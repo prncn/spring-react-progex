@@ -1,25 +1,17 @@
-import { Card } from 'react-bootstrap';
-
 export default function Post({ data }) {
-
   function formatDate(dateString) {
-    const iso = new Date(dateString.replace(' ', 'T')).toISOString().split('T')
-    return iso[0] + ' ' + iso[1].slice(0,5)
-
+    const options = { weekday: 'long', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric'};
+    // const iso = new Date(dateString.replace(' ', 'T')).toISOString().split('T');
+    const iso = new Date(dateString.replace(' ', 'T'))
+    // return iso[0] + ' ' + iso[1].slice(0, 5).toLocaleDateString("en-US", options);
+    return iso.toLocaleDateString('en-US', options).replace(',', ' ');
   }
 
   return (
-    <Card
-      bg={'dark'}
-      text={'white'}
-      style={{ width: '18rem' }}
-      className="m-2 shadow"
-    >
-      <Card.Header>{formatDate(data.date)}</Card.Header>
-      <Card.Body>
-        <Card.Title>{data.author}</Card.Title>
-        <Card.Text>{data.content}</Card.Text>
-      </Card.Body>
-    </Card>
+    <div className="bg-gray-700 flex justify-center align-center flex-col rounded h-32 w-80 m-2 p-4 text-white shadow-2xl">
+      <div className="text-sm mb-4">{formatDate(data.date)}</div>
+      <div className="mt-auto font-semibold text-lg">{data.author}</div>
+      <div>{data.content}</div>
+    </div>
   );
 }

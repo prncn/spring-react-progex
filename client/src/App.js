@@ -17,14 +17,16 @@ export default function App() {
 
   console.log(data);
   return (
-    <div className="App">
-      <div
-        className="App-header d-flex justify-content-center align-items-center min-vh-100"
-        style={{ backgroundColor: 'aliceblue' }}
-      >
-        { data.map(post => (
-          <Post key={post.id} data={post}/>
-        )) }
+    <div
+      className="flex justify-center items-center min-h-screen bg-blue-50"
+    >
+      <div className="flex flex-col justify-center">
+        <h1 className="font-bold text-2xl mx-2 drop-shadow">Posts</h1>
+        <div className="flex justify-center items-center">
+          {data.map((post) => (
+            <Post key={post.id} data={post} />
+          ))}
+        </div>
       </div>
     </div>
   );
