@@ -1,9 +1,8 @@
 export default function Post({ data }) {
+  
   function formatDate(dateString) {
     const options = { weekday: 'long', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric'};
-    // const iso = new Date(dateString.replace(' ', 'T')).toISOString().split('T');
     const iso = new Date(dateString.replace(' ', 'T'))
-    // return iso[0] + ' ' + iso[1].slice(0, 5).toLocaleDateString("en-US", options);
     return iso.toLocaleDateString('en-US', options).replace(',', ' ');
   }
 
