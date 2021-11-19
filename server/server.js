@@ -15,3 +15,5 @@ app.get('/api/posts', db.getPosts)
 app.listen(port, () => {
   console.log(`Node server running on http://localhost:${port}`)
 })
+
+//TEST TEST
