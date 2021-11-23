@@ -9,7 +9,7 @@ export default function App() {
   }, []);
 
   async function getPosts() {
-    const url = 'http://localhost:5000/api/posts';
+    const url = 'http://localhost:8080/api/posts';
     const response = await fetch(url);
     const data = await response.json();
     setData(data);
