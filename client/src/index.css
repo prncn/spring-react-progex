@@ -27,3 +27,6 @@ code {
   scrollbar-width: none;  /* Firefox */
 }
 
+.login-background__card {
+  @apply absolute rounded-lg shadow-lg hover:shadow transition duration-300 ease-in-out xl:visible invisible;
+}
