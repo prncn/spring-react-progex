@@ -6,7 +6,7 @@ import Login from './pages/Login';
 export default function App() {
   
   return (
-    <div className="h-screen bg-gray-100">
+    <div className="h-screen">
       <Router>
         <Routes>
           <Route path="/dash" element={<Dashboard />} />
