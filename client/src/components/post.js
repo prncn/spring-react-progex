@@ -31,7 +31,7 @@ export default function Post({ data }) {
         className="flex justify-center align-center flex-col p-2"
         style={{ width: '600px', height: '500px' }}
       >
-        <div className="font-semibold mb-1">{data.author} 
+        <div className="font-semibold mb-1">{data.author + ' '} 
           &#183; <div className="font-light inline">{formatDate(data.date)}</div>
         </div>
         <div>{data.content}</div>
