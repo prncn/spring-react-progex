@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 
 export default function App() {
   
@@ -10,7 +11,8 @@ export default function App() {
       <Router>
         <Routes>
           <Route path="/dash" element={<Dashboard />} />
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Signup/>} />
+          <Route path="/login" element={<Login/>} />
         </Routes>
       </Router>
     </div>

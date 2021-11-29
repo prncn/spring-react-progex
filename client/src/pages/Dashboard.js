@@ -1,5 +1,7 @@
 import Post from "../components/post";
 import React, { useState, useEffect } from "react";
+import { logout } from "../firebase";
+import { Navigate, useNavigate } from "react-router";
 
 export default function Dashboard() {
   // const [data, setData] = useState([]);
@@ -20,6 +22,26 @@ export default function Dashboard() {
   //   const data = await response.json();
   //   setData(data);
   // }
+
+
+  const [error, setError] = useState("")
+  const navigate = useNavigate();
+
+  async function handleLogout(e) {
+
+    e.preventDefault();
+
+    try {
+      setError('')
+      await logout()
+      navigate('/signup')
+    }catch {
+      setError('Failed to log out')
+      alert('Filed to logout')
+    }
+
+  }
+
 
   const placeholder = [
     {
