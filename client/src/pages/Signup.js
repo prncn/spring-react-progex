@@ -1,35 +1,43 @@
 import '../index.css';
-import { signin } from '../firebase';
-import { useState,useRef} from 'react';
-import { useNavigate } from 'react-router';
-import { Link } from 'react-router-dom';
-
-export default function Login() {
-
-const emailRef = useRef();
-const passwordRef = useRef();
-const [loading,setLoading] = useState();
-const [error,setError] = useState();
-const navigate = useNavigate();
-
-async function handleLogin(e) {
-  e.preventDefault()
-
-  try {
-    setError("")
-    setLoading(true)
-    await signin(emailRef.current.value, passwordRef.current.value)
-    navigate('/dash')
-  } catch {
-    setError("Failed to log in");
-    alert('Failed to log in')
-
-  }
-
-  setLoading(false)
-}
+import { signup } from '../firebase';
+import { useRef,useState} from 'react';
+import { Link} from 'react-router-dom';
+import { useAuth } from '../firebase';
+import { useNavigate } from 'react-router-dom';
 
 
+export default function Signup() {
+
+    const emailRef =useRef();
+    const passwordRef = useRef();
+    const passwordConfirmRef = useRef();
+    const [loading,setLoading] = useState();
+    const [error,setError] = useState();
+
+    const navigate = useNavigate();
+
+
+    async function handleSignup(e) {
+
+        e.preventDefault();
+
+        if (passwordRef.current.value !== passwordConfirmRef.current.value) {
+            setError('Passwords do not match')
+            alert('Passwords do not match')
+          }
+
+
+        try {
+            setError('')
+            setLoading(true)
+            await signup(emailRef.current.value,passwordRef.current.value)
+            navigate('/dash')
+            
+        }catch{
+            alert('Error')
+        }
+        setLoading(false)
+    }
 
 
 
@@ -66,22 +74,24 @@ async function handleLogin(e) {
         worse way to share docs.
       </div>
       <div className="z-10 bg-gray-700 md:bg-indigo-300 m-2 p-4 sm:w-80 h-96 shadow-lg rounded-lg flex flex-col justify-center items-center hover:shadow transition duration-300 ease-in-out">
-        <p className="font-semibold text-white text-3xl">Sign in</p>
+        <p className="font-semibold text-white text-3xl">Sign up</p>
         <form>
             <input ref={emailRef} type="email" placeholder="E-Mail" />
             <input ref={passwordRef} type="password" placeholder="Password"/>
+            <input ref={passwordConfirmRef} type="password" placeholder="Confirm Password"/>
+            
           <div className="flex justify-between">
-            <button disabled={loading} onClick={handleLogin}
+            <button disabled={loading} onClick={handleSignup}
               type="button"
               className="py-2 px-6 bg-green-200 hover:bg-green-300 rounded-lg text-gray-700 font-semibold mt-5"
             >
-              Sign in
+              Sign up
             </button>
             <button
               type="button"
               className="py-2 px-4 shadow-lg hover:shadow rounded-lg text-white font-semibold mt-5"
             >
-              <Link to="/">Sign up </Link>
+             <Link to="/login">Already have an account ? </Link>
             </button>
           </div>
         </form>
