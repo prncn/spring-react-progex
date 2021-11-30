@@ -3,8 +3,11 @@ import { initializeApp } from "firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 import { getAuth} from "firebase/auth"
-import { createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged, signOut } from "@firebase/auth";
+import { createUserWithEmailAndPassword,signInWithEmailAndPassword,
+        onAuthStateChanged, signOut, sendPasswordResetEmail,
+        updatePassword,updateEmail} from "@firebase/auth";
 import { useState,useEffect } from "react";
+
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -31,6 +34,20 @@ export function signin(email,password) {
 export function logout() {
     signOut(auth)
 }
+
+export function resetPassword() {
+    sendPasswordResetEmail(auth)
+}
+
+export function _updateEmail(email) {
+   return updateEmail(auth.currentUser,email)
+}
+
+export function _updatePassword(email) {
+    return updatePassword(auth.currentUser,email)
+ }
+ 
+
 
 // custom hook
 export function useAuth() {
