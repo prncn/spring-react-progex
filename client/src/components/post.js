@@ -3,8 +3,8 @@ import IconComment from '../icons/comment';
 import IconBook from '../icons/book';
 import IconHeart from '../icons/heart';
 
-export default function Post({ data }) {
-  function formatDate(dateString) {
+export default function Post({ data, offline}) {
+  function formatDateString(dateString) {
     const options = {
       weekday: 'long',
       month: 'short',
@@ -14,6 +14,12 @@ export default function Post({ data }) {
     };
     const iso = new Date(dateString.replace(' ', 'T'));
     return iso.toLocaleDateString('en-US', options).replace(',', ' ');
+  }
+
+  function formatUnixTimestamp(dateString) {
+    if(dateString !== null){
+      return new Date(dateString.seconds).toLocaleDateString("en-US")
+    }
   }
 
   return (
@@ -31,8 +37,8 @@ export default function Post({ data }) {
         className="flex justify-center align-center flex-col p-2"
         style={{ width: '600px', height: '500px' }}
       >
-        <div className="font-semibold mb-1">{data.author + ' '} 
-          &#183; <div className="font-light inline">{formatDate(data.date)}</div>
+        <div className="font-semibold mb-1">{data.authorId + ' '} 
+          &#183; <div className="font-light inline">{offline ? formatDateString(data.date) : formatUnixTimestamp(data.date)}</div>
         </div>
         <div>{data.content}</div>
         <div className="my-5 w-full h-full relative">

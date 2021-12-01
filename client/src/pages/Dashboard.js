@@ -1,27 +1,34 @@
 import Post from '../components/post';
 import React, { useState, useEffect } from 'react';
 import { logout } from '../firebase';
-import { Navigate, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 
 export default function Dashboard() {
-  // const [data, setData] = useState([]);
+  const [data, setData] = useState([]);
+  const [offline, setOffline] = useState(false);
 
-  // useEffect(() => {
-  //   getPosts();
-  // }, []);
+  useEffect(() => {
+    getPosts();
+  });
 
-  // async function getPosts() {
-  //   const url = 'http://localhost:8080/api/posts';
-  //   const response = await fetch(url);
+  /**
+   * Gets all posts from rest API
+   */
+  async function getPosts() {
+    const url = 'http://localhost:8080/api/posts/';
+    const response = await fetch(url);
 
-  //   if (!response.ok) {
-  //     const message = `Fetch error has occured: ${response.status}`;
-  //     throw new Error(message);
-  //   }
-
-  //   const data = await response.json();
-  //   setData(data);
-  // }
+    if (!response.ok) {
+      const message = `Fetch error has occured: ${response.status}`;
+      setData(placeholder);
+      setOffline(true)
+      console.log(message);
+    } else {
+      const data = await response.json();
+      setOffline(false)
+      setData(data);
+    }
+  }
 
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -35,14 +42,14 @@ export default function Dashboard() {
       navigate('/signup');
     } catch {
       setError('Failed to log out');
-      alert('Filed to logout');
+      alert(error);
     }
   }
 
   const placeholder = [
     {
       id: 5,
-      author: 'Aretha',
+      author: 'Offline',
       content: 'A document for you, G',
       date: '2021-11-07 10:57:24.083539',
       url: 'https://www.geschkult.fu-berlin.de/e/khi/_ressourcen/ndl_forum_pdf/rembrandt_symposium_programm.pdf',
@@ -81,8 +88,8 @@ export default function Dashboard() {
         <div className="flex flex-col justify-center -mt-7">
           <h1 className="font-bold text-gray-700 text-3xl mx-2">Posts</h1>
           <div className="flex flex-col justify-center items-center">
-            {placeholder.map((post) => (
-              <Post key={post.id} data={post} />
+            {data.map((post) => (
+              <Post key={post.id} data={post} offline={offline}/>
             ))}
           </div>
         </div>
