@@ -28,5 +28,5 @@ code {
 }
 
 .login-background__card {
-  @apply absolute rounded-lg shadow-lg hover:shadow transition duration-300 ease-in-out xl:visible invisible;
+  @apply w-60 lg:w-80 absolute rounded-lg shadow-lg hover:shadow transition duration-300 ease-in-out xl:visible invisible;
 }
