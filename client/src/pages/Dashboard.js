@@ -1,7 +1,9 @@
 import Post from "../components/post";
 import React, { useState, useEffect } from "react";
 import { logout } from "../firebase";
-import { Navigate, useNavigate } from "react-router";
+import {  useNavigate } from "react-router";
+import { useAuth } from "../firebase";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   // const [data, setData] = useState([]);
@@ -24,8 +26,9 @@ export default function Dashboard() {
   // }
 
 
-  const [error, setError] = useState("")
+  const [error, setError] = useState("") // used to display error messages
   const navigate = useNavigate();
+  const currentUser = useAuth();
 
   async function handleLogout(e) {
 
@@ -34,7 +37,7 @@ export default function Dashboard() {
     try {
       setError('')
       await logout()
-      navigate('/signup')
+      navigate('/')
     }catch {
       setError('Failed to log out')
       alert('Filed to logout')
@@ -72,6 +75,16 @@ export default function Dashboard() {
 
   return (
     <div>
+      <div>
+        current user is {currentUser?.email} 
+      </div>
+      <Link to="/update-profile">
+            Update Profile
+      </Link>
+      <button onClick={handleLogout}
+      type="button">
+        Log Out 
+      </button>
     <div className="flex justify-center min-h-screen mt-20 relative">
       <div className="w-50 m-4 p-4 pr-10 h-96 bg-gray-700 rounded text-gray-100 text-xl flex flex-col justify-start shadow-lg">
         <div className="flex flex-col text-left">
