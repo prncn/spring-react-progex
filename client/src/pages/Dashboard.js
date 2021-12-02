@@ -18,17 +18,16 @@ export default function Dashboard() {
    */
   async function getPosts() {
     const url = 'http://localhost:8080/api/posts/';
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      const message = `Fetch error has occured: ${response.status}`;
-      setData(placeholder);
-      setOffline(true);
-      console.log(message);
-    } else {
+    try {
+      const response = await fetch(url);
       const data = await response.json();
       setOffline(false);
       setData(data);
+    } catch (error) {
+      const message = `Fetch error has occured: ${error}`;
+      setData(placeholder);
+      setOffline(true);
+      console.log(message);
     }
   }
 
@@ -52,7 +51,7 @@ export default function Dashboard() {
   const placeholder = [
     {
       id: 5,
-      author: 'Offline',
+      authorId: 'Offline',
       content: 'A document for you, G',
       date: '2021-11-07 10:57:24.083539',
       url: 'https://www.geschkult.fu-berlin.de/e/khi/_ressourcen/ndl_forum_pdf/rembrandt_symposium_programm.pdf',
@@ -60,7 +59,7 @@ export default function Dashboard() {
     },
     {
       id: 6,
-      author: 'Erykah',
+      authorId: 'Erykah',
       content: 'Some article by yours truly',
       date: '2021-11-08 10:57:24.083539',
       url: 'https://imma.ie/wp-content/uploads/2018/10/whatisconceptualart.pdf',
@@ -68,7 +67,7 @@ export default function Dashboard() {
     },
     {
       id: 7,
-      author: 'Chitra',
+      authorId: 'Chitra',
       content: 'Some article by yours truly',
       date: '2021-11-08 10:57:24.083539',
       url: 'https://www.sprengel-museum.de/images/PDF/BIG-short-guide-en.pdf',
@@ -77,7 +76,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div>
+    <>
       <div>current user is {currentUser?.email}</div>
       <Link to="/update-profile">Update Profile</Link>
       <button onClick={handleLogout} type="button">
@@ -92,23 +91,23 @@ export default function Dashboard() {
             <button className="text-left">Settings</button>
             <button className="text-left">More</button>
           </div>
-          <div className="flex flex-col justify-center -mt-7">
-            <h1 className="font-bold text-gray-700 text-3xl mx-2">Posts</h1>
-            <div className="flex flex-col justify-center items-center">
-              {data.map((post) => (
-                <Post key={post.id} data={post} offline={offline} />
-              ))}
-            </div>
+        </div>
+        <div className="flex flex-col justify-center -mt-7">
+          <h1 className="font-bold text-gray-700 text-3xl mx-2">Posts</h1>
+          <div className="flex flex-col justify-center items-center">
+            {placeholder.map((post) => (
+              <Post key={post.id} data={post} offline={offline} />
+            ))}
           </div>
-          <div className="w-80 h-96 rounded-lg bg-gray-50 m-4 p-6">
-            <h1 className="text-xl font-semibold mb-4">Spaces for you</h1>
-            <div className="font-semibold divide-y">
-              <p className="py-2">#illustrations</p>
-              <p className="py-2">#statistics</p>
-            </div>
+        </div>
+        <div className="w-80 h-96 rounded-lg bg-gray-50 m-4 p-6">
+          <h1 className="text-xl font-semibold mb-4">Spaces for you</h1>
+          <div className="font-semibold divide-y">
+            <p className="py-2">#illustrations</p>
+            <p className="py-2">#statistics</p>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
