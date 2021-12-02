@@ -10,26 +10,26 @@ export default function Dashboard() {
   const [offline, setOffline] = useState(false);
 
   useEffect(() => {
-    getPosts();
-  });
-
-  /**
-   * Gets all posts from rest API
-   */
-  async function getPosts() {
-    const url = 'http://localhost:8080/api/posts/';
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-      setOffline(false);
-      setData(data);
-    } catch (error) {
-      const message = `Fetch error has occured: ${error}`;
-      setData(placeholder);
-      setOffline(true);
-      console.log(message);
+    /**
+     * Gets all posts from rest API
+     */
+    async function fetchPosts() {
+      const url = 'http://localhost:8080/api/posts/';
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        setOffline(false);
+        setData(data);
+      } catch (error) {
+        const message = `Fetch error has occured: ${error}`;
+        setData(placeholder);
+        setOffline(true);
+        console.log(message);
+      }
     }
-  }
+    fetchPosts();
+  }, []);
+
 
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -95,7 +95,7 @@ export default function Dashboard() {
         <div className="flex flex-col justify-center -mt-7">
           <h1 className="font-bold text-gray-700 text-3xl mx-2">Posts</h1>
           <div className="flex flex-col justify-center items-center">
-            {placeholder.map((post) => (
+            {data.map((post) => (
               <Post key={post.id} data={post} offline={offline} />
             ))}
           </div>
