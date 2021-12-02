@@ -30,3 +30,11 @@ code {
 .login-background__card {
   @apply w-60 lg:w-80 absolute rounded-lg shadow-lg hover:shadow transition duration-300 ease-in-out xl:visible invisible;
 }
+
+.home-form__right-btn {
+  @apply py-3 px-6 shadow-lg text-gray-500 hover:shadow rounded-lg mx-2 text-sm font-semibold mt-5;
+}
+
+.home-form__heading {
+  @apply font-semibold text-gray-400 text-right w-full pb-4 text-3xl;
+}

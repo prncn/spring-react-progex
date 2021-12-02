@@ -1,3 +1,4 @@
+import '../index.css';
 import { Input } from '../pages/Home';
 import { signin } from '../firebase';
 import { useRef, useState } from 'react';
@@ -28,6 +29,9 @@ export default function LoginForm() {
 
   return (
     <form>
+      <p className="home-form__heading">
+        Sign in
+      </p>
       <Input ref={emailRef} type="email" placeholder="E-Mail" />
       <Input ref={passwordRef} type="password" placeholder="Password" />
       <div className="flex justify-between">
@@ -42,11 +46,14 @@ export default function LoginForm() {
         <Link to="/">
           <button
             type="button"
-            className="py-2 px-4 shadow-lg hover:shadow rounded-lg text-white font-semibold mt-5"
+            className="p-3 text-gray-500 mx-1 shadow-lg hover:shadow rounded-lg font-semibold text-sm mt-5"
           >
-            Sign up
+            Create an Account
           </button>
         </Link>
+      </div>
+      <div className="mt-10 text-sm text-gray-300 hover:text-gray-500">
+        <Link to="/forgot-password">Forgot Password?</Link>
       </div>
     </form>
   );

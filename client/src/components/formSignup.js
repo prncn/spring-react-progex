@@ -1,3 +1,4 @@
+import '../index.css';
 import { Input } from '../pages/Home';
 import { signup } from '../firebase';
 import { useRef, useState } from 'react';
@@ -33,6 +34,10 @@ export default function SignupForm() {
   }
   return (
     <form>
+      <p className="home-form__heading">
+        Sign up
+      </p>
+
       <Input ref={emailRef} type="email" placeholder="E-Mail" />
       <Input ref={passwordRef} type="password" placeholder="Password" />
       <Input
@@ -46,16 +51,16 @@ export default function SignupForm() {
           disabled={loading}
           onClick={handleSignup}
           type="button"
-          className="py-2 px-6 bg-green-200 hover:bg-green-300 rounded-lg text-gray-700 font-semibold mt-5"
+          className="py-2 px-6 bg-green-200 hover:bg-green-300 rounded-lg text-gray-800 font-semibold mt-5"
         >
           Sign up
         </button>
         <Link to="/login">
           <button
             type="button"
-            className="py-2 px-4 shadow-lg hover:shadow rounded-lg text-white font-semibold mt-5"
+            className="home-form__right-btn"
           >
-            Sign in
+            Got an account
           </button>
         </Link>
       </div>
