@@ -8,14 +8,12 @@ export default function ResetPasswordForm() {
   const emailRef = useRef();
   const [loading, setLoading] = useState();
   const [setMessage] = useState(); // used to display messages to the user
-  const [setError] = useState(); // used to display errors to the user
 
   async function handleresetPasword(e) {
     e.preventDefault();
 
     try {
       setMessage('');
-      setError('');
       setLoading(true);
       if (emailRef.current.value) {
         await resetPassword(emailRef.current.value);
@@ -23,7 +21,6 @@ export default function ResetPasswordForm() {
       setMessage('Check your E-Mail inbox for further instructions');
     } catch {
       alert('Failed to send E-Mail to reset password');
-      setError('Failed to send E-Mail to reset password,try again');
     }
 
     setLoading(false);

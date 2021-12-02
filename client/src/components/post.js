@@ -4,7 +4,9 @@ import IconBook from '../icons/book';
 import IconHeart from '../icons/heart';
 
 export default function Post({ data, offline}) {
+
   function formatDateString(dateString) {
+    console.log('fired');
     const options = {
       weekday: 'long',
       month: 'short',

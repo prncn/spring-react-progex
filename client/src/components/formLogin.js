@@ -8,19 +8,16 @@ export default function LoginForm() {
   const emailRef = useRef();
   const passwordRef = useRef();
   const [loading, setLoading] = useState();
-  const [error, setError] = useState();
   const navigate = useNavigate();
 
   async function handleLogin(e) {
     e.preventDefault();
 
     try {
-      setError('');
       setLoading(true);
       await signin(emailRef.current.value, passwordRef.current.value);
       navigate('/dash');
-    } catch {
-      setError('Failed to log in');
+    } catch (error) {
       alert(error);
     }
 
@@ -43,7 +40,7 @@ export default function LoginForm() {
         >
           Sign in
         </button>
-        <Link to="/">
+        <Link to="/signup">
           <button
             type="button"
             className="p-3 text-gray-500 mx-1 shadow-lg hover:shadow rounded-lg font-semibold text-sm mt-5"
@@ -52,8 +49,8 @@ export default function LoginForm() {
           </button>
         </Link>
       </div>
-      <div className="mt-10 text-sm text-gray-300 hover:text-gray-500">
-        <Link to="/forgot-password">Forgot Password?</Link>
+      <div className="mt-10">
+        <Link className="text-sm text-gray-300 hover:text-gray-500" to="/forgot-password">Forgot Password?</Link>
       </div>
     </form>
   );

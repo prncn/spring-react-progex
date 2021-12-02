@@ -9,7 +9,6 @@ export default function UpdateProfileForm() {
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
   const [loading, setLoading] = useState();
-  const [error, setError] = useState();
   const currentUser = useAuth();
   const navigate = useNavigate();
 
@@ -17,11 +16,9 @@ export default function UpdateProfileForm() {
     e.preventDefault();
 
     if (passwordRef.current.value !== passwordConfirmRef.current.value) {
-      setError('Passwords do not match');
-      alert(error);
+      alert('Passwords do not match');
     }
 
-    setError('');
     setLoading(true);
     const promises = [];
 
@@ -38,7 +35,6 @@ export default function UpdateProfileForm() {
         navigate('/');
       })
       .catch(() => {
-        setError('Profile could not be updated , try again');
         alert('Profile could not be updated , try again');
       })
       .finally(() => {

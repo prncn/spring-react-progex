@@ -10,7 +10,6 @@ export default function SignupForm() {
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
   const [loading, setLoading] = useState();
-  const [setError] = useState();
 
   const navigate = useNavigate();
 
@@ -18,17 +17,15 @@ export default function SignupForm() {
     e.preventDefault();
 
     if (passwordRef.current.value !== passwordConfirmRef.current.value) {
-      setError('Passwords do not match');
       alert('Passwords do not match');
     }
 
     try {
-      setError('');
       setLoading(true);
       await signup(emailRef.current.value, passwordRef.current.value);
       navigate('/dash');
-    } catch {
-      alert('Error');
+    } catch (error) {
+      alert(error);
     }
     setLoading(false);
   }
