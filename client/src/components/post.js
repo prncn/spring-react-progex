@@ -25,7 +25,7 @@ export default function Post({ data, offline}) {
   }
 
   return (
-    <div className="bg-gray-50 flex rounded-lg overflow-hidden m-2 p-2 text-black">
+    <div className="bg-gray-50 flex rounded-lg m-2 py-2 text-black">
       <div className="w-20 bg-gray-50 pl-4">
         <div className="w-16 h-16 mt-2 rounded-full shadow-lg">
           <img
