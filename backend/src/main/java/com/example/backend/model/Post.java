@@ -20,5 +20,4 @@ public class Post {
 
     private String icon; //Filepath to bucket
     private String url; //Temporary 01/12/2021
-    private String content; 
 }
