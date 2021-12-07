@@ -11,13 +11,14 @@ import { useState,useEffect } from "react";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBsrDw9IPriLCVnWEs8JccAF_vvT9c81qk",
-  authDomain: "auth-development-b1a51.firebaseapp.com",
-  projectId: "auth-development-b1a51",
-  storageBucket: "auth-development-b1a51.appspot.com",
-  messagingSenderId: "720198584640",
-  appId: "1:720198584640:web:6e699d63d1da6ffa4dd2a5"
-};
+    apiKey: "AIzaSyBGVejgoBEWRT5w4HIRMKOe5IoRpcndWHo",
+    authDomain: "prog-ex.firebaseapp.com",
+    projectId: "prog-ex",
+    storageBucket: "prog-ex.appspot.com",
+    messagingSenderId: "435059451981",
+    appId: "1:435059451981:web:231d082cb78c8648149404",
+    measurementId: "G-CRLNDZDZKZ"
+  };
 
 // Initialize Firebase
 initializeApp(firebaseConfig);
