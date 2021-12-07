@@ -45,7 +45,11 @@ code {
 }
 
 .dashboard-nav__btn {
-  @apply text-left font-semibold py-1;
+  @apply text-left font-semibold rounded-lg w-40 inline-flex items-center px-4 py-2;
+}
+
+.dashboard-nav__btn:hover {
+  @apply bg-indigo-100 text-indigo-400
 }
 
 @keyframes bounce {
