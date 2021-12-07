@@ -2,7 +2,6 @@ package com.example.backend.controller;
 
 import com.example.backend.model.Post;
 import com.example.backend.service.PostService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,8 +20,6 @@ import java.util.concurrent.ExecutionException;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/posts") 
 public class PostController {
-
-    
     private final PostService postService;
 
     public PostController(PostService postService){
