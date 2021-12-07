@@ -1,5 +1,7 @@
 package com.example.backend.model;
 
+
+import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.annotation.DocumentId;
 import lombok.Data;
 
@@ -13,7 +15,10 @@ public class Post {
     private Post[] subPosts; //Maybe can just be strings and methods can be written to get all subPosts and have a String array here instead?
     private Post parentPost;
 
-    private String url; //Filepath to bucket
-    private String icon; //Temporary 01/12/2021
-    private String content;
+    private String content; 
+    private Timestamp date;
+
+    private String icon; //Filepath to bucket
+    private String url; //Temporary 01/12/2021
+    private String content; 
 }
