@@ -38,7 +38,7 @@ export default function Home({ form }) {
         <div className="text-6xl md:text-7xl text-gray-600 md:text-green-300 visible">
           Murdoc.
         </div>{' '}
-        The worse way to share docs.
+        The weird way to share docs.
       </div>
       <div className="z-10 bg-gray-700 md:bg-gray-100 m-2 p-5 sm:w-80 h-96 shadow-xl rounded-lg flex flex-col justify-center items-center hover:shadow transition duration-300 ease-in-out">
         {form === 'login' && <LoginForm /> }

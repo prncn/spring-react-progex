@@ -1,3 +1,4 @@
+import '../index.css';
 import Post from '../components/post';
 import React, { useState, useEffect } from 'react';
 import { logout } from '../firebase';
@@ -83,13 +84,13 @@ export default function Dashboard() {
         Log Out
       </button>
       <div className="flex justify-center min-h-screen mt-20 relative">
-        <div className="w-50 m-4 p-4 pr-10 h-96 bg-gray-700 rounded text-gray-100 text-xl flex flex-col justify-start shadow-lg">
-          <div className="flex flex-col text-left">
-            <button className="text-left font-semibold">Home</button>
-            <button className="text-left">Explore</button>
-            <button className="text-left">Profile</button>
-            <button className="text-left">Settings</button>
-            <button className="text-left">More</button>
+        <div className="w-50 m-4 pr-10 h-96 rounded flex flex-col justify-start">
+          <div className="flex flex-col text-left text-gray-600 text-2xl">
+            <button className="dashboard-nav__btn">Home</button>
+            <button className="dashboard-nav__btn">Explore</button>
+            <button className="dashboard-nav__btn">Profile</button>
+            <button className="dashboard-nav__btn">Settings</button>
+            <button className="dashboard-nav__btn">More</button>
           </div>
         </div>
         <div className="flex flex-col justify-center -mt-7">
