@@ -35,7 +35,7 @@ export default function LoginForm() {
         <button
           disabled={loading}
           onClick={handleLogin}
-          type="button"
+          type="submit"
           className="py-2 px-6 bg-green-200 hover:bg-green-300 rounded-lg text-gray-700 font-semibold mt-5"
         >
           Sign in

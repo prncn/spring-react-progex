@@ -3,10 +3,9 @@ import IconComment from '../icons/comment';
 import IconBook from '../icons/book';
 import IconHeart from '../icons/heart';
 
-export default function Post({ data, offline}) {
+export default function Post({ data, offline }) {
 
   function formatDateString(dateString) {
-    console.log('fired');
     const options = {
       weekday: 'long',
       month: 'short',
@@ -20,7 +19,7 @@ export default function Post({ data, offline}) {
 
   function formatUnixTimestamp(dateString) {
     if(dateString !== null){
-      return new Date(dateString.seconds).toLocaleDateString("en-US")
+      return new Date(dateString.seconds * 1000).toLocaleDateString("en-US")
     }
   }
 

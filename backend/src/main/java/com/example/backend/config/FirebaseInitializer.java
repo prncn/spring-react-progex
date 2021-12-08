@@ -14,8 +14,9 @@ public class FirebaseInitializer {
 
     @PostConstruct
     public void initialize() throws IOException {
+        String dir = System.getProperty("user.dir");
         FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(new FileInputStream("backend/src/main/resources/static/prog-ex-firebase-adminsdk.json")))
+                .setCredentials(GoogleCredentials.fromStream(new FileInputStream(dir + "/src/main/resources/static/prog-ex-firebase-adminsdk.json")))
                 .build();
 
         FirebaseApp.initializeApp(options);

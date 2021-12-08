@@ -1,11 +1,11 @@
 import '../index.css';
 import Post from '../components/post';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createRef } from 'react';
 import { logout } from '../firebase';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../firebase';
 import { Link } from 'react-router-dom';
-import { getPosts } from '../controller/queryService';
+import { createPost, getPosts } from '../controller/queryService';
 import { IconLogout, IconExplore, IconDocs, IconProfile } from '../icons/NavIcons';
 import IconHome from '../icons/home';
 
@@ -13,12 +13,18 @@ export default function Dashboard() {
   const [data, setData] = useState([]);
   const [offline, setOffline] = useState(true);
   const currentUser = useAuth();
+  const currentUserName = currentUser?.email.split('@')[0]
+  console.log(currentUser);
 
   useEffect(() => {
     (async () => {
-      const data = await getPosts();
+      const [data, responded] = await getPosts();
       console.log(data);
       setData(data);
+      if(responded !== null) {
+        setOffline(false)
+        console.log('IS ONLINE');
+      }
     })();
   }, []);
 
@@ -29,12 +35,12 @@ export default function Dashboard() {
         <div className="flex flex-col justify-center">
           <p className="text-gray-500">Hi, {currentUser?.email}</p>
           <div className="flex flex-col justify-center items-center">
-            <PostCreator />
+            <PostCreator currentUser={currentUserName}/>
             <h1 className="font-bold text-gray-700 text-3xl self-start">
               Posts
             </h1>
             {data.map((post) => (
-              <Post key={post.id} data={post} offline={offline} />
+              <Post key={post.id} data={post} />
             ))}
           </div>
         </div>
@@ -46,22 +52,31 @@ export default function Dashboard() {
   );
 }
 
-function PostCreator() {
+function PostCreator({ currentUser }) {
+  const contentRef = createRef()
+  const urlRef = createRef()
+  const pfpIcon = "https://i.imgur.com/ncnHn9I.jpg"
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    createPost(currentUser, contentRef.current.value, pfpIcon, urlRef.current.value);
+  }
+
   return (
     <div className="w-full h-40 flex rounded-lg bg-indigo-400 py-2 my-6">
       <div className="w-20 pl-4">
         <div className="w-16 h-16 mt-2 rounded-full">
           <img
             className="w-full h-full object-contained rounded-full block shadow-lg"
-            src="https://i.imgur.com/ncnHn9I.jpg"
+            src={pfpIcon}
             alt="pfp_icon"
           />
         </div>
       </div>
       <form className="w-full h-full m-1 px-3 flex flex-col">
-        <input className="bg-indigo-400 w-3/4 p-1 text-gray-50 placeholder-gray-300 font-semibold text-lg focus:outline-none" placeholder="Title your Doc..."></input>
-        <input className="bg-indigo-400 w-3/4 p-1 text-gray-50 placeholder-gray-300 text-sm focus:outline-none h-auto" placeholder="URL to your Doc..."></input>
-        <button className="bg-gray-100 text-black font-semibold px-5 py-2 rounded-full self-end"><span>Send.</span></button>
+        <input ref={contentRef} className="bg-indigo-400 w-3/4 p-1 text-gray-50 placeholder-gray-300 font-semibold text-lg focus:outline-none" placeholder="Title your Doc..."></input>
+        <input ref={urlRef} className="bg-indigo-400 w-3/4 p-1 text-gray-50 placeholder-gray-300 text-sm focus:outline-none h-auto" placeholder="URL to your Doc..."></input>
+        <button onClick={handleSubmit} className="bg-gray-100 text-black font-semibold px-5 py-2 rounded-full self-end"><span>Send.</span></button>
       </form>
     </div>
   );

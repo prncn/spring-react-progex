@@ -26,18 +26,18 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping(value = "/" , produces = "application/json")
+    @GetMapping(value = "/", produces = "application/json")
     public List<Post> getAllPost() throws ExecutionException, InterruptedException {
         return postService.getPostList();
     } 
 
-    @PostMapping(value = "/publish", produces = "application/json")
+    @PostMapping(value = "/", produces = "application/json")
     public String createPost(@RequestBody Post post) throws ExecutionException, InterruptedException
     {
        return postService.createPost(post);
     }
 
-    @PutMapping(value = "/update", produces = "application/json")
+    @PutMapping(value = "/", produces = "application/json")
     public String updatePost(@RequestBody Post post) throws ExecutionException, InterruptedException
     {
        return postService.updatePost(post);
