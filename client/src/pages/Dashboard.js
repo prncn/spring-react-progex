@@ -13,8 +13,8 @@ export default function Dashboard() {
   const [data, setData] = useState([]);
   const [offline, setOffline] = useState(true);
   const currentUser = useAuth();
-  const currentUserName = currentUser?.email.split('@')[0]
   console.log(currentUser);
+  console.log(offline);
 
   useEffect(() => {
     (async () => {
@@ -23,7 +23,6 @@ export default function Dashboard() {
       setData(data);
       if(responded !== null) {
         setOffline(false)
-        console.log('IS ONLINE');
       }
     })();
   }, []);
@@ -33,9 +32,9 @@ export default function Dashboard() {
       <div className="flex justify-center min-h-screen mt-20 relative">
         <NavTab />
         <div className="flex flex-col justify-center">
-          <p className="text-gray-500">Hi, {currentUser?.email}</p>
+          <p className="text-gray-500">Hi, {currentUser?.displayName}</p>
           <div className="flex flex-col justify-center items-center">
-            <PostCreator currentUser={currentUserName}/>
+            <PostCreator currentUser={currentUser}/>
             <h1 className="font-bold text-gray-700 text-3xl self-start">
               Posts
             </h1>
@@ -55,7 +54,7 @@ export default function Dashboard() {
 function PostCreator({ currentUser }) {
   const contentRef = createRef()
   const urlRef = createRef()
-  const pfpIcon = "https://i.imgur.com/ncnHn9I.jpg"
+  const pfpIcon = currentUser?.photoURL
 
   function handleSubmit(e) {
     e.preventDefault();

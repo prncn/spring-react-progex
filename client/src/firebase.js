@@ -11,6 +11,7 @@ import {
   sendPasswordResetEmail,
   updatePassword,
   updateEmail,
+  updateProfile,
 } from '@firebase/auth';
 import { useState, useEffect } from 'react';
 
@@ -29,8 +30,13 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 export const auth = getAuth();
 
-export function signup(email, password) {
-  return createUserWithEmailAndPassword(auth, email, password);
+export function signup(email, password, displayName) {
+  return createUserWithEmailAndPassword(auth, email, password).then((res) => {
+    updateProfile(res.user, {
+      displayName,
+      photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
+    });
+  });
 }
 
 export function signin(email, password) {
