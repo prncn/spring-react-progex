@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 export default function SignupForm() {
+  const displayNameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
@@ -22,7 +23,7 @@ export default function SignupForm() {
 
     try {
       setLoading(true);
-      await signup(emailRef.current.value, passwordRef.current.value);
+      await signup(emailRef.current.value, passwordRef.current.value, displayNameRef.current.value);
       navigate('/dash');
     } catch (error) {
       alert(error);
@@ -35,6 +36,7 @@ export default function SignupForm() {
         Sign up
       </p>
 
+      <Input ref={displayNameRef} type="text" placeholder="Display Name" />
       <Input ref={emailRef} type="email" placeholder="E-Mail" />
       <Input ref={passwordRef} type="password" placeholder="Password" />
       <Input
