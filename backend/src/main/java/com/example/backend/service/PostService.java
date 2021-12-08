@@ -44,8 +44,8 @@ public class PostService {
     public String createPost(Post post) throws InterruptedException, ExecutionException
     {
       post.setDate(Timestamp.now()); //get local current time
-      Firestore dbFirestore = FirestoreClient.getFirestore();
-      ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("posts").document().set(post);
+      firestore = FirestoreClient.getFirestore();
+      ApiFuture<WriteResult> collectionsApiFuture = firestore.collection("posts").document().set(post);
       return collectionsApiFuture.get().getUpdateTime().toString(); 
 
     }
@@ -59,9 +59,16 @@ public class PostService {
      */
     public String updatePost(Post post) throws ExecutionException, InterruptedException
     {
-        Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("posts").document(post.getId()).set(post);
+        firestore = FirestoreClient.getFirestore();
+        ApiFuture<WriteResult> collectionsApiFuture = firestore.collection("posts").document(post.getId()).set(post);
         return collectionsApiFuture.get().getUpdateTime().toString();
 
+    }
+
+    public String deletePost(String id) throws InterruptedException, ExecutionException
+    {
+        firestore = FirestoreClient.getFirestore();
+        ApiFuture<WriteResult> writeResult = firestore.collection("posts").document(id).delete();
+        return writeResult.get().getUpdateTime().toString();
     }
 }

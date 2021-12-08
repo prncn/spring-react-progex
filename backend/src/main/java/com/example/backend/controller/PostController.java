@@ -43,4 +43,10 @@ public class PostController {
        return postService.updatePost(post);
     }
 
+    @DeleteMapping(value = "/delete", produces = "application/json")
+    public String deletePost(@RequestHeader String id) throws InterruptedException, ExecutionException
+    {
+        return postService.deletePost(id);
+    }
+
 }
