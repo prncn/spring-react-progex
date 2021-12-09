@@ -1,8 +1,6 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from "firebase/firestore"
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -15,7 +13,6 @@ import {
 } from '@firebase/auth';
 import { useState, useEffect } from 'react';
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: 'AIzaSyBGVejgoBEWRT5w4HIRMKOe5IoRpcndWHo',
   authDomain: 'prog-ex.firebaseapp.com',
@@ -26,9 +23,9 @@ const firebaseConfig = {
   measurementId: 'G-CRLNDZDZKZ',
 };
 
-// Initialize Firebase
 initializeApp(firebaseConfig);
 export const auth = getAuth();
+export const db = getFirestore();
 
 export function signup(email, password, displayName) {
   return createUserWithEmailAndPassword(auth, email, password).then((res) => {
@@ -36,6 +33,7 @@ export function signup(email, password, displayName) {
       displayName,
       photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     });
+    db.collection('users').doc(auth.currentUser.uid)
   });
 }
 

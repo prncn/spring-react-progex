@@ -1,4 +1,8 @@
-const placeholder = [
+/**
+ * Placeholder list of posts data. This will be passed
+ * to getPosts() when the Spring server is offline.
+ */
+export const placeholder = [
   {
     id: 5,
     authorId: 'Offline',
@@ -34,6 +38,11 @@ const placeholder = [
   },
 ];
 
+/**
+ * Fetch posts from Spring endpoint.
+ * @returns Array. First entry is the resulting data, which is a placeholder
+ * in case of a fetch error. Second entry is a success response.
+ */
 export async function getPosts() {
   const url = 'http://localhost:8080/api/posts/';
   try {
@@ -47,6 +56,15 @@ export async function getPosts() {
   }
 }
 
+/**
+ * Call spring endpoint to create a post document in
+ * firestore and use params of client.
+ * @param {string} authorId - Firestore ID of document
+ * @param {string} content - Title of post
+ * @param {string} icon - Icon of user
+ * @param {string} url - URL of PDF file
+ * @returns 
+ */
 export async function createPost(authorId, content, icon, url) {
   const endpoint = 'http://localhost:8080/api/posts/';
   try {
