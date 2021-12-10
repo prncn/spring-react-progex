@@ -4,7 +4,7 @@ import React, { useState, useEffect, createRef } from 'react';
 import { logout, useAuth } from '../firebase';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
-import { createPost, getPosts } from '../controller/QueryService';
+import { createPost, getPosts, placeholder } from '../controller/QueryService';
 import {
   IconLogout,
   IconExplore,
@@ -14,7 +14,7 @@ import {
 import IconHome from '../icons/home';
 
 export default function Dashboard() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(placeholder);
   const [offline, setOffline] = useState(true);
   const currentUser = useAuth();
   console.log(currentUser);
@@ -42,8 +42,8 @@ export default function Dashboard() {
             <h1 className="font-bold text-gray-700 text-3xl self-start">
               Posts
             </h1>
-            {data.map((post) => (
-              <Post key={post.id} data={post} />
+            {data.map((post, i) => (
+              <Post key={post.id} data={post} idn={i}/>
             ))}
           </div>
         </div>
