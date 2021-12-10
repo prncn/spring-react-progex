@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from "firebase/firestore"
+import { getFirestore } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -33,7 +34,14 @@ export function signup(email, password, displayName) {
       displayName,
       photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     });
-    db.collection('users').doc(auth.currentUser.uid)
+    try {
+      const docRef = addDoc(collection(db, "users", res.user.id), {
+      }).then(() => {
+        console.log("Document written with ID: ", docRef.id);
+      })
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   });
 }
 
