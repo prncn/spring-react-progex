@@ -1,8 +1,5 @@
 import '../index.css';
-import LoginForm from '../components/formLogin';
-import SignupForm from '../components/formSignup';
-import ResetPasswordForm from '../components/formResetPassword';
-import UpdateProfileForm from '../components/formUpdateProfile';
+import { LoginForm, SignupForm, ResetPasswordForm } from '../components/homeForms';
 import { forwardRef } from 'react';
 
 export const Input = forwardRef((props, ref) => {
@@ -43,7 +40,6 @@ export default function Home({ form }) {
       <div className="z-10 bg-gray-700 md:bg-gray-100 m-2 p-5 sm:w-80 h-96 shadow-xl rounded-lg flex flex-col justify-center items-center hover:shadow transition duration-300 ease-in-out">
         {form === 'login' && <LoginForm /> }
         {form === 'signup' && <SignupForm /> }
-        {form === 'update' && <UpdateProfileForm /> }
         {form === 'reset' && <ResetPasswordForm /> }
       </div>
       <div className="invisible lg:visible h-full w-1/3 fixed top-0 right-0 bg-hero-pattern"></div>

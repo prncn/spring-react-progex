@@ -4,8 +4,13 @@ import React, { useState, useEffect, createRef } from 'react';
 import { logout, useAuth } from '../firebase';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
-import { createPost, getPosts } from '../controller/queryService';
-import { IconLogout, IconExplore, IconDocs, IconProfile } from '../icons/NavIcons';
+import { createPost, getPosts } from '../controller/QueryService';
+import {
+  IconLogout,
+  IconExplore,
+  IconDocs,
+  IconProfile,
+} from '../icons/NavIcons';
 import IconHome from '../icons/home';
 
 export default function Dashboard() {
@@ -21,7 +26,7 @@ export default function Dashboard() {
       console.log(data);
       setData(data);
       if (responded !== null) {
-        setOffline(false)
+        setOffline(false);
       }
     })();
   }, []);
@@ -51,13 +56,18 @@ export default function Dashboard() {
 }
 
 function PostCreator({ currentUser }) {
-  const contentRef = createRef()
-  const urlRef = createRef()
-  const pfpIcon = currentUser?.photoURL
+  const contentRef = createRef();
+  const urlRef = createRef();
+  const pfpIcon = currentUser?.photoURL;
 
   function handleSubmit(e) {
     e.preventDefault();
-    createPost(currentUser, contentRef.current.value, pfpIcon, urlRef.current.value);
+    createPost(
+      currentUser,
+      contentRef.current.value,
+      pfpIcon,
+      urlRef.current.value
+    );
   }
 
   return (
@@ -72,15 +82,28 @@ function PostCreator({ currentUser }) {
         </div>
       </div>
       <form className="w-full h-full flex flex-col">
-        <input ref={contentRef} className="bg-indigo-400 w-3/4 p-1 text-gray-50 placeholder-gray-300 font-semibold text-lg focus:outline-none" placeholder="Title your Doc..."></input>
-        <input ref={urlRef} className="bg-indigo-400 w-3/4 p-1 text-gray-50 placeholder-gray-300 text-sm focus:outline-none h-auto" placeholder="URL to your Doc..."></input>
-        <button onClick={handleSubmit} className="bg-gray-100 text-black font-semibold px-5 py-2 rounded-full place-self-end mt-auto"><span>Send.</span></button>
+        <input
+          ref={contentRef}
+          className="bg-indigo-400 w-3/4 p-1 text-gray-50 placeholder-gray-300 font-semibold text-lg focus:outline-none"
+          placeholder="Title your Doc..."
+        ></input>
+        <input
+          ref={urlRef}
+          className="bg-indigo-400 w-3/4 p-1 text-gray-50 placeholder-gray-300 text-sm focus:outline-none h-auto"
+          placeholder="URL to your Doc..."
+        ></input>
+        <button
+          onClick={handleSubmit}
+          className="bg-gray-100 text-black font-semibold px-5 py-2 rounded-full place-self-end mt-auto"
+        >
+          <span>Send.</span>
+        </button>
       </form>
     </div>
   );
 }
 
-function NavTab() {
+export function NavTab() {
   const navigate = useNavigate();
 
   async function handleLogout(e) {
@@ -101,10 +124,12 @@ function NavTab() {
         <div className="text-3xl font-semibold text-indigo-400 mb-5 cursor-pointer">
           Murdoc.
         </div>
-        <button className="dashboard-nav__btn">
-          <IconHome />
-          <span>Home</span>
-        </button>
+        <Link to="/dash">
+          <button className="dashboard-nav__btn">
+            <IconHome />
+            <span>Dash</span>
+          </button>
+        </Link>
         <button className="dashboard-nav__btn">
           <IconExplore />
           <span>Explore</span>
@@ -113,7 +138,7 @@ function NavTab() {
           <IconDocs />
           <span>Docs</span>
         </button>
-        <Link to="/update-profile">
+        <Link to="/profile">
           <button className="dashboard-nav__btn">
             <IconProfile />
             <span>Profile</span>

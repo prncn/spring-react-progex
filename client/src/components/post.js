@@ -58,7 +58,7 @@ export default function Post({ data, offline }) {
         </div>
         <div>{data.content}</div>
         <div ref={docRef} className="my-5 w-full h-full relative overflow-hidden">
-          <Document className="w-full" file={{ url: `https://test.cors.workers.dev/${(data.url)}`, mode: 'no-cors', httpHeaders: { "access-control-allow-origin": "*" } }} cache={false} onLoadSuccess={onDocumentLoadSuccess}>
+          <Document className="w-full" file={{ url: `${(data.url)}`, mode: 'no-cors', httpHeaders: { "Access-Control-Allow-Origin": "*" } }} cache={false} onLoadSuccess={onDocumentLoadSuccess}>
             <Page width={width} pageNumber={1} />
           </Document>
         </div>
