@@ -1,6 +1,7 @@
 import '../index.css';
 import { LoginForm, SignupForm, ResetPasswordForm } from '../components/homeForms';
 import { forwardRef } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 export const Input = forwardRef((props, ref) => {
   return (
@@ -25,6 +26,7 @@ export default function Home({ form }) {
         <div className="bg-green-200 left-0 bottom-0 h-80 login-background__card"></div>
         <div className="bg-gray-100 left-14 top-2/3 h-96 login-background__card"></div>
         <div className="bg-gray-100 left-20 top-2/3 h-96 login-background__card"></div>
+        <div></div>
 
         <div className="bg-green-200 inset-10 w-96 h-80 login-background__card"></div>
         <div className="bg-gray-100 inset-5 w-96 h-80 login-background__card"></div>
