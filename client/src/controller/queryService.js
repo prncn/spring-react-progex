@@ -4,37 +4,49 @@
  */
 export const placeholder = [
   {
-    id: 5,
-    authorId: 'Offline',
-    content: 'A document for you, G',
+    id: '5',
+    user: {
+      'id': '1',
+      'name': 'Loading...',
+      'icon': 'https://i.imgur.com/NDFE7BQ.jpg'
+    },
+    title: 'Rembrandt Symposium Programm',
+    description: 'This is a placeholder',
     date: {
       "seconds": 1638807536,
       "nanos": 782000000
     },
     url: 'https://www.geschkult.fu-berlin.de/e/khi/_ressourcen/ndl_forum_pdf/rembrandt_symposium_programm.pdf',
-    icon: 'https://i.imgur.com/NDFE7BQ.jpg',
   },
   {
-    id: 6,
-    authorId: 'Erykah',
-    content: 'Some article by yours truly',
+    id: '6',
+    user: {
+      'id': '2',
+      'name': 'Erykah',
+      'icon': 'https://i.imgur.com/Ks2oou4.jpg'
+    },
+    title: 'What is Conceptual Art',
+    description: 'Some article by yours truly',
     date: {
       "seconds": 1638807536,
       "nanos": 782000000
     },
     url: 'https://imma.ie/wp-content/uploads/2018/10/whatisconceptualart.pdf',
-    icon: 'https://i.imgur.com/Ks2oou4.jpg',
   },
   {
-    id: 7,
-    authorId: 'Chitra',
-    content: 'Some article by yours truly',
+    id: '7',
+    user: {
+      'id': '3',
+      'name': 'Aysha',
+      'icon': 'https://i.imgur.com/ncnHn9I.jpg'
+    },
+    title: 'Big Short Guide',
+    description: 'Read this, it is important',
     date: {
       "seconds": 1638807536,
       "nanos": 782000000
     },
     url: 'https://www.sprengel-museum.de/images/PDF/BIG-short-guide-en.pdf',
-    icon: 'https://i.imgur.com/ncnHn9I.jpg',
   },
 ];
 

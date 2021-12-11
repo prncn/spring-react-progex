@@ -1,7 +1,7 @@
 import '../index.css';
 import Post from '../components/post';
 import React, { useState, useEffect, createRef } from 'react';
-import { logout, useAuth } from '../firebase';
+import { logout, useAuth } from '../controller/Firebase';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import { createPost, getPosts, placeholder } from '../controller/QueryService';

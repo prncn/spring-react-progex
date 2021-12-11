@@ -1,9 +1,8 @@
 import '../index.css';
 import { Input } from '../pages/Home';
-import { signin, signup } from '../firebase';
 import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { resetPassword } from '../firebase';
+import { signin, signup, resetPassword } from '../controller/Firebase';
 
 /**
  * Form component to handle login by user
