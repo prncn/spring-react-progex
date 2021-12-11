@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useAuth, _updateEmail, _updatePassword } from '../firebase';
+import { useAuth, _updateEmail, _updatePassword } from '../controller/Firebase';
 import { useNavigate } from 'react-router';
 import { NavTab } from './Dashboard';
 

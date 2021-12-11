@@ -30,7 +30,7 @@ export default function Post({ data, offline, idn }) {
         <div className="w-16 h-16 mt-2 rounded-full shadow-lg">
           <img
             className="w-full h-full object-contained rounded-full block shadow-lg"
-            src={data.icon}
+            src={data.user.icon}
             alt="pfp_icon"
           />
         </div>
@@ -40,7 +40,7 @@ export default function Post({ data, offline, idn }) {
         style={{ width: '600px', height: '500px' }}
       >
         <div className="font-semibold mb-1">
-          {data.authorId + ' '}
+          {data.user.name + ' '}
           &#183;{' '}
           <div className="font-light inline">
             {offline
@@ -48,8 +48,8 @@ export default function Post({ data, offline, idn }) {
               : formatUnixTimestamp(data.date)}
           </div>
         </div>
-        <div>{data.content}</div>
-        <PDFviewer idn={idn} file={data.url}/>
+        <div>{data.description}</div>
+        <PDFviewer idn={idn} file={data.url} title={data.title}/>
         <div className="h-10 w-full">
           <div className="h-full w-3/4 flex justify-between items-center">
             <button>
@@ -68,17 +68,17 @@ export default function Post({ data, offline, idn }) {
   );
 }
 
-function PDFviewer({ idn, file }) {
+function PDFviewer({ idn, file, title }) {
   useEffect(() => {
     const viewSDKClient = new ViewSDKClient();
     viewSDKClient.ready().then(() => {
-      viewSDKClient.previewFile(file, `pdf-div-${idn}`, {
+      viewSDKClient.previewFile(file, title, `pdf-div-${idn}`, {
         embedMode: 'SIZED_CONTAINER',
         showPrintPDF: false,
         dockPageControls: false
       });
     });
-  }, [file, idn]);
+  }, [idn, file, title]);
 
   return (
     <div className="in-line-container w-full h-full overflow-y-auto">

@@ -16,37 +16,25 @@ class ViewSDKClient {
     return this.readyPromise;
   }
 
-  previewFile(file, divId, viewerConfig) {
+  previewFile(file, fileName, divId, viewerConfig) {
     const config = {
       clientId: 'cfb77c914b3444668a74f3b1f0a30e78',
     };
     if (divId) {
-      /* Optional only for Light Box embed mode */
-      /* Pass the div id in which PDF should be rendered */
       config.divId = divId;
     }
     /* Initialize the AdobeDC View object */
     this.adobeDCView = new window.AdobeDC.View(config);
 
-    /* Invoke the file preview API on Adobe DC View object */
     const previewFilePromise = this.adobeDCView.previewFile(
       {
         content: {
           location: {
             url: file,
-            /*
-                  If the file URL requires some additional headers, then it can be passed as follows:-
-                  headers: [
-                      {
-                          key: "<HEADER_KEY>",
-                          value: "<HEADER_VALUE>",
-                      }
-                  ]
-                  */
           },
         },
         metaData: {
-          fileName: 'Bodea Brochure.pdf',
+          fileName: `${fileName}.pdf`,
           id: '6d07d124-ac85-43b3-a867-36930f502ac6',
         },
       },
@@ -54,33 +42,6 @@ class ViewSDKClient {
     );
 
     return previewFilePromise;
-  }
-
-  previewFileUsingFilePromise(divId, filePromise, fileName) {
-    /* Initialize the AdobeDC View object */
-    this.adobeDCView = new window.AdobeDC.View({
-      /* Pass your registered client id */
-      clientId: 'cfb77c914b3444668a74f3b1f0a30e78',
-      /* Pass the div id in which PDF should be rendered */
-      divId,
-    });
-
-    /* Invoke the file preview API on Adobe DC View object */
-    this.adobeDCView.previewFile(
-      {
-        /* Pass information on how to access the file */
-        content: {
-          /* pass file promise which resolve to arrayBuffer */
-          promise: filePromise,
-        },
-        /* Pass meta data of file */
-        metaData: {
-          /* file name */
-          fileName: fileName,
-        },
-      },
-      {}
-    );
   }
 
   registerSaveApiHandler() {
