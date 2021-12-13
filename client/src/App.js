@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
+import Explore from './pages/Explore';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 
@@ -12,6 +13,7 @@ export default function App() {
           <Route path="/dash" element={<Dashboard />} />
           <Route path="/forgot-password" element={<Home form="reset" />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/spaces" element={<Explore />} />
           <Route path="/signup" element={<Home form="signup" />} />
           <Route path="/" element={<Home form="login" />} />
           <Route path="/login" element={<Home form="login" />} />

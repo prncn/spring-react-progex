@@ -45,7 +45,7 @@ code {
 }
 
 .dashboard-nav__btn {
-  @apply text-left font-semibold rounded-lg w-40 inline-flex items-center px-4 py-2;
+  @apply text-left font-semibold rounded-lg w-full inline-flex items-center px-10 py-2;
 }
 
 .dashboard-nav__btn:hover {
