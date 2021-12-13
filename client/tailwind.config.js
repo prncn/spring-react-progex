@@ -4,6 +4,7 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
+       'post-img': "url('img/flame-1681.png')",
        'hero-pattern': "url('img/hero-pattern.jpg')",
       }
     }

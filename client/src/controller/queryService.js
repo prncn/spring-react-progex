@@ -7,7 +7,7 @@ export const placeholder = [
     id: '5',
     user: {
       'id': '1',
-      'name': 'Loading...',
+      'name': 'Preload',
       'icon': 'https://i.imgur.com/NDFE7BQ.jpg'
     },
     title: 'Rembrandt Symposium Programm',
@@ -16,7 +16,7 @@ export const placeholder = [
       "seconds": 1638807536,
       "nanos": 782000000
     },
-    url: 'https://www.geschkult.fu-berlin.de/e/khi/_ressourcen/ndl_forum_pdf/rembrandt_symposium_programm.pdf',
+    url: 'https://www.nga.gov/content/dam/ngaweb/Education/learning-resources/an-eye-for-art/AnEyeforArt-RembrandtVanRijn.pdf',
   },
   {
     id: '6',

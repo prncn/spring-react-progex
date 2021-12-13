@@ -2,10 +2,12 @@ import '../index.css';
 import IconComment from '../icons/comment';
 import IconBook from '../icons/book';
 import IconHeart from '../icons/heart';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import ViewSDKClient from '../controller/ViewSDKClient';
 
 export default function Post({ data, offline, idn }) {
+  const [fill, setFill] = useState(false);
+
   function formatDateString(dateString) {
     const options = {
       weekday: 'long',
@@ -24,9 +26,14 @@ export default function Post({ data, offline, idn }) {
     }
   }
 
+  function toggleFill(e) {
+    e.preventDefault();
+    setFill(!fill)
+  }
+
   return (
-    <div className="flex rounded-lg m-2 p-2 text-black" style={{backgroundColor: '#EAEAEA'}}>
-      <div className="w-20 pl-4" style={{backgroundColor: '#EAEAEA'}}>
+    <div className="w-full flex rounded-lg my-3 pt-2 px-2 text-white bg-gray-800">
+      <div className="w-20 pl-4 bg-gray-800 rounded-lg">
         <div className="w-16 h-16 mt-2 rounded-full shadow-lg">
           <img
             className="w-full h-full object-contained rounded-full block shadow-lg"
@@ -34,10 +41,22 @@ export default function Post({ data, offline, idn }) {
             alt="pfp_icon"
           />
         </div>
+        <div className="h-2/3">
+          <div className="h-full px-2 mt-8 flex flex-col justify-around items-center">
+            <button className="hover:bg-gray-700 p-4 rounded-full shadow-xl" onClick={toggleFill}>
+              <IconHeart fill={fill}/>
+            </button>
+            <button className="hover:bg-gray-700 p-4 rounded-full">
+              <IconComment />
+            </button>
+            <button className="hover:bg-gray-700 p-4 rounded-full">
+              <IconBook />
+            </button>
+          </div>
+        </div>
       </div>
       <div
-        className="flex justify-center align-center flex-col p-2"
-        style={{ width: '600px', height: '500px' }}
+        className="flex justify-center align-center flex-col p-2 w-full"
       >
         <div className="font-semibold mb-1">
           {data.user.name + ' '}
@@ -48,21 +67,8 @@ export default function Post({ data, offline, idn }) {
               : formatUnixTimestamp(data.date)}
           </div>
         </div>
-        <div>{data.description}</div>
+        <div className="pb-3">{data.description}</div>
         <PDFviewer idn={idn} file={data.url} title={data.title}/>
-        <div className="h-10 w-full">
-          <div className="h-full w-3/4 flex justify-between items-center">
-            <button>
-              <IconComment />
-            </button>
-            <button>
-              <IconBook />
-            </button>
-            <button>
-              <IconHeart />
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -73,7 +79,7 @@ function PDFviewer({ idn, file, title }) {
     const viewSDKClient = new ViewSDKClient();
     viewSDKClient.ready().then(() => {
       viewSDKClient.previewFile(file, title, `pdf-div-${idn}`, {
-        embedMode: 'SIZED_CONTAINER',
+        embedMode: 'IN_LINE',
         showPrintPDF: false,
         dockPageControls: false
       });
@@ -81,7 +87,7 @@ function PDFviewer({ idn, file, title }) {
   }, [idn, file, title]);
 
   return (
-    <div className="in-line-container w-full h-full overflow-y-auto">
+    <div className="in-line-container w-full h-96 overflow-y-scroll rounded-xl">
       <div id={`pdf-div-${idn}`} className="in-line-div w-full h-full" />
     </div>
   );

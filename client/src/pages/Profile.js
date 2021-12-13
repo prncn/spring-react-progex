@@ -44,8 +44,8 @@ export default function Profile() {
   }
 
   return (
-    <div className="flex justify-center min-h-screen mt-10 relativ">
-        <NavTab />
+    <div className="flex min-h-screen">
+      <NavTab />
     </div>
   );
 }

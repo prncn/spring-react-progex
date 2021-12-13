@@ -40,14 +40,14 @@ export function LoginForm() {
           disabled={loading}
           onClick={handleLogin}
           type="submit"
-          className="py-2 px-6 bg-green-200 hover:bg-green-300 rounded-lg text-gray-700 font-semibold mt-5"
+          className="py-2 px-6 bg-indigo-100 hover:bg-indigo-200 rounded-lg text-indigo-400 font-semibold mt-5"
         >
           Sign in
         </button>
         <Link to="/signup">
           <button
             type="button"
-            className="p-3 text-gray-500 mx-1 shadow-lg hover:shadow rounded-lg font-semibold text-sm mt-5"
+            className="p-3 text-gray-500 mx-1 border border-black hover:bg-gray-200 rounded-lg font-semibold text-sm mt-5"
           >
             Create an Account
           </button>
