@@ -4,10 +4,12 @@ import Dashboard from './pages/Dashboard';
 import Explore from './pages/Explore';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
+import { AuthProvider } from "./context/AuthContext"
 
 export default function App() {
   return (
     <div className="h-screen">
+      <AuthProvider>
       <Router>
         <Routes>
           <Route path="/dash" element={<Dashboard />} />
@@ -19,6 +21,7 @@ export default function App() {
           <Route path="/login" element={<Home form="login" />} />
         </Routes>
       </Router>
+      </AuthProvider>
     </div>
   );
 }

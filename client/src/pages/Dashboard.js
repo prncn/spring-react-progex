@@ -4,7 +4,7 @@ import React, { useState, useEffect, createRef } from 'react';
 import { logout, useAuth } from '../controller/Firebase';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
-import { createPost, getPosts, placeholder } from '../controller/QueryService';
+import { createPost, getPosts, placeholder } from '../controller/queryService';
 import {
   IconLogout,
   IconExplore,
