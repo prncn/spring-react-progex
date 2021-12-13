@@ -52,6 +52,10 @@ code {
   @apply bg-indigo-100 text-indigo-400
 }
 
+.dashboard-nav__btn:focus {
+  @apply bg-indigo-100 text-indigo-400
+}
+
 @keyframes bounce {
   0%, 100% {
     transform: translateY(-10%);

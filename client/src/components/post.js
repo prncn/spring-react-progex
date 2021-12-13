@@ -32,7 +32,7 @@ export default function Post({ data, offline, idn }) {
   }
 
   return (
-    <div className="w-full flex rounded-lg my-3 pt-2 pl-2 text-white bg-gray-800">
+    <div className="w-full flex rounded-lg my-3 pt-2 px-2 text-white bg-gray-800">
       <div className="w-20 pl-4 bg-gray-800 rounded-lg">
         <div className="w-16 h-16 mt-2 rounded-full shadow-lg">
           <img

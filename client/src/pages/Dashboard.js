@@ -4,7 +4,7 @@ import React, { useState, useEffect, createRef } from 'react';
 import { logout, useAuth } from '../controller/Firebase';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
-import { createPost, getPosts, placeholder } from '../controller/queryService';
+import { createPost, getPosts, placeholder } from '../controller/QueryService';
 import {
   IconLogout,
   IconExplore,
@@ -32,23 +32,26 @@ export default function Dashboard() {
   }, []);
 
   return (
-      <div className="flex min-h-screen">
-        <NavTab currentUser={currentUser} />
-        <div className="flex flex-col justify-center">
-          <div className="flex flex-col justify-center items-center divide-y px-4">
-            <PostCreator currentUser={currentUser} />
-            <h1 className="font-bold text-gray-600 text-3xl text-left w-full">
-              Posts
-            </h1>
-            {data.map((post, i) => (
-              <Post key={post.id} data={post} idn={i} />
-            ))}
-          </div>
-        </div>
-        <SpacesTab
-          spaces={['distributedsystems', 'illustrations', 'fashion']}
-        />
+    <div className="flex min-h-screen justify-center divide-x divide-black">
+      <NavTab currentUser={currentUser} />
+      <div className="flex flex-col justify-center items-center divide-y divide-black px-4 flex-shrink-0 w-1/2">
+        <PostCreator currentUser={currentUser} />
+        <h1 className="font-bold text-gray-600 text-3xl text-left w-full">
+          Posts
+        </h1>
+        {data.map((post, i) => (
+          <Post key={post.id} data={post} idn={i} />
+        ))}
       </div>
+      <SpacesTab
+        spaces={[
+          'distributedsystems',
+          'illustrations',
+          'streetwear',
+          'fitness',
+        ]}
+      />
+    </div>
   );
 }
 
@@ -88,9 +91,7 @@ function PostCreator({ currentUser }) {
         Hi, {currentUser?.displayName}. ✋ <br />{' '}
         <p className="font-light"> Share your docs here. </p>
       </div>
-      <div
-        className={show ? 'visible relative w-full h-full flex' : 'invisible'}
-      >
+      <div className={show ? 'w-full h-full flex' : 'hidden'}>
         <div className="w-20">
           <div className="w-16 h-16 mt-2 rounded-full">
             <img
@@ -139,8 +140,8 @@ export function NavTab({ currentUser }) {
   }
 
   return (
-    <div className="sticky w-1/3 left-0 border h-screen top-0 flex flex-col">
-      <div className="w-72 h-24 border rounded-lg m-4 ml-auto flex p-3">
+    <div className="sticky h-screen top-0 flex flex-col">
+      <div className="w-72 h-24 border border-black rounded-lg m-4 ml-auto flex p-3">
         <div className="w-16 h-16 rounded-full">
           <img
             className="w-full h-full object-contained rounded-full"
@@ -162,13 +163,13 @@ export function NavTab({ currentUser }) {
       <div className="flex flex-col items-end mx-4 mb-auto">
         <div className="flex flex-col w-72 text-left text-gray-600 text-xl">
           <Link to="/dash">
-            <button className="dashboard-nav__btn">
+            <button className="dashboard-nav__btn bg-indigo-100 text-indigo-400">
               <IconHome />
               <span>Dash</span>
             </button>
           </Link>
           <Link to="/spaces">
-            <button className="dashboard-nav__btn border">
+            <button className="dashboard-nav__btn">
               <IconExplore />
               <span>Spaces</span>
             </button>
@@ -196,8 +197,8 @@ export function NavTab({ currentUser }) {
 
 function SpacesTab({ spaces }) {
   return (
-    <div className="sticky top-0 min-h-screen w-1/3 h-full right-0 border">
-      <div className="w-80 h-96 rounded-lg border m-4 py-6 right-20">
+    <div className="sticky top-0 min-h-screen h-full">
+      <div className="w-80 h-96 rounded-lg border border-black m-4 py-6 right-20">
         <h1 className="text-xl font-semibold mb-4 pl-6">Spaces for you</h1>
         <div className="font-semibold divide-y">
           {spaces.map((space, i) => (
