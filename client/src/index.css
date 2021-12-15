@@ -45,15 +45,15 @@ code {
 }
 
 .dashboard-nav__btn {
-  @apply text-left font-semibold rounded-lg w-full inline-flex items-center px-10 py-2;
+  @apply text-left font-semibold rounded-lg w-full inline-flex items-center px-10 py-2 transition;
 }
 
 .dashboard-nav__btn:hover {
-  @apply bg-indigo-100 text-indigo-400
+  @apply border border-black;
 }
 
 .dashboard-nav__btn:focus {
-  @apply bg-indigo-100 text-indigo-400
+  @apply bg-indigo-100 text-indigo-400;
 }
 
 @keyframes bounce {

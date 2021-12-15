@@ -31,12 +31,34 @@ export default function Dashboard() {
     })();
   }, []);
 
+  function Stories() {
+    return (
+      <div className="w-full p-4">
+        <ul className="flex justify-around">
+          {data.slice(0, 5).map((item, i) => (
+            <li key={i} className="flex flex-col justify-center items-center">
+              <div className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block">
+                <img
+                  src={item.user.photoURL}
+                  className="rounded-full w-20 h-20 object-cover"
+                  alt="pfp_st"
+                />
+              </div>
+              <p className="text-sm text-gray-700">{item.user.displayName}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen justify-center divide-x divide-black">
-      <NavTab currentUser={currentUser} />
-      <div className="flex flex-col justify-center items-center divide-y divide-black px-4 flex-shrink-0 w-1/2">
+    <div className="flex min-h-screen justify-center divide-x">
+      <NavTab currentUser={currentUser} active="dash" />
+      <div className="flex flex-col items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
+        <Stories />
         <PostCreator currentUser={currentUser} />
-        <h1 className="font-bold text-gray-600 text-3xl text-left w-full">
+        <h1 className="font-bold text-gray-500 text-3xl text-left pt-10 w-full px-3">
           Posts
         </h1>
         {data.map((post, i) => (
@@ -56,7 +78,7 @@ export default function Dashboard() {
 }
 
 function PostCreator({ currentUser }) {
-  const contentRef = createRef();
+  const titleRef = createRef();
   const urlRef = createRef();
   const pfpIcon = currentUser?.photoURL;
   const [show, setShow] = useState(false);
@@ -64,9 +86,12 @@ function PostCreator({ currentUser }) {
   function handleSubmit(e) {
     e.preventDefault();
     createPost(
-      currentUser,
-      contentRef.current.value,
-      pfpIcon,
+      {
+        ...currentUser,
+        id: currentUser?.uid
+      },
+      titleRef.current.value,
+      titleRef.current.value,
       urlRef.current.value
     );
   }
@@ -81,7 +106,7 @@ function PostCreator({ currentUser }) {
   return (
     <div
       onClick={handleReveal}
-      className="w-full h-40 flex rounded-lg bg-indigo-400 p-3 mb-6 bg-post-img"
+      className="w-full h-40 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 transition-all"
     >
       <div
         className={
@@ -103,13 +128,13 @@ function PostCreator({ currentUser }) {
         </div>
         <form className="w-full h-full flex flex-col">
           <input
-            ref={contentRef}
-            className="bg-indigo-400 w-3/4 p-1 text-gray-50 placeholder-gray-300 font-semibold text-lg focus:outline-none"
+            ref={titleRef}
+            className="bg-transparent w-3/4 p-3 text-gray-50 placeholder-gray-300 font-semibold text-lg focus:outline-none"
             placeholder="Title your Doc..."
           ></input>
           <input
             ref={urlRef}
-            className="bg-indigo-400 w-3/4 p-1 text-gray-50 placeholder-gray-300 text-sm focus:outline-none h-auto"
+            className="bg-transparent w-3/4 p-3 text-gray-50 placeholder-gray-300 text-sm focus:outline-none h-auto"
             placeholder="URL to your Doc..."
           ></input>
           <button
@@ -124,7 +149,7 @@ function PostCreator({ currentUser }) {
   );
 }
 
-export function NavTab({ currentUser }) {
+export function NavTab({ currentUser, active }) {
   const navigate = useNavigate();
 
   async function handleLogout(e) {
@@ -139,9 +164,24 @@ export function NavTab({ currentUser }) {
     }
   }
 
+  function NavLink({ path, children }) {
+    return (
+      <Link to={`/${path}`}>
+        <button
+          className={`dashboard-nav__btn ${
+            active === path ? 'bg-indigo-100 text-indigo-400' : ''
+          }`}
+        >
+          {children}
+          <span>{path}</span>
+        </button>
+      </Link>
+    );
+  }
+
   return (
-    <div className="sticky h-screen top-0 flex flex-col">
-      <div className="w-72 h-24 border border-black rounded-lg m-4 ml-auto flex p-3">
+    <div className="sticky h-screen top-0 md:flex flex-col hidden">
+      <div className="w-72 h-24 border rounded-lg m-4 ml-auto flex p-3 bg-gray-50">
         <div className="w-16 h-16 rounded-full">
           <img
             className="w-full h-full object-contained rounded-full"
@@ -162,31 +202,21 @@ export function NavTab({ currentUser }) {
       </div>
       <div className="flex flex-col items-end mx-4 mb-auto">
         <div className="flex flex-col w-72 text-left text-gray-600 text-xl">
-          <Link to="/dash">
-            <button className="dashboard-nav__btn bg-indigo-100 text-indigo-400">
-              <IconHome />
-              <span>Dash</span>
-            </button>
-          </Link>
-          <Link to="/spaces">
-            <button className="dashboard-nav__btn">
-              <IconExplore />
-              <span>Spaces</span>
-            </button>
-          </Link>
-          <button className="dashboard-nav__btn">
+          <NavLink path="dash">
+            <IconHome />
+          </NavLink>
+          <NavLink path="spaces">
+            <IconExplore />
+          </NavLink>
+          <NavLink path="docs">
             <IconDocs />
-            <span>Docs</span>
-          </button>
-          <Link to="/profile">
-            <button className="dashboard-nav__btn">
-              <IconProfile />
-              <span>Profile</span>
-            </button>
-          </Link>
+          </NavLink>
+          <NavLink path="profile">
+            <IconProfile />
+          </NavLink>
           <button onClick={handleLogout} className="dashboard-nav__btn">
             <IconLogout />
-            <span>Logout</span>
+            <span>logout</span>
           </button>
         </div>
       </div>
@@ -197,8 +227,8 @@ export function NavTab({ currentUser }) {
 
 function SpacesTab({ spaces }) {
   return (
-    <div className="sticky top-0 min-h-screen h-full">
-      <div className="w-80 h-96 rounded-lg border border-black m-4 py-6 right-20">
+    <div className="sticky top-0 min-h-screen h-full hidden xl:block">
+      <div className="w-80 h-96 rounded-lg border m-4 py-6 right-20 bg-gray-50">
         <h1 className="text-xl font-semibold mb-4 pl-6">Spaces for you</h1>
         <div className="font-semibold divide-y">
           {spaces.map((space, i) => (

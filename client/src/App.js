@@ -5,6 +5,7 @@ import Explore from './pages/Explore';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import { AuthProvider } from './context/AuthContext';
+import Docs from './pages/Docs';
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
             <Route path="/forgot-password" element={<Home form="reset" />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/spaces" element={<Explore />} />
+            <Route path="/docs" element={<Docs />} />
             <Route path="/signup" element={<Home form="signup" />} />
             <Route path="/" element={<Home form="login" />} />
             <Route path="/login" element={<Home form="login" />} />
