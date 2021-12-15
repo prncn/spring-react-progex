@@ -1,113 +1,244 @@
+import '../index.css';
 import Post from '../components/post';
-import React, { useState, useEffect } from 'react';
-import { logout } from '../firebase';
+import React, { useState, useEffect, createRef } from 'react';
+import { logout, useAuth } from '../controller/Firebase';
 import { useNavigate } from 'react-router';
-import { useAuth } from '../firebase';
 import { Link } from 'react-router-dom';
+import { createPost, getPosts, placeholder } from '../controller/QueryService';
+import {
+  IconLogout,
+  IconExplore,
+  IconDocs,
+  IconProfile,
+} from '../icons/NavIcons';
+import IconHome from '../icons/home';
 
 export default function Dashboard() {
-  const [data, setData] = useState([]);
-  const [offline, setOffline] = useState(false);
+  const [data, setData] = useState(placeholder);
+  const [offline, setOffline] = useState(true);
+  const currentUser = useAuth();
+  console.log(currentUser);
+  console.log(offline);
 
   useEffect(() => {
-    getPosts();
-  });
-
-  /**
-   * Gets all posts from rest API
-   */
-  async function getPosts() {
-    const url = 'http://localhost:8080/api/posts/';
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-      setOffline(false);
+    (async () => {
+      const [data, responded] = await getPosts();
+      console.log(data);
       setData(data);
-    } catch (error) {
-      const message = `Fetch error has occured: ${error}`;
-      setData(placeholder);
-      setOffline(true);
-      console.log(message);
+      if (responded !== null) {
+        setOffline(false);
+      }
+    })();
+  }, []);
+
+  function Stories() {
+    return (
+      <div className="w-full p-4">
+        <ul className="flex justify-around">
+          {data.slice(0, 5).map((item, i) => (
+            <li key={i} className="flex flex-col justify-center items-center">
+              <div className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block">
+                <img
+                  src={item.user.photoURL}
+                  className="rounded-full w-20 h-20 object-cover"
+                  alt="pfp_st"
+                />
+              </div>
+              <p className="text-sm text-gray-700">{item.user.displayName}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen justify-center divide-x">
+      <NavTab currentUser={currentUser} active="dash" />
+      <div className="flex flex-col items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
+        <Stories />
+        <PostCreator currentUser={currentUser} />
+        <h1 className="font-bold text-gray-500 text-3xl text-left pt-10 w-full px-3">
+          Posts
+        </h1>
+        {data.map((post, i) => (
+          <Post key={post.id} data={post} idn={i} />
+        ))}
+      </div>
+      <SpacesTab
+        spaces={[
+          'distributedsystems',
+          'illustrations',
+          'streetwear',
+          'fitness',
+        ]}
+      />
+    </div>
+  );
+}
+
+function PostCreator({ currentUser }) {
+  const titleRef = createRef();
+  const urlRef = createRef();
+  const pfpIcon = currentUser?.photoURL;
+  const [show, setShow] = useState(false);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    createPost(
+      {
+        ...currentUser,
+        id: currentUser?.uid
+      },
+      titleRef.current.value,
+      titleRef.current.value,
+      urlRef.current.value
+    );
+  }
+
+  function handleReveal(e) {
+    e.preventDefault();
+    if (!show) {
+      setShow(true);
     }
   }
 
-  const [error, setError] = useState('');
+  return (
+    <div
+      onClick={handleReveal}
+      className="w-full h-40 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 transition-all"
+    >
+      <div
+        className={
+          show ? 'hidden' : 'self-end w-1/3 text-3xl text-white font-semibold'
+        }
+      >
+        Hi, {currentUser?.displayName}. ✋ <br />{' '}
+        <p className="font-light"> Share your docs here. </p>
+      </div>
+      <div className={show ? 'w-full h-full flex' : 'hidden'}>
+        <div className="w-20">
+          <div className="w-16 h-16 mt-2 rounded-full">
+            <img
+              className="w-full h-full object-contained rounded-full block shadow-lg"
+              src={pfpIcon}
+              alt="pfp_icon"
+            />
+          </div>
+        </div>
+        <form className="w-full h-full flex flex-col">
+          <input
+            ref={titleRef}
+            className="bg-transparent w-3/4 p-3 text-gray-50 placeholder-gray-300 font-semibold text-lg focus:outline-none"
+            placeholder="Title your Doc..."
+          ></input>
+          <input
+            ref={urlRef}
+            className="bg-transparent w-3/4 p-3 text-gray-50 placeholder-gray-300 text-sm focus:outline-none h-auto"
+            placeholder="URL to your Doc..."
+          ></input>
+          <button
+            onClick={handleSubmit}
+            className="bg-gray-100 text-black font-semibold px-5 py-2 rounded-full place-self-end mt-auto hover:bg-gray-200"
+          >
+            <span>Send.</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export function NavTab({ currentUser, active }) {
   const navigate = useNavigate();
-  const currentUser = useAuth();
 
   async function handleLogout(e) {
     e.preventDefault();
 
     try {
-      setError('');
       await logout();
       navigate('/signup');
-    } catch {
-      setError('Failed to log out');
+    } catch (error) {
+      console.error(error);
       alert(error);
     }
   }
 
-  const placeholder = [
-    {
-      id: 5,
-      authorId: 'Offline',
-      content: 'A document for you, G',
-      date: '2021-11-07 10:57:24.083539',
-      url: 'https://www.geschkult.fu-berlin.de/e/khi/_ressourcen/ndl_forum_pdf/rembrandt_symposium_programm.pdf',
-      icon: 'https://i.imgur.com/NDFE7BQ.jpg',
-    },
-    {
-      id: 6,
-      authorId: 'Erykah',
-      content: 'Some article by yours truly',
-      date: '2021-11-08 10:57:24.083539',
-      url: 'https://imma.ie/wp-content/uploads/2018/10/whatisconceptualart.pdf',
-      icon: 'https://i.imgur.com/Ks2oou4.jpg',
-    },
-    {
-      id: 7,
-      authorId: 'Chitra',
-      content: 'Some article by yours truly',
-      date: '2021-11-08 10:57:24.083539',
-      url: 'https://www.sprengel-museum.de/images/PDF/BIG-short-guide-en.pdf',
-      icon: 'https://i.imgur.com/ncnHn9I.jpg',
-    },
-  ];
+  function NavLink({ path, children }) {
+    return (
+      <Link to={`/${path}`}>
+        <button
+          className={`dashboard-nav__btn ${
+            active === path ? 'bg-indigo-100 text-indigo-400' : ''
+          }`}
+        >
+          {children}
+          <span>{path}</span>
+        </button>
+      </Link>
+    );
+  }
 
   return (
-    <>
-      <div>current user is {currentUser?.email}</div>
-      <Link to="/update-profile">Update Profile</Link>
-      <button onClick={handleLogout} type="button">
-        Log Out
-      </button>
-      <div className="flex justify-center min-h-screen mt-20 relative">
-        <div className="w-50 m-4 p-4 pr-10 h-96 bg-gray-700 rounded text-gray-100 text-xl flex flex-col justify-start shadow-lg">
-          <div className="flex flex-col text-left">
-            <button className="text-left font-semibold">Home</button>
-            <button className="text-left">Explore</button>
-            <button className="text-left">Profile</button>
-            <button className="text-left">Settings</button>
-            <button className="text-left">More</button>
-          </div>
+    <div className="sticky h-screen top-0 md:flex flex-col hidden">
+      <div className="w-72 h-24 border rounded-lg m-4 ml-auto flex p-3 bg-gray-50">
+        <div className="w-16 h-16 rounded-full">
+          <img
+            className="w-full h-full object-contained rounded-full"
+            src={currentUser?.photoURL}
+            alt="pfp_icon"
+          />
         </div>
-        <div className="flex flex-col justify-center -mt-7">
-          <h1 className="font-bold text-gray-700 text-3xl mx-2">Posts</h1>
-          <div className="flex flex-col justify-center items-center">
-            {placeholder.map((post) => (
-              <Post key={post.id} data={post} offline={offline} />
-            ))}
-          </div>
-        </div>
-        <div className="w-80 h-96 rounded-lg bg-gray-50 m-4 p-6">
-          <h1 className="text-xl font-semibold mb-4">Spaces for you</h1>
-          <div className="font-semibold divide-y">
-            <p className="py-2">#illustrations</p>
-            <p className="py-2">#statistics</p>
-          </div>
+        <div className="ml-2">
+          <p>
+            {new Date().toLocaleTimeString('en-GB', {
+              hour: 'numeric',
+              minute: 'numeric',
+            })}
+          </p>
+          <p>{currentUser?.email}</p>
+          <p>{currentUser?.displayName}</p>
         </div>
       </div>
-    </>
+      <div className="flex flex-col items-end mx-4 mb-auto">
+        <div className="flex flex-col w-72 text-left text-gray-600 text-xl">
+          <NavLink path="dash">
+            <IconHome />
+          </NavLink>
+          <NavLink path="spaces">
+            <IconExplore />
+          </NavLink>
+          <NavLink path="docs">
+            <IconDocs />
+          </NavLink>
+          <NavLink path="profile">
+            <IconProfile />
+          </NavLink>
+          <button onClick={handleLogout} className="dashboard-nav__btn">
+            <IconLogout />
+            <span>logout</span>
+          </button>
+        </div>
+      </div>
+      <div className="m-4 font-semibold text-3xl ml-auto mt-auto">Murdoc.</div>
+    </div>
+  );
+}
+
+function SpacesTab({ spaces }) {
+  return (
+    <div className="sticky top-0 min-h-screen h-full hidden xl:block">
+      <div className="w-80 h-96 rounded-lg border m-4 py-6 right-20 bg-gray-50">
+        <h1 className="text-xl font-semibold mb-4 pl-6">Spaces for you</h1>
+        <div className="font-semibold divide-y">
+          {spaces.map((space, i) => (
+            <div className="py-3 px-6 hover:bg-gray-200 cursor-pointer" key={i}>
+              <p>#{space}</p>
+              <p className="font-light text-sm">4124 Docs in this Space</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

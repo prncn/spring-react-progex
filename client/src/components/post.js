@@ -2,11 +2,13 @@ import '../index.css';
 import IconComment from '../icons/comment';
 import IconBook from '../icons/book';
 import IconHeart from '../icons/heart';
+import { useEffect, useState } from 'react';
+import ViewSDKClient from '../controller/ViewSDKClient';
 
-export default function Post({ data, offline}) {
+export default function Post({ data, offline, idn }) {
+  const [fill, setFill] = useState(false);
 
   function formatDateString(dateString) {
-    console.log('fired');
     const options = {
       weekday: 'long',
       month: 'short',
@@ -19,47 +21,78 @@ export default function Post({ data, offline}) {
   }
 
   function formatUnixTimestamp(dateString) {
-    if(dateString !== null){
-      return new Date(dateString.seconds).toLocaleDateString("en-US")
+    if (dateString !== null) {
+      return new Date(dateString.seconds * 1000).toLocaleDateString('en-US');
     }
   }
 
+  function toggleFill(e) {
+    e.preventDefault();
+    setFill(!fill);
+  }
+
   return (
-    <div className="bg-gray-50 flex rounded-lg overflow-hidden m-2 p-2 text-black">
-      <div className="w-20 bg-gray-50 pl-4">
+    <div
+      className="flex rounded-lg lg:my-3 my-1 pt-2 px-2 mx-4 text-white bg-gray-800 hover:bg-gray-900 transition text-sm"
+      style={{ width: '98%' }}
+    >
+      <div className="w-20 pl-4 rounded-lg">
         <div className="w-16 h-16 mt-2 rounded-full shadow-lg">
           <img
-            className="w-full h-full object-contained rounded-full block shadow-lg"
-            src={data.icon}
+            className="w-full h-full object-cover rounded-full block shadow-lg"
+            src={data.user.photoURL}
             alt="pfp_icon"
           />
         </div>
-      </div>
-      <div
-        className="flex justify-center align-center flex-col p-2"
-        style={{ width: '600px', height: '500px' }}
-      >
-        <div className="font-semibold mb-1">{data.authorId + ' '} 
-          &#183; <div className="font-light inline">{offline ? formatDateString(data.date) : formatUnixTimestamp(data.date)}</div>
-        </div>
-        <div>{data.content}</div>
-        <div className="my-5 w-full h-full relative">
-        <iframe
-          title="viewer"
-          src={`https://docs.google.com/viewer?url=${data.url}&embedded=true`}
-          className="h-full w-full rounded focus:outline-none absolute"
-          style={{top: "-10px"}}
-          frameBorder="0"
-        ></iframe>
-        </div>
-        <div className="h-10 w-full">
-          <div className="h-full w-3/4 flex justify-between items-center">
-            <button><IconComment/></button>
-            <button><IconBook/></button>
-            <button><IconHeart/></button>
+        <div className="h-2/3">
+          <div className="h-full px-2 mt-8 flex flex-col justify-around items-center">
+            <button
+              className="hover:bg-gray-800 p-4 rounded-full shadow-xl"
+              onClick={toggleFill}
+            >
+              <IconHeart fill={fill} />
+            </button>
+            <button className="hover:bg-gray-800 p-4 rounded-full">
+              <IconComment />
+            </button>
+            <button className="hover:bg-gray-800 p-4 rounded-full">
+              <IconBook />
+            </button>
           </div>
         </div>
       </div>
+      <div className="flex justify-center align-center flex-col p-2 w-full">
+        <div className="font-semibold mb-1">
+          {data.user.displayName + ' '}
+          &#183;{' '}
+          <div className="font-light inline">
+            {offline
+              ? formatDateString(data.date)
+              : formatUnixTimestamp(data.date)}
+          </div>
+        </div>
+        <div className="pb-3">{data.description}</div>
+        <PDFviewer idn={idn} file={data.url} title={data.title} />
+      </div>
+    </div>
+  );
+}
+
+export function PDFviewer({ idn = 0, file, title }) {
+  useEffect(() => {
+    const viewSDKClient = new ViewSDKClient();
+    viewSDKClient.ready().then(() => {
+      viewSDKClient.previewFile(file, title, `pdf-div-${idn}`, {
+        embedMode: 'IN_LINE',
+        showPrintPDF: false,
+        dockPageControls: false,
+      });
+    });
+  }, [idn, file, title]);
+
+  return (
+    <div className="in-line-container w-full h-96 overflow-y-scroll rounded-xl">
+      <div id={`pdf-div-${idn}`} className="in-line-div w-full h-full" />
     </div>
   );
 }

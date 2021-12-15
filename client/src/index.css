@@ -29,6 +29,11 @@ code {
 
 .login-background__card {
   @apply w-60 lg:w-80 absolute rounded-lg shadow-lg hover:shadow transition duration-300 ease-in-out xl:visible invisible;
+  animation: bounce 10s ease alternate infinite;
+}
+
+.login-background__card:nth-child(odd) {
+  animation-delay: -2s;
 }
 
 .home-form__right-btn {
@@ -37,4 +42,25 @@ code {
 
 .home-form__heading {
   @apply font-semibold text-gray-400 text-right w-full pb-4 text-3xl;
+}
+
+.dashboard-nav__btn {
+  @apply text-left font-semibold rounded-lg w-full inline-flex items-center px-10 py-2 transition;
+}
+
+.dashboard-nav__btn:hover {
+  @apply border border-black;
+}
+
+.dashboard-nav__btn:focus {
+  @apply bg-indigo-100 text-indigo-400;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-10%);
+  }
+  50% {
+    transform: translateY(0);
+  }
 }

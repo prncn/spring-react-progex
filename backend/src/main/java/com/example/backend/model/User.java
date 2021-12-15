@@ -9,11 +9,7 @@ public class User {
     @DocumentId
     private String id;
 
-    // Data of User
-    private String pseudoName;
-    private String surName;
-    private String lastName;
-
-    private String[] followers;
-    private String[] following;
+    private String displayName;
+    private String photoURL;
+    private String email;
 }
