@@ -30,6 +30,11 @@ public class PostController {
         return postService.getPostList();
     }
 
+    @GetMapping(value = "/", produces = "application/json")
+    public Post getPostById(@RequestHeader String id) throws ExecutionException, InterruptedException {
+        return postService.getPost(id);
+    }
+
     @PostMapping(value = "/", produces = "application/json")
     public String createPost(@RequestBody Post post) throws ExecutionException, InterruptedException {
         return postService.createPost(post);
