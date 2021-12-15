@@ -34,9 +34,39 @@ export const placeholder = [
     url: 'https://imma.ie/wp-content/uploads/2018/10/whatisconceptualart.pdf',
   },
   {
+    id: '11',
+    user: {
+      'id': '9',
+      'name': 'Sulli',
+      'icon': 'https://i.imgur.com/kLcZbQT.jpeg'
+    },
+    title: 'What is Conceptual Art',
+    description: 'Some article by yours truly',
+    date: {
+      "seconds": 1638807536,
+      "nanos": 782000000
+    },
+    url: 'https://imma.ie/wp-content/uploads/2018/10/whatisconceptualart.pdf',
+  },
+  {
     id: '7',
     user: {
       'id': '3',
+      'name': 'Aysha',
+      'icon': 'https://i.imgur.com/ncnHn9I.jpg'
+    },
+    title: 'Big Short Guide',
+    description: 'Read this, it is important',
+    date: {
+      "seconds": 1638807536,
+      "nanos": 782000000
+    },
+    url: 'https://www.sprengel-museum.de/images/PDF/BIG-short-guide-en.pdf',
+  },
+  {
+    id: '13',
+    user: {
+      'id': '29',
       'name': 'Aysha',
       'icon': 'https://i.imgur.com/ncnHn9I.jpg'
     },

@@ -36,9 +36,9 @@ export default function Explore() {
 
   return (
     <div className="flex min-h-screen">
-      <NavTab currentUser={auth} />
-      <div className="bg-gray-800 w-full">
-        <div className="grid grid-cols-6 grid-rows-4 gap-4 p-10 bg-gray-800 overflow-auto">
+      <NavTab currentUser={auth} active="spaces"/>
+      <div className="bg-gray-100 w-full">
+        <div className="grid grid-cols-6 grid-rows-4 gap-4 p-10 overflow-auto">
           {spaces.map((name) => (
             <div
               className={`h-40 col-span-${rand()} row-span-1 bg-post-img hover:bg-${color}-400 bg-${color}-300 rounded-lg font-semibold text-2xl text-white p-4 cursor-pointer`}

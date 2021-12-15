@@ -44,8 +44,8 @@ export default function Profile() {
   }
 
   return (
-    <div className="flex min-h-screen">
-      <NavTab />
+    <div className="flex min-h-screen justify-center divide-x divide-black">
+      <NavTab currentUser={currentUser} active="profile"/>
     </div>
   );
 }

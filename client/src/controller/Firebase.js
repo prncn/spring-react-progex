@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { collection, addDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -35,7 +35,9 @@ export function signup(email, password, displayName) {
       photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     });
     try {
-      const docRef = addDoc(collection(db, "users", res.user.id), {
+      console.log(res.user.uid);
+      console.log(db);
+      const docRef = setDoc(doc(db, "users", res.user.uid), {
       }).then(() => {
         console.log("Document written with ID: ", docRef.id);
       })
