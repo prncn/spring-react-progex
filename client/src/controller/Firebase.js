@@ -36,10 +36,12 @@ export function signup(email, password, displayName) {
     });
     try {
       console.log(res.user.uid);
-      console.log(db);
       const docRef = setDoc(doc(db, "users", res.user.uid), {
+        displayName,
+        email,
+        photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
       }).then(() => {
-        console.log("Document written with ID: ", docRef.id);
+        console.log("Document written with ID: ", docRef.uid);
       })
     } catch (e) {
       console.error("Error adding document: ", e);

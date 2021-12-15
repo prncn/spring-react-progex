@@ -39,12 +39,12 @@ export default function Dashboard() {
             <li key={i} className="flex flex-col justify-center items-center">
               <div className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block">
                 <img
-                  src={item.user.icon}
+                  src={item.user.photoURL}
                   className="rounded-full w-20 h-20 object-cover"
                   alt="pfp_st"
                 />
               </div>
-              <p className="text-sm text-gray-700">{item.user.name}</p>
+              <p className="text-sm text-gray-700">{item.user.displayName}</p>
             </li>
           ))}
         </ul>
@@ -55,7 +55,7 @@ export default function Dashboard() {
   return (
     <div className="flex min-h-screen justify-center divide-x">
       <NavTab currentUser={currentUser} active="dash" />
-      <div className="flex flex-col justify-center items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
+      <div className="flex flex-col items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
         <Stories />
         <PostCreator currentUser={currentUser} />
         <h1 className="font-bold text-gray-500 text-3xl text-left pt-10 w-full px-3">
@@ -77,9 +77,8 @@ export default function Dashboard() {
   );
 }
 
-
 function PostCreator({ currentUser }) {
-  const contentRef = createRef();
+  const titleRef = createRef();
   const urlRef = createRef();
   const pfpIcon = currentUser?.photoURL;
   const [show, setShow] = useState(false);
@@ -87,9 +86,12 @@ function PostCreator({ currentUser }) {
   function handleSubmit(e) {
     e.preventDefault();
     createPost(
-      currentUser,
-      contentRef.current.value,
-      pfpIcon,
+      {
+        ...currentUser,
+        id: currentUser?.uid
+      },
+      titleRef.current.value,
+      titleRef.current.value,
       urlRef.current.value
     );
   }
@@ -126,7 +128,7 @@ function PostCreator({ currentUser }) {
         </div>
         <form className="w-full h-full flex flex-col">
           <input
-            ref={contentRef}
+            ref={titleRef}
             className="bg-transparent w-3/4 p-3 text-gray-50 placeholder-gray-300 font-semibold text-lg focus:outline-none"
             placeholder="Title your Doc..."
           ></input>

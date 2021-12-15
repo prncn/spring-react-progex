@@ -40,7 +40,7 @@ export default function Post({ data, offline, idn }) {
         <div className="w-16 h-16 mt-2 rounded-full shadow-lg">
           <img
             className="w-full h-full object-cover rounded-full block shadow-lg"
-            src={data.user.icon}
+            src={data.user.photoURL}
             alt="pfp_icon"
           />
         </div>
@@ -63,7 +63,7 @@ export default function Post({ data, offline, idn }) {
       </div>
       <div className="flex justify-center align-center flex-col p-2 w-full">
         <div className="font-semibold mb-1">
-          {data.user.name + ' '}
+          {data.user.displayName + ' '}
           &#183;{' '}
           <div className="font-light inline">
             {offline

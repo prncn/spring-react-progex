@@ -7,8 +7,8 @@ export const placeholder = [
     id: '5',
     user: {
       'id': '1',
-      'name': 'Preload',
-      'icon': 'https://i.imgur.com/NDFE7BQ.jpg'
+      'displayName': 'Preload',
+      'photoURL': 'https://i.imgur.com/NDFE7BQ.jpg'
     },
     title: 'Rembrandt Symposium Programm',
     description: 'This is a placeholder',
@@ -22,8 +22,8 @@ export const placeholder = [
     id: '6',
     user: {
       'id': '2',
-      'name': 'Erykah',
-      'icon': 'https://i.imgur.com/Ks2oou4.jpg'
+      'displayName': 'Erykah',
+      'photoURL': 'https://i.imgur.com/Ks2oou4.jpg'
     },
     title: 'What is Conceptual Art',
     description: 'Some article by yours truly',
@@ -37,8 +37,8 @@ export const placeholder = [
     id: '11',
     user: {
       'id': '9',
-      'name': 'Sulli',
-      'icon': 'https://i.imgur.com/kLcZbQT.jpeg'
+      'displayName': 'Sulli',
+      'photoURL': 'https://i.imgur.com/kLcZbQT.jpeg'
     },
     title: 'What is Conceptual Art',
     description: 'Some article by yours truly',
@@ -52,8 +52,8 @@ export const placeholder = [
     id: '7',
     user: {
       'id': '3',
-      'name': 'Aysha',
-      'icon': 'https://i.imgur.com/ncnHn9I.jpg'
+      'displayName': 'Aysha',
+      'photoURL': 'https://i.imgur.com/ncnHn9I.jpg'
     },
     title: 'Big Short Guide',
     description: 'Read this, it is important',
@@ -67,8 +67,8 @@ export const placeholder = [
     id: '13',
     user: {
       'id': '29',
-      'name': 'Aysha',
-      'icon': 'https://i.imgur.com/ncnHn9I.jpg'
+      'displayName': 'Aysha',
+      'photoURL': 'https://i.imgur.com/ncnHn9I.jpg'
     },
     title: 'Big Short Guide',
     description: 'Read this, it is important',
@@ -107,7 +107,7 @@ export async function getPosts() {
  * @param {string} url - URL of PDF file
  * @returns 
  */
-export async function createPost(authorId, content, icon, url) {
+export async function createPost(user, title, description, url) {
   const endpoint = 'http://localhost:8080/api/posts/';
   try {
     const response = await fetch(endpoint, {
@@ -116,9 +116,9 @@ export async function createPost(authorId, content, icon, url) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        authorId,
-        content,
-        icon,
+        user,
+        title,
+        description,
         url
       })
     })
