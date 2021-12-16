@@ -20,8 +20,8 @@ export default function Docs() {
         },
         {
           name: 'Rembrandt Eats My Ass.pdf',
-          url: 'https://www.nga.gov/content/dam/ngaweb/Education/learning-resources/an-eye-for-art/AnEyeforArt-RembrandtVanRijn.pdf'
-        }
+          url: 'https://www.nga.gov/content/dam/ngaweb/Education/learning-resources/an-eye-for-art/AnEyeforArt-RembrandtVanRijn.pdf',
+        },
       ],
     },
     {
@@ -44,15 +44,14 @@ export default function Docs() {
     },
     {
       name: 'parent three',
-      items: []
-    }
+      items: [],
+    },
   ];
 
-  const defaultUrl = "https://imma.ie/wp-content/uploads/2018/10/whatisconceptualart.pdf"
-  const [activeDoc, setActiveDoc] = useState(defaultUrl);
+  const [activeDoc, setActiveDoc] = useState();
   const getName = (name, url) => {
     setActiveDoc(url);
-  }
+  };
 
   const data = {
     name: 'main',
@@ -60,25 +59,30 @@ export default function Docs() {
   };
 
   function RecursiveDrawFolder({ name, items, pass, url }) {
-    const [showChildren, setShowChildren] = useState(false);
+    const [showChildren, setShowChildren] = useState(true);
 
     const handleClick = useCallback(() => {
-      setShowChildren(!showChildren);
-      if(!items) {
+      if (!items) {
         pass(name, url);
+        return;
       }
+      setShowChildren(!showChildren);
     }, [name, pass, items, showChildren, setShowChildren, url]);
 
     return (
       <div className="text-white space-y-4 flex flex-col">
-        <button onClick={handleClick} className="grow h-10 text-left flex hover:bg-gray-700 rounded-lg items-center p-2 space-x-2">
-          {items && <IconFolder fill={items.length}/>}
+        <button
+          onClick={handleClick}
+          className="grow h-10 text-left flex hover:bg-gray-700 rounded-lg items-center p-2 space-x-2"
+        >
+          {items && <IconFolder fill={items.length} />}
           <span>{name}</span>
         </button>
         <div className="relative flex flex-col left-4 border-l border-gray-500 px-4 transition">
-          {showChildren && (items ?? []).map((item) => (
-            <RecursiveDrawFolder {...item} pass={pass}/>
-          ))}
+          {showChildren &&
+            (items ?? []).map((item) => (
+              <RecursiveDrawFolder {...item} pass={pass} />
+            ))}
         </div>
       </div>
     );
@@ -87,17 +91,18 @@ export default function Docs() {
   return (
     <div className="flex min-h-screen">
       <NavTab currentUser={auth} active="docs" />
-      <div className="bg-gray-800 w-full flex">
-        <div className="w-1/2 xl:w-1/3 h-full p-10">
+      <div className="bg-gray-800 w-full flex p-10">
+        <div className="w-1/2 xl:w-1/3 h-full mr-10">
           <div className="h-full w-full rounded-lg border border-white p-4">
             <RecursiveDrawFolder {...data} pass={getName} />
           </div>
         </div>
-        <div className="h-full w-auto">
-        <div className="flex flex-col text-white justify-center items-center w-full h-full grow space-y-4">
-          <PDFviewer file={activeDoc} title={'someting'}/>
-          <p>{activeDoc}</p>
-        </div>
+        <div className="h-full flex-1">
+          <div className="flex flex-col text-white w-full h-full grow space-y-4">
+            {activeDoc && (
+              <PDFviewer file={activeDoc} title={'someting'} height="full" />
+            )}
+          </div>
         </div>
       </div>
     </div>

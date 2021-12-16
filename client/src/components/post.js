@@ -6,7 +6,8 @@ import { useEffect, useState } from 'react';
 import ViewSDKClient from '../controller/ViewSDKClient';
 
 export default function Post({ data, offline, idn }) {
-  const [fill, setFill] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   function formatDateString(dateString) {
     const options = {
@@ -26,9 +27,14 @@ export default function Post({ data, offline, idn }) {
     }
   }
 
-  function toggleFill(e) {
+  function toggleLiked(e) {
     e.preventDefault();
-    setFill(!fill);
+    setLiked(!liked);
+  }
+
+  function toggleSaved(e) {
+    e.preventDefault();
+    setSaved(!saved);
   }
 
   return (
@@ -48,15 +54,18 @@ export default function Post({ data, offline, idn }) {
           <div className="h-full px-2 mt-8 flex flex-col justify-around items-center">
             <button
               className="hover:bg-gray-800 p-4 rounded-full shadow-xl"
-              onClick={toggleFill}
+              onClick={toggleLiked}
             >
-              <IconHeart fill={fill} />
+              <IconHeart filled={liked} />
             </button>
             <button className="hover:bg-gray-800 p-4 rounded-full">
               <IconComment />
             </button>
-            <button className="hover:bg-gray-800 p-4 rounded-full">
-              <IconBook />
+            <button
+              className="hover:bg-gray-800 p-4 rounded-full"
+              onClick={toggleSaved}
+            >
+              <IconBook filled={saved} />
             </button>
           </div>
         </div>
@@ -78,8 +87,10 @@ export default function Post({ data, offline, idn }) {
   );
 }
 
-export function PDFviewer({ idn = 0, file, title }) {
+export function PDFviewer({ idn = 0, file, title, height = '96' }) {
   useEffect(() => {
+    if (file === null) return;
+
     const viewSDKClient = new ViewSDKClient();
     viewSDKClient.ready().then(() => {
       viewSDKClient.previewFile(file, title, `pdf-div-${idn}`, {
@@ -91,7 +102,9 @@ export function PDFviewer({ idn = 0, file, title }) {
   }, [idn, file, title]);
 
   return (
-    <div className="in-line-container w-full h-96 overflow-y-scroll rounded-xl">
+    <div
+      className={`in-line-container w-full h-${height} overflow-y-scroll rounded-xl`}
+    >
       <div id={`pdf-div-${idn}`} className="in-line-div w-full h-full" />
     </div>
   );
