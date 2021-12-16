@@ -44,5 +44,4 @@ public class PostController {
     public String deletePost(@RequestHeader String id) throws InterruptedException, ExecutionException {
         return postService.deletePost(id);
     }
-
 }
