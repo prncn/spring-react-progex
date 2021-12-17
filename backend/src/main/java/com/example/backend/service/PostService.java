@@ -105,8 +105,8 @@ public class PostService {
         // Create empty post object. This will be filled up later on with values from the retrieved document
         Post post = new Post();
 
-        // Initialize firestore client
-        firestore = FirestoreClient.getFirestore();
+
+
 
         // Retrieve post from firestore based on the given id
         //@TODO: what happens if the post with the given id doesn't exist?
