@@ -11,8 +11,6 @@ import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
-import com.google.firebase.cloud.FirestoreClient;
-
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -61,7 +59,6 @@ public class PostService {
 
     public String createPost(Post post) throws InterruptedException, ExecutionException {
         post.setDate(Timestamp.now()); // get local current time
-        firestore = FirestoreClient.getFirestore();
         String userId = post.getUser().getId();
         System.out.println(userId);
         DocumentReference userRef = firestore.collection("users").document(userId);
@@ -81,14 +78,12 @@ public class PostService {
      * @throws InterruptedException
      */
     public String updatePost(Post post) throws ExecutionException, InterruptedException {
-        firestore = FirestoreClient.getFirestore();
         ApiFuture<WriteResult> collectionsApiFuture = firestore.collection("posts").document(post.getId()).set(post);
         return collectionsApiFuture.get().getUpdateTime().toString();
 
     }
 
     public String deletePost(String id) throws InterruptedException, ExecutionException {
-        firestore = FirestoreClient.getFirestore();
         ApiFuture<WriteResult> writeResult = firestore.collection("posts").document(id).delete();
         return writeResult.get().getUpdateTime().toString();
     }
