@@ -31,32 +31,11 @@ export default function Dashboard() {
     })();
   }, []);
 
-  function Stories() {
-    return (
-      <div className="w-full p-4">
-        <ul className="flex justify-around">
-          {data.slice(0, 5).map((item, i) => (
-            <li key={i} className="flex flex-col justify-center items-center">
-              <div className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block">
-                <img
-                  src={item.user.photoURL}
-                  className="rounded-full w-20 h-20 object-cover"
-                  alt="pfp_st"
-                />
-              </div>
-              <p className="text-sm text-gray-700">{item.user.displayName}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
-
   return (
     <div className="flex min-h-screen justify-center divide-x">
       <NavTab currentUser={currentUser} active="dash" />
       <div className="flex flex-col items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
-        <Stories />
+        <Stories storyposts={data.slice(0, 5)} />
         <PostCreator currentUser={currentUser} />
         <h1 className="font-bold text-gray-500 text-3xl text-left pt-10 w-full px-3">
           Posts
@@ -77,6 +56,27 @@ export default function Dashboard() {
   );
 }
 
+function Stories({ storyposts }) {
+  return (
+    <div className="w-full p-4">
+      <ul className="flex justify-around">
+        {storyposts.map((item, i) => (
+          <li key={i} className="flex flex-col justify-center items-center">
+            <div className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block">
+              <img
+                src={item.user.photoURL}
+                className="rounded-full w-20 h-20 object-cover"
+                alt="pfp_st"
+              />
+            </div>
+            <p className="text-sm text-gray-700">{item.user.displayName}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function PostCreator({ currentUser }) {
   const titleRef = createRef();
   const urlRef = createRef();
@@ -88,7 +88,7 @@ function PostCreator({ currentUser }) {
     createPost(
       {
         ...currentUser,
-        id: currentUser?.uid
+        id: currentUser?.uid,
       },
       titleRef.current.value,
       titleRef.current.value,
@@ -225,7 +225,7 @@ export function NavTab({ currentUser, active }) {
   );
 }
 
-function SpacesTab({ spaces }) {
+export function SpacesTab({ spaces }) {
   return (
     <div className="sticky top-0 min-h-screen h-full hidden xl:block">
       <div className="w-80 h-96 rounded-lg border m-4 py-6 right-20 bg-gray-50">

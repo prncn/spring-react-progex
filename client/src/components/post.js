@@ -4,6 +4,7 @@ import IconBook from '../icons/book';
 import IconHeart from '../icons/heart';
 import { useEffect, useState } from 'react';
 import ViewSDKClient from '../controller/ViewSDKClient';
+import { Link, NavLink } from 'react-router-dom';
 
 export default function Post({ data, offline, idn }) {
   const [liked, setLiked] = useState(false);
@@ -58,9 +59,17 @@ export default function Post({ data, offline, idn }) {
             >
               <IconHeart filled={liked} />
             </button>
-            <button className="hover:bg-gray-800 p-4 rounded-full">
-              <IconComment />
-            </button>
+            <Link
+              to={{
+                pathname: '/view',
+                search: `?id=${data.id}`,
+                state: data.id,
+              }}
+            >
+              <button className="hover:bg-gray-800 p-4 rounded-full">
+                <IconComment />
+              </button>
+            </Link>
             <button
               className="hover:bg-gray-800 p-4 rounded-full"
               onClick={toggleSaved}
@@ -75,9 +84,7 @@ export default function Post({ data, offline, idn }) {
           {data.user.displayName + ' '}
           &#183;{' '}
           <div className="font-light inline">
-            {offline
-              ? formatDateString(data.date)
-              : formatUnixTimestamp(data.date)}
+            {formatUnixTimestamp(data.date)}
           </div>
         </div>
         <div className="pb-3">{data.description}</div>

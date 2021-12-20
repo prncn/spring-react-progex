@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import { AuthProvider } from './context/AuthContext';
 import Docs from './pages/Docs';
+import SinglePost from './pages/SinglePost';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Router>
           <Routes>
             <Route path="/dash" element={<Dashboard />} />
+            <Route path="/view" element={<SinglePost />} />
             <Route path="/forgot-password" element={<Home form="reset" />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/spaces" element={<Explore />} />

@@ -4,49 +4,50 @@ import { useAuth } from '../controller/Firebase';
 import { IconFolder } from '../icons/FileIcons';
 import { NavTab } from './Dashboard';
 
+const fileList = [
+  {
+    name: 'parent one',
+    items: [
+      {
+        name: 'ones child one',
+        items: [],
+      },
+      {
+        name: 'ones child two',
+        items: [],
+      },
+      {
+        name: 'Rembrandt Eats My Ass.pdf',
+        url: 'https://www.nga.gov/content/dam/ngaweb/Education/learning-resources/an-eye-for-art/AnEyeforArt-RembrandtVanRijn.pdf',
+      },
+    ],
+  },
+  {
+    name: 'parent two',
+    items: [
+      {
+        name: 'twos child one',
+        items: [
+          {
+            name: 'twos child ones child one',
+            items: [],
+          },
+          {
+            name: 'twos child ones child two',
+            items: [],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'parent three',
+    items: [],
+  },
+];
+
 export default function Docs() {
   const auth = useAuth();
-  const fileList = [
-    {
-      name: 'parent one',
-      items: [
-        {
-          name: 'ones child one',
-          items: [],
-        },
-        {
-          name: 'ones child two',
-          items: [],
-        },
-        {
-          name: 'Rembrandt Eats My Ass.pdf',
-          url: 'https://www.nga.gov/content/dam/ngaweb/Education/learning-resources/an-eye-for-art/AnEyeforArt-RembrandtVanRijn.pdf',
-        },
-      ],
-    },
-    {
-      name: 'parent two',
-      items: [
-        {
-          name: 'twos child one',
-          items: [
-            {
-              name: 'twos child ones child one',
-              items: [],
-            },
-            {
-              name: 'twos child ones child two',
-              items: [],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: 'parent three',
-      items: [],
-    },
-  ];
 
   const [activeDoc, setActiveDoc] = useState();
   const getName = (name, url) => {
