@@ -10,6 +10,35 @@ export default function Post({ data, offline, idn }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  function timeDifference(previous) {
+    previous = previous.seconds / 1000;
+    const current = Math.floor(Date.now() / 1000);
+
+    var msPerMinute = 60 * 1000;
+    var msPerHour = msPerMinute * 60;
+    var msPerDay = msPerHour * 24;
+    var msPerMonth = msPerDay * 30;
+    var msPerYear = msPerDay * 365;
+
+    var elapsed = current - previous;
+    console.log(current);
+    console.log(previous);
+
+    if (elapsed < msPerMinute) {
+      return Math.round(elapsed / 1000) + ' seconds ago';
+    } else if (elapsed < msPerHour) {
+      return Math.round(elapsed / msPerMinute) + ' minutes ago';
+    } else if (elapsed < msPerDay) {
+      return Math.round(elapsed / msPerHour) + ' hours ago';
+    } else if (elapsed < msPerMonth) {
+      return Math.round(elapsed / msPerDay) + ' days ago';
+    } else if (elapsed < msPerYear) {
+      return Math.round(elapsed / msPerMonth) + ' months ago';
+    } else {
+      return Math.round(elapsed / msPerYear) + ' years ago';
+    }
+  }
+
   function formatDateString(dateString) {
     const options = {
       weekday: 'long',
@@ -83,9 +112,7 @@ export default function Post({ data, offline, idn }) {
         <div className="font-semibold mb-1">
           {data.user.displayName + ' '}
           &#183;{' '}
-          <div className="font-light inline">
-            {formatUnixTimestamp(data.date)}
-          </div>
+          <div className="font-light inline">{timeDifference(data.date)}</div>
         </div>
         <div className="pb-3">{data.description}</div>
         <PDFviewer idn={idn} file={data.url} title={data.title} />
