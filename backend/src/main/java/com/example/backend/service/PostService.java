@@ -87,4 +87,32 @@ public class PostService {
         ApiFuture<WriteResult> writeResult = firestore.collection("posts").document(id).delete();
         return writeResult.get().getUpdateTime().toString();
     }
+
+    /**
+     * Retrieves a post with the given id
+     *
+     * @param id id of the post to retrieve
+     * @return the post object
+     * @throws InterruptedException
+     * @throws ExecutionException
+     */
+    public Post getPost(String id) throws InterruptedException, ExecutionException {
+        // Create empty post object. This will be filled up later on with values from the retrieved document
+        Post post = new Post();
+
+
+
+
+        // Retrieve post from firestore based on the given id
+        //@TODO: what happens if the post with the given id doesn't exist?
+        DocumentSnapshot doc = firestore.collection("posts").document(id).get().get();
+
+        post.setId(doc.getId());
+        post.setTitle(doc.getString("title"));
+        post.setDescription(doc.getString("description"));
+        post.setDate(doc.getTimestamp("date"));
+        post.setUrl(doc.getString("url"));
+
+        return post;
+    }
 }
