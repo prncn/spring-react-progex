@@ -1,5 +1,3 @@
-import { async } from '@firebase/util';
-
 /**
  * Placeholder list of posts data. This will be passed
  * to getPosts() when the Spring server is offline.

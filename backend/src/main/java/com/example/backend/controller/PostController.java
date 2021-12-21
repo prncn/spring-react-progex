@@ -32,7 +32,7 @@ public class PostController {
 
     @GetMapping(value = "/{id}", produces = "application/json")
     public Post getPostById(@RequestHeader String id) throws ExecutionException, InterruptedException {
-        return postService.getPost(id);
+        return postService.getPostById(id);
     }
 
     @PostMapping(value = "/", produces = "application/json")

@@ -4,58 +4,38 @@ import IconBook from '../icons/book';
 import IconHeart from '../icons/heart';
 import { useEffect, useState } from 'react';
 import ViewSDKClient from '../controller/ViewSDKClient';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
+export function timeDifference(previous) {
+  previous = previous.seconds / 1000;
+  const current = Math.floor(Date.now() / 1000);
+
+  var msPerMinute = 60 * 1000;
+  var msPerHour = msPerMinute * 60;
+  var msPerDay = msPerHour * 24;
+  var msPerMonth = msPerDay * 30;
+  var msPerYear = msPerDay * 365;
+
+  var elapsed = current - previous;
+
+  if (elapsed < msPerMinute) {
+    return Math.round(elapsed / 1000) + ' seconds ago';
+  } else if (elapsed < msPerHour) {
+    return Math.round(elapsed / msPerMinute) + ' minutes ago';
+  } else if (elapsed < msPerDay) {
+    return Math.round(elapsed / msPerHour) + ' hours ago';
+  } else if (elapsed < msPerMonth) {
+    return Math.round(elapsed / msPerDay) + ' days ago';
+  } else if (elapsed < msPerYear) {
+    return Math.round(elapsed / msPerMonth) + ' months ago';
+  } else {
+    return Math.round(elapsed / msPerYear) + ' years ago';
+  }
+}
 
 export default function Post({ data, offline, idn }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
-
-  function timeDifference(previous) {
-    previous = previous.seconds / 1000;
-    const current = Math.floor(Date.now() / 1000);
-
-    var msPerMinute = 60 * 1000;
-    var msPerHour = msPerMinute * 60;
-    var msPerDay = msPerHour * 24;
-    var msPerMonth = msPerDay * 30;
-    var msPerYear = msPerDay * 365;
-
-    var elapsed = current - previous;
-    console.log(current);
-    console.log(previous);
-
-    if (elapsed < msPerMinute) {
-      return Math.round(elapsed / 1000) + ' seconds ago';
-    } else if (elapsed < msPerHour) {
-      return Math.round(elapsed / msPerMinute) + ' minutes ago';
-    } else if (elapsed < msPerDay) {
-      return Math.round(elapsed / msPerHour) + ' hours ago';
-    } else if (elapsed < msPerMonth) {
-      return Math.round(elapsed / msPerDay) + ' days ago';
-    } else if (elapsed < msPerYear) {
-      return Math.round(elapsed / msPerMonth) + ' months ago';
-    } else {
-      return Math.round(elapsed / msPerYear) + ' years ago';
-    }
-  }
-
-  function formatDateString(dateString) {
-    const options = {
-      weekday: 'long',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-    };
-    const iso = new Date(dateString.replace(' ', 'T'));
-    return iso.toLocaleDateString('en-US', options).replace(',', ' ');
-  }
-
-  function formatUnixTimestamp(dateString) {
-    if (dateString !== null) {
-      return new Date(dateString.seconds * 1000).toLocaleDateString('en-US');
-    }
-  }
 
   function toggleLiked(e) {
     e.preventDefault();
@@ -77,7 +57,7 @@ export default function Post({ data, offline, idn }) {
           <img
             className="w-full h-full object-cover rounded-full block shadow-lg"
             src={data.user.photoURL}
-            alt="pfp_icon"
+            alt={data.user.displayName}
           />
         </div>
         <div className="h-2/3">
@@ -88,13 +68,7 @@ export default function Post({ data, offline, idn }) {
             >
               <IconHeart filled={liked} />
             </button>
-            <Link
-              to={{
-                pathname: '/view',
-                search: `?id=${data.id}`,
-                state: data.id,
-              }}
-            >
+            <Link to={`/view?id=${data.id}`} state={data}>
               <button className="hover:bg-gray-800 p-4 rounded-full">
                 <IconComment />
               </button>

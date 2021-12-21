@@ -33,24 +33,7 @@ public class PostService {
         List<Post> posts = new ArrayList<>();
 
         for (QueryDocumentSnapshot document : documents) {
-            Post post = new Post();
-
-            post.setId(document.getId());
-            post.setTitle(document.getString("title"));
-            post.setDescription(document.getString("description"));
-            post.setDate(document.getTimestamp("date"));
-            post.setUrl(document.getString("url"));
-
-            DocumentReference ds = (DocumentReference) document.get("userId");
-            ApiFuture<DocumentSnapshot> userFuture = ds.get();
-            DocumentSnapshot userDoc = userFuture.get();
-            User user = new User();
-            user.setDisplayName(userDoc.getString("displayName"));
-            user.setEmail(userDoc.getString("email"));
-            user.setPhotoURL(userDoc.getString("photoURL"));
-
-            post.setUser(user);
-
+            Post post = getPostById(document.getId());
             posts.add(post);
         }
 
@@ -96,22 +79,33 @@ public class PostService {
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    public Post getPost(String id) throws InterruptedException, ExecutionException {
-        // Create empty post object. This will be filled up later on with values from the retrieved document
+    public Post getPostById(String id) throws InterruptedException, ExecutionException {
+        // Create empty post object. This will be filled up later on with values from
+        // the retrieved document
         Post post = new Post();
 
-
-
-
         // Retrieve post from firestore based on the given id
-        //@TODO: what happens if the post with the given id doesn't exist?
+        // @TODO: what happens if the post with the given id doesn't exist?
         DocumentSnapshot doc = firestore.collection("posts").document(id).get().get();
+        if (doc == null) {
+            return null;
+        }
 
         post.setId(doc.getId());
         post.setTitle(doc.getString("title"));
         post.setDescription(doc.getString("description"));
         post.setDate(doc.getTimestamp("date"));
         post.setUrl(doc.getString("url"));
+
+        DocumentReference ds = (DocumentReference) doc.get("userId");
+        ApiFuture<DocumentSnapshot> userFuture = ds.get();
+        DocumentSnapshot userDoc = userFuture.get();
+        User user = new User();
+        user.setDisplayName(userDoc.getString("displayName"));
+        user.setEmail(userDoc.getString("email"));
+        user.setPhotoURL(userDoc.getString("photoURL"));
+
+        post.setUser(user);
 
         return post;
     }
