@@ -1,7 +1,6 @@
 package com.example.backend.service;
 
 import com.example.backend.model.Post;
-import com.example.backend.model.PostDocument;
 import com.example.backend.model.User;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.Timestamp;
@@ -13,8 +12,7 @@ import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -32,7 +30,12 @@ public class PostService {
 
         List<Post> posts = new ArrayList<>();
 
+        int limit = 50;
+        int counter = 0;
         for (QueryDocumentSnapshot document : documents) {
+
+            if(counter >= limit) break;
+
             Post post = new Post();
 
             post.setId(document.getId());
@@ -42,29 +45,39 @@ public class PostService {
             post.setUrl(document.getString("url"));
 
             DocumentReference ds = (DocumentReference) document.get("userId");
-            ApiFuture<DocumentSnapshot> userFuture = ds.get();
-            DocumentSnapshot userDoc = userFuture.get();
-            User user = new User();
-            user.setDisplayName(userDoc.getString("displayName"));
-            user.setEmail(userDoc.getString("email"));
-            user.setPhotoURL(userDoc.getString("photoURL"));
+            if ( ds != null) {
+                ApiFuture<DocumentSnapshot> userFuture = ds.get();
+                DocumentSnapshot userDoc = userFuture.get();
 
-            post.setUser(user);
+                User user = new User();
+                user.setId(ds.getId());
+                user.setDisplayName(userDoc.getString("displayName"));
+                user.setEmail(userDoc.getString("email"));
+                user.setPhotoURL(userDoc.getString("photoURL"));
+
+                post.setUser(user);
+            }
 
             posts.add(post);
+            counter++;
         }
+
+        //Sort posts by date
+        Collections.sort(posts, new Comparator<Post>() {
+            public int compare(Post o1, Post o2) {
+                if (o1.getDate() == null || o2.getDate() == null)
+                    return 0;
+                return o2.getDate().compareTo(o1.getDate());
+            }
+        });
 
         return posts;
     }
 
     public String createPost(Post post) throws InterruptedException, ExecutionException {
         post.setDate(Timestamp.now()); // get local current time
-        String userId = post.getUser().getId();
-        System.out.println(userId);
-        DocumentReference userRef = firestore.collection("users").document(userId);
-        PostDocument postDoc = new PostDocument(post, userRef);
 
-        ApiFuture<WriteResult> collectionsApiFuture = firestore.collection("posts").document().set(postDoc);
+        ApiFuture<WriteResult> collectionsApiFuture = firestore.collection("posts").document().set(post);
         return collectionsApiFuture.get().getUpdateTime().toString();
 
     }
