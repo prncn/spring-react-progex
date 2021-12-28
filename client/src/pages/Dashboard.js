@@ -22,10 +22,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     (async () => {
-      const [data, responded] = await getPosts();
+      const { data, status } = await getPosts();
       console.log(data);
       setData(data);
-      if (responded !== null) {
+      if (status !== null) {
         setOffline(false);
       }
     })();
@@ -62,7 +62,7 @@ function Stories({ storyposts }) {
       <ul className="flex justify-around">
         {storyposts.map((item, i) => (
           <li key={i} className="flex flex-col justify-center items-center">
-            <div className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block">
+            <div className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block cursor-pointer animate-gradient-xy">
               <img
                 src={item.user.photoURL}
                 className="rounded-full w-20 h-20 object-cover"
@@ -106,7 +106,7 @@ function PostCreator({ currentUser }) {
   return (
     <div
       onClick={handleReveal}
-      className="w-full h-40 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 transition-all"
+      className="w-full h-40 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 animate-gradient-y transition-all"
     >
       <div
         className={

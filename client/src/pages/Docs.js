@@ -59,8 +59,8 @@ export default function Docs() {
     items: fileList,
   };
 
-  function RecursiveDrawFolder({ name, items, pass, url }) {
-    const [showChildren, setShowChildren] = useState(true);
+  function RecursiveDrawFolder({ name, items, pass, url, opened = false }) {
+    const [showChildren, setShowChildren] = useState(opened);
 
     const handleClick = useCallback(() => {
       if (!items) {
@@ -68,7 +68,7 @@ export default function Docs() {
         return;
       }
       setShowChildren(!showChildren);
-    }, [name, pass, items, showChildren, setShowChildren, url]);
+    }, [items, name, pass, showChildren, url]);
 
     return (
       <div className="text-white space-y-4 flex flex-col">
@@ -79,7 +79,7 @@ export default function Docs() {
           {items && <IconFolder fill={items.length} />}
           <span>{name}</span>
         </button>
-        <div className="relative flex flex-col left-4 border-l border-gray-500 px-4 transition">
+        <div className="relative flex flex-col left-4 border-gray-500 px-4 transition">
           {showChildren &&
             (items ?? []).map((item) => (
               <RecursiveDrawFolder {...item} pass={pass} />

@@ -1,5 +1,5 @@
 import '../index.css';
-import Post, { timeDifference } from '../components/post';
+import Post from '../components/post';
 import React, { useEffect } from 'react';
 import { useAuth } from '../controller/Firebase';
 import { NavTab, SpacesTab } from './Dashboard';

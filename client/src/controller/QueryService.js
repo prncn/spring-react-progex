@@ -90,11 +90,11 @@ export async function getPosts() {
   try {
     const response = await fetch(url);
     const data = await response.json();
-    return [data, response.ok];
+    return { data, status: response.ok };
   } catch (error) {
     const message = `Fetch error has occured: ${error}`;
     console.error(message);
-    return [placeholder, null];
+    return { placeholder, status: null };
   }
 }
 
