@@ -228,7 +228,7 @@ export async function checkIfPostLikedByUser(postId, userId) {
 }
 
 export async function fetchUnsplashedImage(searchTerm) {
-  const endpoint = `https://api.unsplash.com/search/photos?query=${searchTerm}&per_page?=1`;
+  const endpoint = `https://api.unsplash.com/search/photos?query=${searchTerm}&per_page=1&page=1`;
   try {
     const response = await fetch(endpoint, {
       method: 'GET',

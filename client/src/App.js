@@ -20,7 +20,9 @@ export default function App() {
             <Route path="/profile" element={<Profile />}>
               <Route path=":userId" element={<Profile />} />
             </Route>
-            <Route path="/spaces" element={<Explore />} />
+            <Route path="/spaces" element={<Explore />}>
+              <Route path=":spaceId" element={<Explore />} />
+            </Route>
             <Route path="/docs" element={<Docs />} />
             <Route path="/signup" element={<Home form="signup" />} />
             <Route path="/" element={<Home form="login" />} />

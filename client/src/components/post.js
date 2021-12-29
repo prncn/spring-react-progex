@@ -102,7 +102,7 @@ export default function Post({ data, offline, idn, currentUser }) {
       </div>
       <div className="flex justify-center align-center flex-col p-2 w-full">
         <div
-          className={`font-semibold mb-1 ${
+          className={`font-semibold mb-1 w-1/3 ${
             isLoading ? 'rounded bg-gray-500' : ''
           }`}
         >
