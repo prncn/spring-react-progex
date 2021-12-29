@@ -1,9 +1,9 @@
-export default function IconHeart({fill = false}) {
+export default function IconHeart({ filled }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className="h-6 w-6"
-      fill={fill ? "currentColor" : "none"}
+      fill={filled ? 'currentColor' : 'none'}
       viewBox="0 0 24 24"
       stroke="currentColor"
     >

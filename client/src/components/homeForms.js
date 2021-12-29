@@ -30,9 +30,7 @@ export function LoginForm() {
 
   return (
     <form>
-      <p className="home-form__heading">
-        Sign in
-      </p>
+      <p className="home-form__heading">Sign in</p>
       <Input ref={emailRef} type="email" placeholder="E-Mail" />
       <Input ref={passwordRef} type="password" placeholder="Password" />
       <div className="flex justify-between">
@@ -54,14 +52,19 @@ export function LoginForm() {
         </Link>
       </div>
       <div className="mt-10">
-        <Link className="text-sm text-gray-300 hover:text-gray-500" to="/forgot-password">Forgot Password?</Link>
+        <Link
+          className="text-sm text-gray-300 hover:text-gray-500"
+          to="/forgot-password"
+        >
+          Forgot Password?
+        </Link>
       </div>
     </form>
   );
 }
 
 /**
- * Component to reset password 
+ * Component to reset password
  * @returns React component
  */
 export function ResetPasswordForm() {
@@ -89,7 +92,13 @@ export function ResetPasswordForm() {
   return (
     <form>
       <p className="home-form__heading">Reset</p>
-      <Input className="w-full" ref={emailRef} type="email" placeholder="E-Mail" required />
+      <Input
+        className="w-full"
+        ref={emailRef}
+        type="email"
+        placeholder="E-Mail"
+        required
+      />
       <div className="flex justify-between">
         <button
           disabled={loading}
@@ -129,7 +138,11 @@ export function SignupForm() {
 
     try {
       setLoading(true);
-      await signup(emailRef.current.value, passwordRef.current.value, displayNameRef.current.value);
+      await signup(
+        emailRef.current.value,
+        passwordRef.current.value,
+        displayNameRef.current.value
+      );
       navigate('/dash');
     } catch (error) {
       alert(error);
@@ -138,9 +151,7 @@ export function SignupForm() {
   }
   return (
     <form>
-      <p className="home-form__heading">
-        Sign up
-      </p>
+      <p className="home-form__heading">Sign up</p>
 
       <Input ref={displayNameRef} type="text" placeholder="Display Name" />
       <Input ref={emailRef} type="email" placeholder="E-Mail" />
@@ -161,10 +172,7 @@ export function SignupForm() {
           Sign up
         </button>
         <Link to="/login">
-          <button
-            type="button"
-            className="home-form__right-btn"
-          >
+          <button type="button" className="home-form__right-btn">
             Got an account
           </button>
         </Link>

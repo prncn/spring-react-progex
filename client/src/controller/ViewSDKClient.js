@@ -41,6 +41,15 @@ class ViewSDKClient {
       viewerConfig
     );
 
+    previewFilePromise.then((adobeViewer) => {
+      adobeViewer.getAPIs().then((apis) => {
+        apis
+          .getCurrentPage()
+          .then((result) => console.log(result))
+          .catch((error) => console.log(error));
+      });
+    });
+
     return previewFilePromise;
   }
 

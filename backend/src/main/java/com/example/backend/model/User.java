@@ -1,5 +1,7 @@
 package com.example.backend.model;
 
+import java.util.ArrayList;
+
 import com.google.cloud.firestore.annotation.DocumentId;
 import lombok.Data;
 
@@ -12,4 +14,6 @@ public class User {
     private String displayName;
     private String photoURL;
     private String email;
+
+    private ArrayList<String> likedPosts = new ArrayList<>();
 }

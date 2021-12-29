@@ -24,6 +24,8 @@ const firebaseConfig = {
   measurementId: 'G-CRLNDZDZKZ',
 };
 
+const photoURL = 'https://i.imgur.com/kLcZbQT.jpeg';
+
 initializeApp(firebaseConfig);
 export const auth = getAuth();
 export const db = getFirestore();
@@ -32,19 +34,16 @@ export function signup(email, password, displayName) {
   return createUserWithEmailAndPassword(auth, email, password).then((res) => {
     updateProfile(res.user, {
       displayName,
-      photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
+      photoURL,
     });
     try {
-      console.log(res.user.uid);
-      const docRef = setDoc(doc(db, "users", res.user.uid), {
+      setDoc(doc(db, 'users', res.user.uid), {
         displayName,
-        email,
-        photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
-      }).then(() => {
-        console.log("Document written with ID: ", docRef.uid);
-      })
+        photoURL,
+        likedPosts: [],
+      });
     } catch (e) {
-      console.error("Error adding document: ", e);
+      console.error('Error adding document: ', e);
     }
   });
 }
