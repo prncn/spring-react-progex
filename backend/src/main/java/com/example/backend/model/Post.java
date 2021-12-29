@@ -1,8 +1,6 @@
 package com.example.backend.model;
 
-
 import com.google.cloud.Timestamp;
-import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.annotation.DocumentId;
 import lombok.Data;
 
@@ -13,9 +11,10 @@ public class Post {
     private String id;
     private User user;
 
-    private String title; 
-    private String description; 
+    private String title;
+    private String description;
     private Timestamp date;
 
     private String url;
+    private Double likeCount = (double) 0;
 }

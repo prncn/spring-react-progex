@@ -17,7 +17,9 @@ export default function App() {
             <Route path="/dash" element={<Dashboard />} />
             <Route path="/view" element={<SinglePost />} />
             <Route path="/forgot-password" element={<Home form="reset" />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<Profile />}>
+              <Route path=":userId" element={<Profile />} />
+            </Route>
             <Route path="/spaces" element={<Explore />} />
             <Route path="/docs" element={<Docs />} />
             <Route path="/signup" element={<Home form="signup" />} />

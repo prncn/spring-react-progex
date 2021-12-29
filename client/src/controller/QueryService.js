@@ -1,3 +1,5 @@
+import { async } from '@firebase/util';
+
 /**
  * Placeholder list of posts data. This will be passed
  * to getPosts() when the Spring server is offline.
@@ -8,7 +10,7 @@ export const placeholder = [
     user: {
       id: '1',
       displayName: 'Preload',
-      photoURL: 'https://i.imgur.com/NDFE7BQ.jpg',
+      photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'Rembrandt Symposium Programm',
     description: 'This is a placeholder',
@@ -23,7 +25,7 @@ export const placeholder = [
     user: {
       id: '2',
       displayName: 'Erykah',
-      photoURL: 'https://i.imgur.com/Ks2oou4.jpg',
+      photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'What is Conceptual Art',
     description: 'Some article by yours truly',
@@ -38,7 +40,7 @@ export const placeholder = [
     user: {
       id: '9',
       displayName: 'Sulli',
-      photoURL: 'https://i.imgur.com/kLcZbQT.jpeg',
+      photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'What is Conceptual Art',
     description: 'Some article by yours truly',
@@ -53,7 +55,7 @@ export const placeholder = [
     user: {
       id: '3',
       displayName: 'Aysha',
-      photoURL: 'https://i.imgur.com/ncnHn9I.jpg',
+      photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'Big Short Guide',
     description: 'Read this, it is important',
@@ -68,7 +70,7 @@ export const placeholder = [
     user: {
       id: '29',
       displayName: 'Aysha',
-      photoURL: 'https://i.imgur.com/ncnHn9I.jpg',
+      photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'Big Short Guide',
     description: 'Read this, it is important',
@@ -80,26 +82,51 @@ export const placeholder = [
   },
 ];
 
+const images = [
+  'https://i.imgur.com/NDFE7BQ.jpg',
+  'https://i.imgur.com/Ks2oou4.jpg',
+  'https://i.imgur.com/kLcZbQT.jpeg',
+  'https://i.imgur.com/ncnHn9I.jpg',
+  'https://pic.onlinewebfonts.com/svg/img_258083.png',
+];
+
 /**
  * Fetch posts from Spring endpoint.
  * @returns Array. First entry is the resulting data, which is a placeholder
  * in case of a fetch error. Second entry is a success response.
  */
 export async function getPosts() {
-  const url = 'http://localhost:8080/api/posts/';
+  const url = 'http://localhost:8080/api/posts?limit=20';
   try {
     const response = await fetch(url);
     const data = await response.json();
-    return { data, status: response.ok };
+    return [data, response.ok];
   } catch (error) {
     const message = `Fetch error has occured: ${error}`;
     console.error(message);
-    return { placeholder, status: null };
+    return [placeholder, null];
   }
 }
 
 export async function getPostById(id) {
   const url = `http://localhost:8080/api/posts/${id}`;
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    return { data, response: response.ok };
+  } catch (error) {
+    console.error(error);
+    return { data: placeholder[0], response: false };
+  }
+}
+
+export async function getPostByUser(user) {
+  const url = `http://localhost:8080/api/posts?user=${user}`;
   try {
     const response = await fetch(url);
     const data = await response.json();
@@ -137,5 +164,81 @@ export async function createPost(user, title, description, url) {
     return response.json();
   } catch (error) {
     console.error(error);
+  }
+}
+
+export async function getUserById(id) {
+  const url = `http://localhost:8080/api/users/${id}`;
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return [data, response.ok];
+  } catch (error) {
+    console.error(error);
+    return [{}, false];
+  }
+}
+
+export async function likePost(postId, userId) {
+  const endpoint = `http://localhost:8080/api/posts/${postId}/like`;
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        postId,
+      }),
+    });
+    return response.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function unlikePost(postId, userId) {
+  const endpoint = `http://localhost:8080/api/posts/${postId}/like`;
+  try {
+    const response = await fetch(endpoint, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        postId,
+      }),
+    });
+    return response.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function checkIfPostLikedByUser(postId, userId) {
+  if (userId !== undefined) {
+    const [data, response] = await getUserById(userId);
+    if (response) {
+      const likedPosts = data.likedPosts || [];
+      return likedPosts.includes(postId);
+    }
+  }
+}
+
+export async function fetchUnsplashedImage(searchTerm) {
+  const endpoint = `https://api.unsplash.com/search/photos?query=${searchTerm}&per_page?=1`;
+  try {
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Client-ID thEZ20OyHFDkAE24Fkg8va-yVBSZBpBaEI86BV2WZ5g',
+      },
+    });
+    return await response.json();
+  } catch (error) {
+    console.log(error);
   }
 }

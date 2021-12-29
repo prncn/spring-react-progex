@@ -5,6 +5,11 @@ import IconHeart from '../icons/heart';
 import { useEffect, useState } from 'react';
 import ViewSDKClient from '../controller/ViewSDKClient';
 import { Link } from 'react-router-dom';
+import {
+  checkIfPostLikedByUser,
+  likePost,
+  unlikePost,
+} from '../controller/QueryService';
 
 export function timeDifference(previous) {
   previous = previous.seconds / 1000;
@@ -33,12 +38,25 @@ export function timeDifference(previous) {
   }
 }
 
-export default function Post({ data, offline, idn }) {
+export default function Post({ data, offline, idn, currentUser }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      setLiked(await checkIfPostLikedByUser(data.id, currentUser?.uid));
+      setIsLoading(false);
+    })();
+  }, [currentUser?.uid, data.id]);
 
   function toggleLiked(e) {
     e.preventDefault();
+    if (!liked) {
+      likePost(data.id, currentUser?.uid);
+    } else {
+      unlikePost(data.id, currentUser?.uid);
+    }
     setLiked(!liked);
   }
 
@@ -55,7 +73,7 @@ export default function Post({ data, offline, idn }) {
       <div className="w-20 pl-4 rounded-lg">
         <div className="w-16 h-16 mt-2 rounded-full shadow-lg">
           <img
-            className="w-full h-full object-cover rounded-full block shadow-lg"
+            className="w-full h-full object-cover rounded-full block shadow-lg transition-all"
             src={data.user.photoURL}
             alt={data.user.displayName}
           />
@@ -83,8 +101,12 @@ export default function Post({ data, offline, idn }) {
         </div>
       </div>
       <div className="flex justify-center align-center flex-col p-2 w-full">
-        <div className="font-semibold mb-1">
-          {data.user.displayName + ' '}
+        <div
+          className={`font-semibold mb-1 ${
+            isLoading ? 'rounded bg-gray-500' : ''
+          }`}
+        >
+          <Link to={`/profile/${data.user.id}`}>{data.user.displayName}</Link>{' '}
           &#183;{' '}
           <div className="font-light inline">{timeDifference(data.date)}</div>
         </div>

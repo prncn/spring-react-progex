@@ -1,6 +1,6 @@
 import '../index.css';
 import Post from '../components/post';
-import React, { useState, useEffect, createRef } from 'react';
+import React, { useState, useEffect, createRef, useCallback } from 'react';
 import { logout, useAuth } from '../controller/Firebase';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -15,19 +15,14 @@ import IconHome from '../icons/home';
 
 export default function Dashboard() {
   const [data, setData] = useState(placeholder);
-  const [offline, setOffline] = useState(true);
   const currentUser = useAuth();
   console.log(currentUser);
-  console.log(offline);
 
   useEffect(() => {
     (async () => {
-      const { data, status } = await getPosts();
-      console.log(data);
+      const [data, status] = await getPosts();
+      console.log(data, status);
       setData(data);
-      if (status !== null) {
-        setOffline(false);
-      }
     })();
   }, []);
 
@@ -41,7 +36,7 @@ export default function Dashboard() {
           Posts
         </h1>
         {data.map((post, i) => (
-          <Post key={post.id} data={post} idn={i} />
+          <Post key={post.id} data={post} idn={i} currentUser={currentUser} />
         ))}
       </div>
       <SpacesTab
@@ -54,6 +49,84 @@ export default function Dashboard() {
       />
     </div>
   );
+
+  function PostCreator({ currentUser }) {
+    const [title, setTitle] = useState();
+    const [url, setUrl] = useState();
+    const pfpIcon = currentUser?.photoURL;
+    const [show, setShow] = useState(false);
+
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      createPost(
+        {
+          ...currentUser,
+          id: currentUser?.uid,
+        },
+        title,
+        title,
+        url
+      );
+      console.log(title);
+      getPosts().then(([data, response]) => {
+        setData(data);
+      });
+    };
+
+    function handleReveal(e) {
+      e.preventDefault();
+      if (!show) {
+        setShow(true);
+      }
+    }
+
+    return (
+      <div
+        onClick={handleReveal}
+        className="w-full h-40 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 animate-gradient-y transition-all"
+      >
+        <div
+          className={
+            show ? 'hidden' : 'self-end w-1/3 text-3xl text-white font-semibold'
+          }
+        >
+          Hi, {currentUser?.displayName}. ✋ <br />{' '}
+          <p className="font-light"> Share your docs here. </p>
+        </div>
+        <div className={show ? 'w-full h-full flex' : 'hidden'}>
+          <div className="w-20">
+            <div className="w-16 h-16 mt-2 rounded-full">
+              <img
+                className="w-full h-full object-cover rounded-full block shadow-lg"
+                src={pfpIcon}
+                alt="pfp_icon"
+              />
+            </div>
+          </div>
+          <form className="w-full h-full flex flex-col">
+            <input
+              className="bg-transparent w-3/4 p-3 text-gray-50 placeholder-gray-300 font-semibold text-lg focus:outline-none"
+              placeholder="Title your Doc..."
+              value={title}
+              onInput={(event) => setTitle(event.target.value)}
+            ></input>
+            <input
+              className="bg-transparent w-3/4 p-3 text-gray-50 placeholder-gray-300 text-sm focus:outline-none h-auto"
+              placeholder="URL to your Doc..."
+              value={url}
+              onInput={(event) => setUrl(event.target.value)}
+            ></input>
+            <button
+              onClick={handleSubmit}
+              className="bg-gray-100 text-black font-semibold px-5 py-2 rounded-full place-self-end mt-auto hover:bg-gray-200"
+            >
+              <span>Send.</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 }
 
 function Stories({ storyposts }) {
@@ -77,78 +150,6 @@ function Stories({ storyposts }) {
   );
 }
 
-function PostCreator({ currentUser }) {
-  const titleRef = createRef();
-  const urlRef = createRef();
-  const pfpIcon = currentUser?.photoURL;
-  const [show, setShow] = useState(false);
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    createPost(
-      {
-        ...currentUser,
-        id: currentUser?.uid,
-      },
-      titleRef.current.value,
-      titleRef.current.value,
-      urlRef.current.value
-    );
-  }
-
-  function handleReveal(e) {
-    e.preventDefault();
-    if (!show) {
-      setShow(true);
-    }
-  }
-
-  return (
-    <div
-      onClick={handleReveal}
-      className="w-full h-40 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 animate-gradient-y transition-all"
-    >
-      <div
-        className={
-          show ? 'hidden' : 'self-end w-1/3 text-3xl text-white font-semibold'
-        }
-      >
-        Hi, {currentUser?.displayName}. ✋ <br />{' '}
-        <p className="font-light"> Share your docs here. </p>
-      </div>
-      <div className={show ? 'w-full h-full flex' : 'hidden'}>
-        <div className="w-20">
-          <div className="w-16 h-16 mt-2 rounded-full">
-            <img
-              className="w-full h-full object-contained rounded-full block shadow-lg"
-              src={pfpIcon}
-              alt="pfp_icon"
-            />
-          </div>
-        </div>
-        <form className="w-full h-full flex flex-col">
-          <input
-            ref={titleRef}
-            className="bg-transparent w-3/4 p-3 text-gray-50 placeholder-gray-300 font-semibold text-lg focus:outline-none"
-            placeholder="Title your Doc..."
-          ></input>
-          <input
-            ref={urlRef}
-            className="bg-transparent w-3/4 p-3 text-gray-50 placeholder-gray-300 text-sm focus:outline-none h-auto"
-            placeholder="URL to your Doc..."
-          ></input>
-          <button
-            onClick={handleSubmit}
-            className="bg-gray-100 text-black font-semibold px-5 py-2 rounded-full place-self-end mt-auto hover:bg-gray-200"
-          >
-            <span>Send.</span>
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
 export function NavTab({ currentUser, active }) {
   const navigate = useNavigate();
 
@@ -166,7 +167,9 @@ export function NavTab({ currentUser, active }) {
 
   function NavLink({ path, children }) {
     return (
-      <Link to={`/${path}`}>
+      <Link
+        to={`/${path === 'profile' ? path + `/${currentUser?.uid}` : path}`}
+      >
         <button
           className={`dashboard-nav__btn ${
             active === path ? 'bg-indigo-100 text-indigo-400' : ''
@@ -182,9 +185,9 @@ export function NavTab({ currentUser, active }) {
   return (
     <div className="sticky h-screen top-0 md:flex flex-col hidden">
       <div className="w-72 h-24 border rounded-lg m-4 ml-auto flex p-3 bg-gray-50">
-        <div className="w-16 h-16 rounded-full">
+        <div className="w-16 h-16 rounded-full shadow-md overflow-visible">
           <img
-            className="w-full h-full object-contained rounded-full"
+            className="w-full h-full object-cover rounded-full"
             src={currentUser?.photoURL}
             alt="pfp_icon"
           />

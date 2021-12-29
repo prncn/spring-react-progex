@@ -6,6 +6,8 @@ import com.google.firebase.FirebaseOptions;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -14,9 +16,17 @@ public class FirebaseInitializer {
 
     @PostConstruct
     public void initialize() throws IOException {
-        String dir = System.getProperty("user.dir");
+        String path = "src/main/resources/static/prog-ex-firebase-adminsdk.json";
+        File credentials;
+
+        try {
+            credentials = new File(path);
+        } catch (Exception e) {
+            credentials = new File("backend/" + path);
+        }
+
         FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(new FileInputStream(dir + "/backend/src/main/resources/static/prog-ex-firebase-adminsdk.json")))
+                .setCredentials(GoogleCredentials.fromStream(new FileInputStream(credentials)))
                 .build();
 
         FirebaseApp.initializeApp(options);

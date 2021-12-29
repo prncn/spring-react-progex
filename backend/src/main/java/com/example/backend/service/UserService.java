@@ -8,6 +8,7 @@ import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -20,11 +21,13 @@ public class UserService {
 
     /**
      * Get the user by id and return only that user.
+     * 
      * @param userId of specific user that should be returned
      * @return full userinfo by querying the id through the user db
      * @throws ExecutionException
      * @throws InterruptedException
      */
+    @SuppressWarnings("unchecked")
     public User getUserById(String userId) throws ExecutionException, InterruptedException {
         ApiFuture<DocumentSnapshot> future = firestore.collection("users").document(userId).get();
         DocumentSnapshot userDoc = future.get();
@@ -34,15 +37,13 @@ public class UserService {
         user.setDisplayName(userDoc.getString("displayName"));
         user.setPhotoURL(userDoc.getString("photoURL"));
         user.setEmail(userDoc.getString("email"));
+        user.setLikedPosts((ArrayList<String>) userDoc.get("likedPosts"));
 
         return user;
     }
 
-    public String updateUser(User user) throws ExecutionException, InterruptedException{
-        ApiFuture<WriteResult> collectionsApiFuture =
-                firestore.
-                        collection("users").
-                        document(user.getId()).set(user);
+    public String updateUser(User user) throws ExecutionException, InterruptedException {
+        ApiFuture<WriteResult> collectionsApiFuture = firestore.collection("users").document(user.getId()).set(user);
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 

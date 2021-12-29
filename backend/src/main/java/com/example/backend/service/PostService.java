@@ -6,10 +6,14 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.FieldValue;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
+import com.google.cloud.firestore.Query.Direction;
+
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,63 +28,77 @@ public class PostService {
         this.firestore = firestore;
     }
 
-    public List<Post> getPostList() throws ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> future = firestore.collection("posts").get();
+    /**
+     * Retrieve list of posts
+     * 
+     * @param limit
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    public List<Post> getPostList(int limit, String byUser) throws ExecutionException, InterruptedException {
+        DocumentReference userRef = firestore.collection("users").document(byUser);
+        Query postsCollection = firestore.collection("posts")
+                .orderBy("date", Direction.DESCENDING)
+                .limit(limit)
+                .whereEqualTo("userId", userRef);
+
+        ApiFuture<QuerySnapshot> future = postsCollection.get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
         List<Post> posts = new ArrayList<>();
 
-        int limit = 50;
-        int counter = 0;
         for (QueryDocumentSnapshot document : documents) {
-
-            if (counter >= limit)
-                break;
-
-            Post post = new Post();
-
-            post.setId(document.getId());
-            post.setTitle(document.getString("title"));
-            post.setDescription(document.getString("description"));
-            post.setDate(document.getTimestamp("date"));
-            post.setUrl(document.getString("url"));
-
-            DocumentReference ds = (DocumentReference) document.get("userId");
-            if (ds != null) {
-                ApiFuture<DocumentSnapshot> userFuture = ds.get();
-                DocumentSnapshot userDoc = userFuture.get();
-
-                User user = new User();
-                user.setId(ds.getId());
-                user.setDisplayName(userDoc.getString("displayName"));
-                user.setEmail(userDoc.getString("email"));
-                user.setPhotoURL(userDoc.getString("photoURL"));
-
-                post.setUser(user);
-            }
-
+            String id = document.getId();
+            Post post = getPostById(id);
             posts.add(post);
-            counter++;
         }
-
-        // Sort posts by date
-        Collections.sort(posts, new Comparator<Post>() {
-            public int compare(Post o1, Post o2) {
-                if (o1.getDate() == null || o2.getDate() == null)
-                    return 0;
-                return o2.getDate().compareTo(o1.getDate());
-            }
-        });
 
         return posts;
     }
 
+    public List<Post> getPostList(int limit) throws ExecutionException, InterruptedException {
+        Query postsCollection = firestore.collection("posts")
+                .orderBy("date", Direction.DESCENDING)
+                .limit(limit);
+
+        ApiFuture<QuerySnapshot> future = postsCollection.get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        List<Post> posts = new ArrayList<>();
+
+        for (QueryDocumentSnapshot document : documents) {
+            String id = document.getId();
+            Post post = getPostById(id);
+            posts.add(post);
+        }
+
+        return posts;
+    }
+
+    /**
+     * Create psot
+     * 
+     * @param post
+     * @return
+     * @throws InterruptedException
+     * @throws ExecutionException
+     */
     public String createPost(Post post) throws InterruptedException, ExecutionException {
         post.setDate(Timestamp.now()); // get local current time
 
-        ApiFuture<WriteResult> collectionsApiFuture = firestore.collection("posts").document().set(post);
-        return collectionsApiFuture.get().getUpdateTime().toString();
+        String userId = post.getUser().getId();
+        DocumentReference userRef = firestore.collection("users").document(userId);
+        Map<String, Object> postData = new HashMap<>();
+        postData.put("date", post.getDate());
+        postData.put("description", post.getDescription());
+        postData.put("likedCount", post.getLikeCount());
+        postData.put("title", post.getTitle());
+        postData.put("url", post.getUrl());
+        postData.put("userId", userRef);
 
+        ApiFuture<WriteResult> collectionsApiFuture = firestore.collection("posts").document().set(postData);
+        return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
     /**
@@ -94,7 +112,6 @@ public class PostService {
     public String updatePost(Post post) throws ExecutionException, InterruptedException {
         ApiFuture<WriteResult> collectionsApiFuture = firestore.collection("posts").document(post.getId()).set(post);
         return collectionsApiFuture.get().getUpdateTime().toString();
-
     }
 
     public String deletePost(String id) throws InterruptedException, ExecutionException {
@@ -131,13 +148,56 @@ public class PostService {
         DocumentReference ds = (DocumentReference) doc.get("userId");
         ApiFuture<DocumentSnapshot> userFuture = ds.get();
         DocumentSnapshot userDoc = userFuture.get();
-        User user = new User();
-        user.setDisplayName(userDoc.getString("displayName"));
-        user.setEmail(userDoc.getString("email"));
-        user.setPhotoURL(userDoc.getString("photoURL"));
 
-        post.setUser(user);
+        if (userDoc.exists()) {
+            User user = new User();
+            user.setId(ds.getId());
+            user.setDisplayName(userDoc.getString("displayName"));
+            user.setEmail(userDoc.getString("email"));
+            user.setPhotoURL(userDoc.getString("photoURL"));
+
+            post.setUser(user);
+        }
 
         return post;
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean checkIfPostLikedByUser(String postId, String userId)
+            throws InterruptedException, ExecutionException {
+        DocumentReference userRef = firestore.collection("users").document(userId);
+        ArrayList<String> likedPosts = (ArrayList<String>) userRef.get().get().get("likedPosts");
+        return likedPosts.contains(postId);
+    }
+
+    /**
+     * Like or unlike a post by passing incrementing the liked count on the
+     * post and passing a post reference to the user
+     * 
+     * @param postId
+     * @param userId
+     * @param like   - If true like the post, else unlike the post
+     * @return
+     * @throws InterruptedException
+     * @throws ExecutionException
+     */
+    @SuppressWarnings("unchecked")
+    public String likePost(String postId, String userId, boolean like) throws InterruptedException, ExecutionException {
+        DocumentReference userRef = firestore.collection("users").document(userId);
+        DocumentReference postRef = firestore.collection("posts").document(postId);
+
+        ArrayList<String> likedPosts = (ArrayList<String>) userRef.get().get().get("likedPosts");
+        if (like) {
+            if (likedPosts.contains(postId)) {
+                return null;
+            }
+            postRef.update("likedCount", FieldValue.increment(1));
+            likedPosts.add(postId);
+        } else {
+            postRef.update("likedCount", FieldValue.increment(-1));
+            likedPosts.remove(postId);
+        }
+        ApiFuture<WriteResult> writeResult = userRef.update("likedPosts", likedPosts);
+        return writeResult.get().getUpdateTime().toString();
     }
 }

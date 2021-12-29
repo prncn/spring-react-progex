@@ -1,30 +1,38 @@
 import React, { useEffect, useRef, useState } from 'react';
-import * as Vibrant from 'node-vibrant';
 import { useAuth, _updateEmail, _updatePassword } from '../controller/Firebase';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { NavTab, SpacesTab } from './Dashboard';
-import { getPosts } from '../controller/QueryService';
+import {
+  getPostById,
+  getPostByUser,
+  getUserById,
+} from '../controller/QueryService';
 import Post from '../components/post';
+import { prominent } from 'color.js';
 
 export default function Profile() {
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
+  const [userPosts, setUserPosts] = useState([]);
+  const [user, setUser] = useState({});
+  const [activeTab, setActiveTab] = useState('Posts');
 
+  const currentUser = useAuth();
   const emailRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
   const [loading, setLoading] = useState();
-  const currentUser = useAuth();
   const navigate = useNavigate();
-  console.log(loading);
-  console.log(handleUpdate);
 
-  const profileImage = currentUser?.photoURL;
-  const [profilePalette, setProfilePalette] = useState('#0000');
-  Vibrant.from('path/to/image').getPalette((err, palette) => {
-    if (err) console.log(err);
+  const [profilePalette, setProfilePalette] = useState([]);
 
-    setProfilePalette(palette);
-  });
+  const params = useParams();
+  useEffect(() => {
+    (async () => {
+      const [data, response] = await getUserById(params.userId);
+      console.log(response);
+      setUser(data);
+    })();
+  }, [params]);
 
   function handleUpdate(e) {
     e.preventDefault();
@@ -49,7 +57,7 @@ export default function Profile() {
         navigate('/');
       })
       .catch(() => {
-        alert('Profile could not be updated , try again');
+        alert('Profile could not be updated, try again');
       })
       .finally(() => {
         setLoading(false);
@@ -58,21 +66,108 @@ export default function Profile() {
 
   useEffect(() => {
     (async () => {
-      const { data, status } = await getPosts();
+      const [data, status] = await getPostByUser(user.id);
       console.log(status);
+      setUserPosts(data);
       setData(data);
+
+      if (user?.photoURL !== undefined) {
+        const color = await prominent(user.photoURL, {
+          amount: 3,
+          format: 'hex',
+          sample: 30,
+          group: 30,
+        });
+        setProfilePalette(color);
+      }
     })();
-  }, []);
+  }, [user]);
+
+  async function switchTab(currentTab) {
+    setActiveTab(currentTab);
+
+    switch (currentTab) {
+      case 'Posts':
+        setData(userPosts);
+        break;
+
+      case 'Liked':
+        const likedPostsIds = user.likedPosts;
+        let likedPosts = [];
+        for (const id of likedPostsIds) {
+          const { data } = await getPostById(id);
+          likedPosts.push(data);
+        }
+        setData(likedPosts);
+        break;
+
+      default:
+        setData(userPosts);
+        break;
+    }
+  }
 
   return (
     <div className="flex min-h-screen justify-center divide-x">
-      <NavTab currentUser={currentUser} active="dash" />
-      <div className="flex flex-col items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
-        <h1 className="font-bold text-gray-500 text-3xl text-left pt-10 w-full px-3">
-          Posts
-        </h1>
+      <NavTab currentUser={currentUser} active="profile" />
+      <div className="flex flex-col items-center xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
+        <div
+          className={`w-full h-40 flex rounded-b-xl p-3 my-4`}
+          style={{
+            backgroundImage: `linear-gradient(to bottom right, ${profilePalette[2]}, ${profilePalette[0]})`,
+          }}
+        >
+          <div className="w-32 h-32 rounded-full">
+            <img
+              className="w-full h-full object-cover rounded-full"
+              src={user?.photoURL}
+              alt="pfp_icon"
+            />
+          </div>
+          <div className="flex flex-col p-4 h-full">
+            <div className="text-3xl text-white font-semibold mb-auto">
+              {user.displayName}
+            </div>
+            <div className=" text-white font-light">
+              <strong className="font-semibold">799</strong> Followers
+            </div>
+            <div className=" text-white font-light">239 Following</div>
+          </div>
+        </div>
+        <div className="flex self-start mt-5 space-x-5 m-3">
+          <button onClick={() => switchTab('Posts')}>
+            <span
+              className={
+                `font-bold text-3xl text-left ` +
+                (activeTab === 'Posts' ? 'text-gray-500' : 'text-gray-300')
+              }
+            >
+              Posts
+            </span>
+          </button>
+          <button onClick={() => switchTab('Liked')}>
+            <span
+              className={
+                `font-bold text-3xl text-left ` +
+                (activeTab === 'Liked' ? 'text-gray-500' : 'text-gray-300')
+              }
+            >
+              Liked
+            </span>
+          </button>
+          <button onClick={() => switchTab('Saved')}>
+            <span
+              className={
+                `font-bold text-3xl text-left ` +
+                (activeTab === 'Saved' ? 'text-gray-500' : 'text-gray-300')
+              }
+            >
+              Saved
+            </span>
+          </button>
+        </div>
         {data.map((post, i) => (
-          <Post key={post.id} data={post} idn={i} />
+          <Post key={post.id} data={post} idn={i} currentUser={currentUser} />
         ))}
       </div>
       <SpacesTab
