@@ -199,5 +199,64 @@ public class PostService {
         }
         ApiFuture<WriteResult> writeResult = userRef.update("likedPosts", likedPosts);
         return writeResult.get().getUpdateTime().toString();
+    
     }
+
+
+    @SuppressWarnings("unchecked")
+    public boolean checkIfPostSaveddByUser(String postId, String userId)
+            throws InterruptedException, ExecutionException {
+        DocumentReference userRef = firestore.collection("users").document(userId);
+        ArrayList<String> savedPosts = (ArrayList<String>) userRef.get().get().get("savedPosts");
+        return savedPosts.contains(postId);
+    }
+
+    
+    /**
+     * Save or unsave a post by passing incrementing the saved count on the
+     * post and passing a post reference to the user
+     * 
+     * @param postId
+     * @param userId
+     * @param like   - If true save the post, else unsave the post
+     * @return
+     * @throws InterruptedException
+     * @throws ExecutionException
+     */
+    @SuppressWarnings("unchecked")
+    public String savePost(String postId, String userId, boolean save) throws InterruptedException, ExecutionException {
+        DocumentReference userRef = firestore.collection("users").document(userId);
+        DocumentReference postRef = firestore.collection("posts").document(postId);
+
+        ArrayList<String> savedPosts = (ArrayList<String>) userRef.get().get().get("savedPosts");
+        if (save) {
+            if (savedPosts.contains(postId)) {
+                return null;
+            }
+            postRef.update("savedCount", FieldValue.increment(1));
+            savedPosts.add(postId);
+        } else {
+            postRef.update("savedCount", FieldValue.increment(-1));
+            savedPosts.remove(postId);
+        }
+        ApiFuture<WriteResult> writeResult = userRef.update("savedPosts", savedPosts);
+        return writeResult.get().getUpdateTime().toString();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
