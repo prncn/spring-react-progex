@@ -43,18 +43,7 @@ public class PostService {
                 .limit(limit)
                 .whereEqualTo("userId", userRef);
 
-        ApiFuture<QuerySnapshot> future = postsCollection.get();
-        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-
-        List<Post> posts = new ArrayList<>();
-
-        for (QueryDocumentSnapshot document : documents) {
-            String id = document.getId();
-            Post post = getPostById(id);
-            posts.add(post);
-        }
-
-        return posts;
+        return getPostList(postsCollection);
     }
 
     public List<Post> getPostList(int limit) throws ExecutionException, InterruptedException {
@@ -62,7 +51,12 @@ public class PostService {
                 .orderBy("date", Direction.DESCENDING)
                 .limit(limit);
 
-        ApiFuture<QuerySnapshot> future = postsCollection.get();
+        return getPostList(postsCollection);
+
+    }
+
+    public List<Post> getPostList(Query query) throws ExecutionException, InterruptedException {
+        ApiFuture<QuerySnapshot> future = query.get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
         List<Post> posts = new ArrayList<>();
@@ -74,6 +68,7 @@ public class PostService {
         }
 
         return posts;
+
     }
 
     /**
@@ -93,6 +88,7 @@ public class PostService {
         postData.put("date", post.getDate());
         postData.put("description", post.getDescription());
         postData.put("likedCount", post.getLikeCount());
+        postData.put("savedCount", post.getSaveCount());
         postData.put("title", post.getTitle());
         postData.put("url", post.getUrl());
         postData.put("userId", userRef);
@@ -150,97 +146,58 @@ public class PostService {
         DocumentSnapshot userDoc = userFuture.get();
 
         if (userDoc.exists()) {
-            User user = new User();
-            user.setId(ds.getId());
-            user.setDisplayName(userDoc.getString("displayName"));
-            user.setEmail(userDoc.getString("email"));
-            user.setPhotoURL(userDoc.getString("photoURL"));
-
+            UserService us = new UserService(firestore);
+            User user = us.getUserById(ds.getId());
             post.setUser(user);
         }
 
         return post;
     }
 
-    @SuppressWarnings("unchecked")
-    public boolean checkIfPostLikedByUser(String postId, String userId)
-            throws InterruptedException, ExecutionException {
-        DocumentReference userRef = firestore.collection("users").document(userId);
-        ArrayList<String> likedPosts = (ArrayList<String>) userRef.get().get().get("likedPosts");
-        return likedPosts.contains(postId);
-    }
-
     /**
-     * Like or unlike a post by passing incrementing the liked count on the
-     * post and passing a post reference to the user
+     * (Un)like or (un)save a post by incrementing the corrensponding
+     * field count on the post and passing a post reference to the user
      * 
-     * @param postId
-     * @param userId
-     * @param like   - If true like the post, else unlike the post
-     * @return
+     * @param filed             - Field should be either list of likes or saved
+     *                          documents
+     * @param postId            - Ref to post
+     * @param userId            - Ref to user
+     * @param notYetIncremented - If true like the post, else unlike the post
+     * @return Timestamp of succesful write
      * @throws InterruptedException
      * @throws ExecutionException
+     * @throws IllegalAccessException
      */
     @SuppressWarnings("unchecked")
-    public String likePost(String postId, String userId, boolean like) throws InterruptedException, ExecutionException {
+    public String incrementPost(String field, String postId, String userId, boolean notYetIncremented)
+            throws InterruptedException, ExecutionException, IllegalAccessException {
         DocumentReference userRef = firestore.collection("users").document(userId);
         DocumentReference postRef = firestore.collection("posts").document(postId);
 
-        ArrayList<String> likedPosts = (ArrayList<String>) userRef.get().get().get("likedPosts");
-        if (like) {
-            if (likedPosts.contains(postId)) {
+        String FIELDCOUNT = null;
+
+        if (field.equals("likedPosts")) {
+            FIELDCOUNT = "likedCount";
+        } else if (field.equals("savedPosts")) {
+            FIELDCOUNT = "savedCount";
+        } else {
+            throw new IllegalAccessException("Invalid field to increment.");
+        }
+
+        ArrayList<String> fieldList = (ArrayList<String>) userRef.get().get().get(field);
+        if (notYetIncremented) {
+            if (fieldList.contains(postId)) {
                 return null;
             }
-            postRef.update("likedCount", FieldValue.increment(1));
-            likedPosts.add(postId);
+            postRef.update(FIELDCOUNT, FieldValue.increment(1));
+            fieldList.add(postId);
         } else {
-            postRef.update("likedCount", FieldValue.increment(-1));
-            likedPosts.remove(postId);
+            postRef.update(FIELDCOUNT, FieldValue.increment(-1));
+            fieldList.remove(postId);
         }
-        ApiFuture<WriteResult> writeResult = userRef.update("likedPosts", likedPosts);
+        ApiFuture<WriteResult> writeResult = userRef.update(field, fieldList);
         return writeResult.get().getUpdateTime().toString();
     
-    }
-
-
-    @SuppressWarnings("unchecked")
-    public boolean checkIfPostSaveddByUser(String postId, String userId)
-            throws InterruptedException, ExecutionException {
-        DocumentReference userRef = firestore.collection("users").document(userId);
-        ArrayList<String> savedPosts = (ArrayList<String>) userRef.get().get().get("savedPosts");
-        return savedPosts.contains(postId);
-    }
-
-    
-    /**
-     * Save or unsave a post by passing incrementing the saved count on the
-     * post and passing a post reference to the user
-     * 
-     * @param postId
-     * @param userId
-     * @param like   - If true save the post, else unsave the post
-     * @return
-     * @throws InterruptedException
-     * @throws ExecutionException
-     */
-    @SuppressWarnings("unchecked")
-    public String savePost(String postId, String userId, boolean save) throws InterruptedException, ExecutionException {
-        DocumentReference userRef = firestore.collection("users").document(userId);
-        DocumentReference postRef = firestore.collection("posts").document(postId);
-
-        ArrayList<String> savedPosts = (ArrayList<String>) userRef.get().get().get("savedPosts");
-        if (save) {
-            if (savedPosts.contains(postId)) {
-                return null;
-            }
-            postRef.update("savedCount", FieldValue.increment(1));
-            savedPosts.add(postId);
-        } else {
-            postRef.update("savedCount", FieldValue.increment(-1));
-            savedPosts.remove(postId);
-        }
-        ApiFuture<WriteResult> writeResult = userRef.update("savedPosts", savedPosts);
-        return writeResult.get().getUpdateTime().toString();
     }
 
 

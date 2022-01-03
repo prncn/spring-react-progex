@@ -46,14 +46,18 @@ export default function Home({ form }) {
         >
           Murdoc.
         </div>{' '}
-        The weird way to share docs.
+        The weird way to <div className="bg-gradient-to-tr from-red-300 to-indigo-500 hover:from-indigo-400 animate-gradient-y bg-clip-text text-transparent">share</div> docs.
       </div>
       <div className="z-10 bg-gray-700 md:bg-gray-100 m-2 p-5 sm:w-80 h-96 hover:shadow-xl rounded-lg flex flex-col justify-center items-center border border-black transition duration-300 ease-in-out">
         {form === 'login' && <LoginForm />}
         {form === 'signup' && <SignupForm />}
         {form === 'reset' && <ResetPasswordForm />}
       </div>
-      <div className="invisible lg:visible h-full w-1/4 fixed top-0 right-0 bg-post-img"></div>
+      <div className="invisible lg:visible h-full w-1/4 fixed top-0 right-0 bg-gradient-to-tr from-red-300 to-indigo-500 hover:from-indigo-400 animate-gradient-y">
+        {Array(10).fill('murdoc').map((a, i) => (
+          <p className={`text-gray-100 font-semibold text-5xl leading-9 tracking-tighter absolute top-${i*8} -left-2`}>{a}</p>
+        ))}
+      </div>
     </div>
   );
 }

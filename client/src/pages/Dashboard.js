@@ -1,17 +1,19 @@
-import '../index.css';
-import Post from '../components/post';
-import React, { useState, useEffect, createRef, useCallback } from 'react';
-import { logout, useAuth } from '../controller/Firebase';
-import { useNavigate } from 'react-router';
-import { Link } from 'react-router-dom';
-import { createPost, getPosts, placeholder } from '../controller/QueryService';
+import "../index.css";
+import Post from "../components/post";
+import React, { useState, useEffect } from "react";
+import { logout, useAuth } from "../controller/Firebase";
+import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
+import { createPost, getPosts, placeholder } from "../controller/QueryService";
 import {
   IconLogout,
   IconExplore,
   IconDocs,
   IconProfile,
-} from '../icons/NavIcons';
-import IconHome from '../icons/home';
+} from "../icons/NavIcons";
+import IconHome from "../icons/home";
+import { lightbox, PDFviewer } from "../components/PDFviewer";
+import ViewSDKClient from "../controller/ViewSDKClient";
 
 export default function Dashboard() {
   const [data, setData] = useState(placeholder);
@@ -20,8 +22,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     (async () => {
-      const [data, status] = await getPosts();
-      console.log(data, status);
+      const { data } = await getPosts();
       setData(data);
     })();
   }, []);
@@ -36,15 +37,17 @@ export default function Dashboard() {
           Posts
         </h1>
         {data.map((post, i) => (
-          <Post key={post.id} data={post} idn={i} currentUser={currentUser} />
+          <Post key={post.id} data={post} currentUser={currentUser}>
+            <PDFviewer idn={i} file={post.url} title={post.title} embedMode='SIZED_CONTAINER' />
+          </Post>
         ))}
       </div>
       <SpacesTab
         spaces={[
-          'distributedsystems',
-          'illustrations',
-          'streetwear',
-          'fitness',
+          "distributedsystems",
+          "illustrations",
+          "streetwear",
+          "fitness",
         ]}
       />
     </div>
@@ -87,13 +90,13 @@ export default function Dashboard() {
       >
         <div
           className={
-            show ? 'hidden' : 'self-end w-1/3 text-3xl text-white font-semibold'
+            show ? "hidden" : "self-end w-1/3 text-3xl text-white font-semibold"
           }
         >
-          Hi, {currentUser?.displayName}. ✋ <br />{' '}
+          Hi, {currentUser?.displayName}. ✋ <br />{" "}
           <p className="font-light"> Share your docs here. </p>
         </div>
-        <div className={show ? 'w-full h-full flex' : 'hidden'}>
+        <div className={show ? "w-full h-full flex" : "hidden"}>
           <div className="w-20">
             <div className="w-16 h-16 mt-2 rounded-full">
               <img
@@ -130,12 +133,14 @@ export default function Dashboard() {
 }
 
 function Stories({ storyposts }) {
+  const sdk = new ViewSDKClient();
   return (
     <div className="w-full p-4">
       <ul className="flex justify-around">
         {storyposts.map((item, i) => (
           <li key={i} className="flex flex-col justify-center items-center">
-            <div className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block cursor-pointer animate-gradient-xy">
+            <div className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block cursor-pointer animate-gradient-xy"
+            onClick={() => lightbox(sdk, item.url, item.title)}>
               <img
                 src={item.user.photoURL}
                 className="rounded-full w-20 h-20 object-cover"
@@ -158,7 +163,7 @@ export function NavTab({ currentUser, active }) {
 
     try {
       await logout();
-      navigate('/signup');
+      navigate("/login");
     } catch (error) {
       console.error(error);
       alert(error);
@@ -168,11 +173,11 @@ export function NavTab({ currentUser, active }) {
   function NavLink({ path, children }) {
     return (
       <Link
-        to={`/${path === 'profile' ? path + `/${currentUser?.uid}` : path}`}
+        to={`/${path === "profile" ? path + `/${currentUser?.uid}` : path}`}
       >
         <button
           className={`dashboard-nav__btn ${
-            active === path ? 'bg-indigo-100 text-indigo-400' : ''
+            active === path ? "bg-indigo-100 text-indigo-400" : ""
           }`}
         >
           {children}
@@ -194,13 +199,13 @@ export function NavTab({ currentUser, active }) {
         </div>
         <div className="ml-2">
           <p>
-            {new Date().toLocaleTimeString('en-GB', {
-              hour: 'numeric',
-              minute: 'numeric',
+            {new Date().toLocaleTimeString("en-GB", {
+              hour: "numeric",
+              minute: "numeric",
             })}
           </p>
-          <p>{currentUser?.email}</p>
-          <p>{currentUser?.displayName}</p>
+          <p className="font-semibold text-sm">{currentUser?.displayName}</p>
+          <p className="font-light text-sm">{currentUser?.email}</p>
         </div>
       </div>
       <div className="flex flex-col items-end mx-4 mb-auto">
@@ -235,10 +240,12 @@ export function SpacesTab({ spaces }) {
         <h1 className="text-xl font-semibold mb-4 pl-6">Spaces for you</h1>
         <div className="font-semibold divide-y">
           {spaces.map((space, i) => (
-            <div className="py-3 px-6 hover:bg-gray-200 cursor-pointer" key={i}>
-              <p>#{space}</p>
-              <p className="font-light text-sm">4124 Docs in this Space</p>
-            </div>
+            <Link to={`/spaces/${space}`} key={i}>
+              <div className="py-3 px-6 hover:bg-gray-200 cursor-pointer">
+                <p>#{space}</p>
+                <p className="font-light text-sm">4124 Docs in this Space</p>
+              </div>
+            </Link>
           ))}
         </div>
       </div>

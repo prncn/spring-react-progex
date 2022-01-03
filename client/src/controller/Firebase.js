@@ -24,7 +24,15 @@ const firebaseConfig = {
   measurementId: 'G-CRLNDZDZKZ',
 };
 
-const photoURL = 'https://i.imgur.com/kLcZbQT.jpeg';
+const images = [
+  'https://i.imgur.com/NDFE7BQ.jpg',
+  'https://i.imgur.com/Ks2oou4.jpg',
+  'https://i.imgur.com/kLcZbQT.jpeg',
+  'https://i.imgur.com/ncnHn9I.jpg',
+  'https://pic.onlinewebfonts.com/svg/img_258083.png',
+];
+
+const photoURL = images[Math.random() * images.length];
 
 initializeApp(firebaseConfig);
 export const auth = getAuth();

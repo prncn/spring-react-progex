@@ -1,5 +1,3 @@
-import { async } from '@firebase/util';
-
 /**
  * Placeholder list of posts data. This will be passed
  * to getPosts() when the Spring server is offline.
@@ -9,37 +7,37 @@ export const placeholder = [
     id: '5',
     user: {
       id: '1',
-      displayName: 'Preload',
+      displayName: 'Loading...',
       photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'Rembrandt Symposium Programm',
-    description: 'This is a placeholder',
+    description: 'Loading...',
     date: {
       seconds: 1638807536,
       nanos: 782000000,
     },
-    url: 'https://www.nga.gov/content/dam/ngaweb/Education/learning-resources/an-eye-for-art/AnEyeforArt-RembrandtVanRijn.pdf',
+    url: 'https://www.tagg.org/pdftest.pdf',
   },
   {
     id: '6',
     user: {
       id: '2',
-      displayName: 'Erykah',
+      displayName: 'Loading...',
       photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'What is Conceptual Art',
-    description: 'Some article by yours truly',
+    description: 'Loading...',
     date: {
       seconds: 1638807536,
       nanos: 782000000,
     },
-    url: 'https://imma.ie/wp-content/uploads/2018/10/whatisconceptualart.pdf',
+    url: 'https://www.tagg.org/pdftest.pdf',
   },
   {
     id: '11',
     user: {
       id: '9',
-      displayName: 'Sulli',
+      displayName: 'Loading...',
       photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'What is Conceptual Art',
@@ -48,13 +46,13 @@ export const placeholder = [
       seconds: 1638807536,
       nanos: 782000000,
     },
-    url: 'https://imma.ie/wp-content/uploads/2018/10/whatisconceptualart.pdf',
+    url: 'https://www.tagg.org/pdftest.pdf',
   },
   {
     id: '7',
     user: {
       id: '3',
-      displayName: 'Aysha',
+      displayName: 'Loading...',
       photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'Big Short Guide',
@@ -63,13 +61,13 @@ export const placeholder = [
       seconds: 1638807536,
       nanos: 782000000,
     },
-    url: 'https://www.sprengel-museum.de/images/PDF/BIG-short-guide-en.pdf',
+    url: 'https://www.tagg.org/pdftest.pdf',
   },
   {
     id: '13',
     user: {
       id: '29',
-      displayName: 'Aysha',
+      displayName: 'Loading...',
       photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'Big Short Guide',
@@ -78,16 +76,8 @@ export const placeholder = [
       seconds: 1638807536,
       nanos: 782000000,
     },
-    url: 'https://www.sprengel-museum.de/images/PDF/BIG-short-guide-en.pdf',
+    url: 'https://www.tagg.org/pdftest.pdf',
   },
-];
-
-const images = [
-  'https://i.imgur.com/NDFE7BQ.jpg',
-  'https://i.imgur.com/Ks2oou4.jpg',
-  'https://i.imgur.com/kLcZbQT.jpeg',
-  'https://i.imgur.com/ncnHn9I.jpg',
-  'https://pic.onlinewebfonts.com/svg/img_258083.png',
 ];
 
 /**
@@ -100,11 +90,11 @@ export async function getPosts() {
   try {
     const response = await fetch(url);
     const data = await response.json();
-    return [data, response.ok];
+    return {data, response: response.ok};
   } catch (error) {
     const message = `Fetch error has occured: ${error}`;
     console.error(message);
-    return [placeholder, null];
+    return {data: placeholder, response: false};
   }
 }
 
@@ -148,23 +138,12 @@ export async function getPostByUser(user) {
  */
 export async function createPost(user, title, description, url) {
   const endpoint = 'http://localhost:8080/api/posts/';
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user,
-        title,
-        description,
-        url,
-      }),
-    });
-    return response.json();
-  } catch (error) {
-    console.error(error);
-  }
+  return HTTPMethodWrapper('POST', endpoint, {
+    user,
+    title,
+    description,
+    url,
+  })
 }
 
 export async function getUserById(id) {
@@ -179,18 +158,14 @@ export async function getUserById(id) {
   }
 }
 
-export async function likePost(postId, userId) {
-  const endpoint = `http://localhost:8080/api/posts/${postId}/like`;
+async function HTTPMethodWrapper(method, endpoint, body) {
   try {
     const response = await fetch(endpoint, {
-      method: 'POST',
+      method,
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        userId,
-        postId,
-      }),
+      body: JSON.stringify(body),
     });
     return response.json();
   } catch (error) {
@@ -198,23 +173,36 @@ export async function likePost(postId, userId) {
   }
 }
 
+export async function likePost(postId, userId) {
+  const endpoint = `http://localhost:8080/api/posts/${postId}/like`;
+  return HTTPMethodWrapper('POST', endpoint, {
+    userId,
+    postId,
+  });
+}
+
 export async function unlikePost(postId, userId) {
   const endpoint = `http://localhost:8080/api/posts/${postId}/like`;
-  try {
-    const response = await fetch(endpoint, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        postId,
-      }),
-    });
-    return response.json();
-  } catch (error) {
-    console.error(error);
-  }
+  return HTTPMethodWrapper('DELETE', endpoint, {
+    userId,
+    postId,
+  });
+}
+
+export async function savePost(postId, userId) {
+  const endpoint = `http://localhost:8080/api/posts/${postId}/save`;
+  return HTTPMethodWrapper('POST', endpoint, {
+    userId,
+    postId,
+  });
+}
+
+export async function unsavePost(postId, userId) {
+  const endpoint = `http://localhost:8080/api/posts/${postId}/save`;
+  return HTTPMethodWrapper('DELETE', endpoint, {
+    userId,
+    postId,
+  });
 }
 
 export async function checkIfPostLikedByUser(postId, userId) {
@@ -227,47 +215,6 @@ export async function checkIfPostLikedByUser(postId, userId) {
   }
 }
 
-
-export async function unsavePost(postId, userId) {
-  const endpoint = `http://localhost:8080/api/posts/${postId}/save`;
-  try {
-    const response = await fetch(endpoint, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        postId,
-      }),
-    });
-    return response.json();
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-
-export async function savePost(postId, userId) {
-  const endpoint = `http://localhost:8080/api/posts/${postId}/save`;
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        postId,
-      }),
-    });
-    return response.json();
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-
 export async function checkIfPostSavedByUser(postId, userId) {
   if (userId !== undefined) {
     const [data, response] = await getUserById(userId);
@@ -277,9 +224,6 @@ export async function checkIfPostSavedByUser(postId, userId) {
     }
   }
 }
-
-
-
 
 export async function fetchUnsplashedImage(searchTerm) {
   const endpoint = `https://api.unsplash.com/search/photos?query=${searchTerm}&per_page=1&page=1`;

@@ -4,11 +4,12 @@ import { useNavigate, useParams } from 'react-router';
 import { NavTab, SpacesTab } from './Dashboard';
 import {
   getPostById,
-  getPostByUser,
+  getPostByUser as getPostsOfUser,
   getUserById,
 } from '../controller/QueryService';
 import Post from '../components/post';
 import { prominent } from 'color.js';
+import { PDFviewer } from '../components/PDFviewer';
 
 export default function Profile() {
   const [data, setData] = useState([]);
@@ -22,8 +23,8 @@ export default function Profile() {
   const passwordConfirmRef = useRef();
   const [loading, setLoading] = useState();
   const navigate = useNavigate();
-
   const [profilePalette, setProfilePalette] = useState([]);
+  console.log(loading);
 
   const params = useParams();
   useEffect(() => {
@@ -63,10 +64,11 @@ export default function Profile() {
         setLoading(false);
       });
   }
+  console.log(handleUpdate);
 
   useEffect(() => {
     (async () => {
-      const [data, status] = await getPostByUser(user.id);
+      const [data, status] = await getPostsOfUser(user.id);
       console.log(status);
       setUserPosts(data);
       setData(data);
@@ -111,7 +113,6 @@ export default function Profile() {
         setData(savedPosts);
         break;
 
-
       default:
         setData(userPosts);
         break;
@@ -122,8 +123,9 @@ export default function Profile() {
     <div className="flex min-h-screen justify-center divide-x">
       <NavTab currentUser={currentUser} active="profile" />
       <div className="flex flex-col items-center xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
+        <div className='w-full h-4' style={{backgroundColor: profilePalette[2]}}></div>
         <div
-          className={`w-full h-40 flex rounded-b-xl p-3 my-4`}
+          className={`w-full h-40 flex rounded-b-xl p-3`}
           style={{
             backgroundImage: `linear-gradient(to bottom right, ${profilePalette[2]}, ${profilePalette[0]})`,
           }}
@@ -178,7 +180,9 @@ export default function Profile() {
           </button>
         </div>
         {data.map((post, i) => (
-          <Post key={post.id} data={post} idn={i} currentUser={currentUser} />
+          <Post key={post.id} data={post} currentUser={currentUser}>
+            <PDFviewer idn={i} file={post.url} title={post.title} embedMode='SIZED_CONTAINER'/>
+          </Post>
         ))}
       </div>
       <SpacesTab
