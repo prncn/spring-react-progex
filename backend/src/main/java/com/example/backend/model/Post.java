@@ -17,4 +17,5 @@ public class Post {
 
     private String url;
     private Double likeCount = (double) 0;
+    private Double saveCount = (double) 0;
 }

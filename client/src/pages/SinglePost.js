@@ -29,7 +29,7 @@ export default function SinglePost() {
         <h1 className="font-bold text-gray-500 text-3xl text-left pt-5 w-full px-3">
           View
         </h1>
-        <Post key={post.id} data={post} />
+        <Post key={post.id} data={post} currentUser={currentUser} />
         <div className="p-3 w-full space-y-2">
           <CommmentCreator user={currentUser} />
           <Comment user={currentUser} />

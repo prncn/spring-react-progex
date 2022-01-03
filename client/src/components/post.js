@@ -7,8 +7,11 @@ import ViewSDKClient from '../controller/ViewSDKClient';
 import { Link } from 'react-router-dom';
 import {
   checkIfPostLikedByUser,
+  checkIfPostSavedByUser,
   likePost,
+  savePost,
   unlikePost,
+  unsavePost,
 } from '../controller/QueryService';
 
 export function timeDifference(previous) {
@@ -38,7 +41,7 @@ export function timeDifference(previous) {
   }
 }
 
-export default function Post({ data, offline, idn, currentUser }) {
+export default function Post({ data, idn, currentUser }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -46,6 +49,7 @@ export default function Post({ data, offline, idn, currentUser }) {
   useEffect(() => {
     (async () => {
       setLiked(await checkIfPostLikedByUser(data.id, currentUser?.uid));
+      setSaved(await checkIfPostSavedByUser(data.id, currentUser?.uid));
       setIsLoading(false);
     })();
   }, [currentUser?.uid, data.id]);
@@ -62,6 +66,11 @@ export default function Post({ data, offline, idn, currentUser }) {
 
   function toggleSaved(e) {
     e.preventDefault();
+    if (!saved) {
+      savePost(data.id, currentUser?.uid);
+    } else {
+      unsavePost(data.id, currentUser?.uid);
+    }
     setSaved(!saved);
   }
 
@@ -102,9 +111,7 @@ export default function Post({ data, offline, idn, currentUser }) {
       </div>
       <div className="flex justify-center align-center flex-col p-2 w-full">
         <div
-          className={`font-semibold mb-1 w-1/3 ${
-            isLoading ? 'rounded bg-gray-500' : ''
-          }`}
+          className={`font-semibold mb-1 w-1/3`}
         >
           <Link to={`/profile/${data.user.id}`}>{data.user.displayName}</Link>{' '}
           &#183;{' '}
@@ -117,23 +124,23 @@ export default function Post({ data, offline, idn, currentUser }) {
   );
 }
 
-export function PDFviewer({ idn = 0, file, title, height = '96' }) {
+export function PDFviewer({ idn = 0, file, title, height = '96', embedMode = 'IN_LINE', scroll = true }) {
   useEffect(() => {
     if (file === null) return;
 
     const viewSDKClient = new ViewSDKClient();
     viewSDKClient.ready().then(() => {
       viewSDKClient.previewFile(file, title, `pdf-div-${idn}`, {
-        embedMode: 'IN_LINE',
+        embedMode,
         showPrintPDF: false,
         dockPageControls: false,
       });
     });
-  }, [idn, file, title]);
+  });
 
   return (
     <div
-      className={`in-line-container w-full h-${height} overflow-y-scroll rounded-xl`}
+      className={`in-line-container w-full h-${height} rounded-xl overflow-y-auto`}
     >
       <div id={`pdf-div-${idn}`} className="in-line-div w-full h-full" />
     </div>

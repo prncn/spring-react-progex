@@ -16,4 +16,5 @@ public class User {
     private String email;
 
     private ArrayList<String> likedPosts = new ArrayList<>();
+    private ArrayList<String> savedPosts = new ArrayList<>();
 }

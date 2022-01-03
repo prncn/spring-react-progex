@@ -150,7 +150,7 @@ export function SignupForm() {
     setLoading(false);
   }
   return (
-    <form>
+    <form className='py-2'>
       <p className="home-form__heading">Sign up</p>
 
       <Input ref={displayNameRef} type="text" placeholder="Display Name" />
@@ -167,12 +167,12 @@ export function SignupForm() {
           disabled={loading}
           onClick={handleSignup}
           type="button"
-          className="py-2 px-6 bg-green-200 hover:bg-green-300 rounded-lg text-gray-800 font-semibold mt-5"
+          className="py-2 px-6 bg-indigo-100 hover:bg-indigo-200 rounded-lg text-indigo-400 font-semibold mt-5"
         >
           Sign up
         </button>
         <Link to="/login">
-          <button type="button" className="home-form__right-btn">
+          <button type="button" className="p-3 text-gray-500 mx-1 border border-black hover:bg-gray-200 rounded-lg font-semibold text-sm mt-5">
             Got an account
           </button>
         </Link>

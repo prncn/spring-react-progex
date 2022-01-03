@@ -1,5 +1,3 @@
-import { async } from '@firebase/util';
-
 /**
  * Placeholder list of posts data. This will be passed
  * to getPosts() when the Spring server is offline.
@@ -100,11 +98,11 @@ export async function getPosts() {
   try {
     const response = await fetch(url);
     const data = await response.json();
-    return [data, response.ok];
+    return {data, response: response.ok};
   } catch (error) {
     const message = `Fetch error has occured: ${error}`;
     console.error(message);
-    return [placeholder, null];
+    return {data: placeholder, response: false};
   }
 }
 
@@ -148,23 +146,12 @@ export async function getPostByUser(user) {
  */
 export async function createPost(user, title, description, url) {
   const endpoint = 'http://localhost:8080/api/posts/';
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user,
-        title,
-        description,
-        url,
-      }),
-    });
-    return response.json();
-  } catch (error) {
-    console.error(error);
-  }
+  return HTTPMethodWrapper('POST', endpoint, {
+    user,
+    title,
+    description,
+    url,
+  })
 }
 
 export async function getUserById(id) {
@@ -179,18 +166,14 @@ export async function getUserById(id) {
   }
 }
 
-export async function likePost(postId, userId) {
-  const endpoint = `http://localhost:8080/api/posts/${postId}/like`;
+async function HTTPMethodWrapper(method, endpoint, body) {
   try {
     const response = await fetch(endpoint, {
-      method: 'POST',
+      method,
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        userId,
-        postId,
-      }),
+      body: JSON.stringify(body),
     });
     return response.json();
   } catch (error) {
@@ -198,23 +181,36 @@ export async function likePost(postId, userId) {
   }
 }
 
+export async function likePost(postId, userId) {
+  const endpoint = `http://localhost:8080/api/posts/${postId}/like`;
+  return HTTPMethodWrapper('POST', endpoint, {
+    userId,
+    postId,
+  });
+}
+
 export async function unlikePost(postId, userId) {
   const endpoint = `http://localhost:8080/api/posts/${postId}/like`;
-  try {
-    const response = await fetch(endpoint, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        postId,
-      }),
-    });
-    return response.json();
-  } catch (error) {
-    console.error(error);
-  }
+  return HTTPMethodWrapper('DELETE', endpoint, {
+    userId,
+    postId,
+  });
+}
+
+export async function savePost(postId, userId) {
+  const endpoint = `http://localhost:8080/api/posts/${postId}/save`;
+  return HTTPMethodWrapper('POST', endpoint, {
+    userId,
+    postId,
+  });
+}
+
+export async function unsavePost(postId, userId) {
+  const endpoint = `http://localhost:8080/api/posts/${postId}/save`;
+  return HTTPMethodWrapper('DELETE', endpoint, {
+    userId,
+    postId,
+  });
 }
 
 export async function checkIfPostLikedByUser(postId, userId) {
@@ -223,6 +219,16 @@ export async function checkIfPostLikedByUser(postId, userId) {
     if (response) {
       const likedPosts = data.likedPosts || [];
       return likedPosts.includes(postId);
+    }
+  }
+}
+
+export async function checkIfPostSavedByUser(postId, userId) {
+  if (userId !== undefined) {
+    const [data, response] = await getUserById(userId);
+    if (response) {
+      const savedPosts = data.savedPosts || [];
+      return savedPosts.includes(postId);
     }
   }
 }

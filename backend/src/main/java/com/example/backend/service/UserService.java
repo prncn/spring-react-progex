@@ -4,7 +4,6 @@ import com.example.backend.model.User;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +37,7 @@ public class UserService {
         user.setPhotoURL(userDoc.getString("photoURL"));
         user.setEmail(userDoc.getString("email"));
         user.setLikedPosts((ArrayList<String>) userDoc.get("likedPosts"));
+        user.setSavedPosts((ArrayList<String>) userDoc.get("savedPosts"));
 
         return user;
     }
