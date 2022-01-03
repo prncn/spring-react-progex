@@ -80,14 +80,6 @@ export const placeholder = [
   },
 ];
 
-const images = [
-  'https://i.imgur.com/NDFE7BQ.jpg',
-  'https://i.imgur.com/Ks2oou4.jpg',
-  'https://i.imgur.com/kLcZbQT.jpeg',
-  'https://i.imgur.com/ncnHn9I.jpg',
-  'https://pic.onlinewebfonts.com/svg/img_258083.png',
-];
-
 /**
  * Fetch posts from Spring endpoint.
  * @returns Array. First entry is the resulting data, which is a placeholder

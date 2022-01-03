@@ -1,6 +1,6 @@
 import '../index.css';
 import Post from '../components/post';
-import React, { createRef, useEffect, useState } from 'react';
+import React, { createRef, useState } from 'react';
 import { useAuth } from '../controller/Firebase';
 import { NavTab, SpacesTab } from './Dashboard';
 import { useLocation, useSearchParams } from 'react-router-dom';
@@ -13,16 +13,6 @@ export default function SinglePost() {
   console.log(post_id_url);
   const post = useLocation().state;
   const [paginator, setPaginator] = useState();
-
-  useEffect(() => {
-    // (async () => {
-    //   const [data, responded] = await getPostById(id);
-    //   console.log(data);
-    //   console.log(responded);
-    //   setPost(data);
-    // })();
-  }, []);
-
   
   return (
     <div className="flex min-h-screen justify-center divide-x">

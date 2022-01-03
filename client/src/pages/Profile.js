@@ -22,8 +22,8 @@ export default function Profile() {
   const passwordConfirmRef = useRef();
   const [loading, setLoading] = useState();
   const navigate = useNavigate();
-
   const [profilePalette, setProfilePalette] = useState([]);
+  console.log(loading);
 
   const params = useParams();
   useEffect(() => {
@@ -63,6 +63,7 @@ export default function Profile() {
         setLoading(false);
       });
   }
+  console.log(handleUpdate);
 
   useEffect(() => {
     (async () => {
