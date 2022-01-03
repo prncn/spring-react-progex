@@ -7,11 +7,11 @@ export const placeholder = [
     id: '5',
     user: {
       id: '1',
-      displayName: 'Preload',
+      displayName: 'Loading...',
       photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'Rembrandt Symposium Programm',
-    description: 'This is a placeholder',
+    description: 'Loading...',
     date: {
       seconds: 1638807536,
       nanos: 782000000,
@@ -22,11 +22,11 @@ export const placeholder = [
     id: '6',
     user: {
       id: '2',
-      displayName: 'Erykah',
+      displayName: 'Loading...',
       photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'What is Conceptual Art',
-    description: 'Some article by yours truly',
+    description: 'Loading...',
     date: {
       seconds: 1638807536,
       nanos: 782000000,
