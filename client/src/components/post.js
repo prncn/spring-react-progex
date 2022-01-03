@@ -2,7 +2,7 @@ import '../index.css';
 import IconComment from '../icons/comment';
 import IconBook from '../icons/book';
 import IconHeart from '../icons/heart';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ViewSDKClient from '../controller/ViewSDKClient';
 import { Link } from 'react-router-dom';
 import {
@@ -41,10 +41,11 @@ export function timeDifference(previous) {
   }
 }
 
-export default function Post({ data, idn, currentUser }) {
+export default function Post({ data, idn, currentUser, setPaginator }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  console.log(isLoading);
 
   useEffect(() => {
     (async () => {
@@ -118,17 +119,17 @@ export default function Post({ data, idn, currentUser }) {
           <div className="font-light inline">{timeDifference(data.date)}</div>
         </div>
         <div className="pb-3">{data.description}</div>
-        <PDFviewer idn={idn} file={data.url} title={data.title} />
+        <PDFviewer idn={idn} file={data.url} title={data.title} embedMode='SIZED_CONTAINER' setPaginator={setPaginator} />
       </div>
     </div>
   );
 }
 
-export function PDFviewer({ idn = 0, file, title, height = '96', embedMode = 'IN_LINE', scroll = true }) {
+export function PDFviewer({ idn = 0, file, title, height = '96', embedMode = 'IN_LINE', scroll = true, setPaginator }) {
+  const viewSDKClient = useMemo(() => new ViewSDKClient(), []);
+
   useEffect(() => {
     if (file === null) return;
-
-    const viewSDKClient = new ViewSDKClient();
     viewSDKClient.ready().then(() => {
       viewSDKClient.previewFile(file, title, `pdf-div-${idn}`, {
         embedMode,
@@ -137,12 +138,18 @@ export function PDFviewer({ idn = 0, file, title, height = '96', embedMode = 'IN
       });
     });
   });
+  
+  useEffect(() => {
+    if(setPaginator) {
+      setPaginator(viewSDKClient);
+    }
+  }, [setPaginator, viewSDKClient]);
 
   return (
     <div
-      className={`in-line-container w-full h-${height} rounded-xl overflow-y-auto`}
+      className={`in-line-container rounded-xl h-${height} overflow-y-auto`} 
     >
-      <div id={`pdf-div-${idn}`} className="in-line-div w-full h-full" />
+      <div id={`pdf-div-${idn}`} className='h-full w-full' style={{ height: `${scroll && '850px'}` }}/>
     </div>
   );
 }

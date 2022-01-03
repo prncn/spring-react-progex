@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { PDFviewer } from "../components/post";
 import { useAuth } from "../controller/Firebase";
@@ -40,11 +40,13 @@ export default function Explore() {
   }
 
   useEffect(() => {
-    (async () => {
-      const postsData = await getPosts();
-      setData(postsData.data);
-    })();
-  }, []);
+    if("spaceId" in params) {
+      (async () => {
+        const postsData = await getPosts();
+        setData(postsData.data);
+      })();
+    }
+  }, [params]);
 
   return (
     <div className="flex min-h-screen">
@@ -66,6 +68,7 @@ export default function Explore() {
                       embedMode="SIZED_CONTAINER"
                       height="80"
                       className="overflow-hidden"
+                      scroll={false}
                     />
                     <div className="bg-black w-full h-full absolute top-0 left-0 hover:opacity-30 opacity-0 transition rounded-lg" />
                   </div>

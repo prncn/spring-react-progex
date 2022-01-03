@@ -10,13 +10,15 @@ class ViewSDKClient {
       }
     });
     this.adobeDCView = undefined;
+    this.viewAPI = undefined;
   }
 
   ready() {
     return this.readyPromise;
   }
 
-  previewFile(file, fileName, divId, viewerConfig) {
+
+  async previewFile(file, fileName, divId, viewerConfig) {
     const config = {
       clientId: 'cfb77c914b3444668a74f3b1f0a30e78',
     };
@@ -41,16 +43,25 @@ class ViewSDKClient {
       viewerConfig
     );
 
-    previewFilePromise.then((adobeViewer) => {
+    previewFilePromise.then(function (adobeViewer) {
       adobeViewer.getAPIs().then((apis) => {
         apis
           .getCurrentPage()
-          .then((result) => console.log(result))
           .catch((error) => console.log(error));
       });
-    });
+    })
 
+    this.viewAPI = previewFilePromise;
     return previewFilePromise;
+  }
+
+  goToPage(pageNum) {
+    this.viewAPI.then(function (adobeViewer) {
+      adobeViewer.getAPIs().then((apis) => {
+        apis
+          .gotoLocation(pageNum);
+      });
+    })
   }
 
   registerSaveApiHandler() {

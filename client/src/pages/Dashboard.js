@@ -157,7 +157,7 @@ export function NavTab({ currentUser, active }) {
 
     try {
       await logout();
-      navigate("/signup");
+      navigate("/login");
     } catch (error) {
       console.error(error);
       alert(error);
@@ -198,8 +198,8 @@ export function NavTab({ currentUser, active }) {
               minute: "numeric",
             })}
           </p>
-          <p>{currentUser?.email}</p>
-          <p>{currentUser?.displayName}</p>
+          <p className="font-medium text-sm">{currentUser?.displayName}</p>
+          <p className="font-light text-sm">{currentUser?.email}</p>
         </div>
       </div>
       <div className="flex flex-col items-end mx-4 mb-auto">

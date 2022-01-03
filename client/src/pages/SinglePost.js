@@ -1,6 +1,6 @@
 import '../index.css';
 import Post from '../components/post';
-import React, { useEffect } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import { useAuth } from '../controller/Firebase';
 import { NavTab, SpacesTab } from './Dashboard';
 import { useLocation, useSearchParams } from 'react-router-dom';
@@ -12,6 +12,7 @@ export default function SinglePost() {
   const post_id_url = searchParams.get('id');
   console.log(post_id_url);
   const post = useLocation().state;
+  const [paginator, setPaginator] = useState();
 
   useEffect(() => {
     // (async () => {
@@ -22,6 +23,7 @@ export default function SinglePost() {
     // })();
   }, []);
 
+  
   return (
     <div className="flex min-h-screen justify-center divide-x">
       <NavTab currentUser={currentUser} active="dash" />
@@ -29,11 +31,11 @@ export default function SinglePost() {
         <h1 className="font-bold text-gray-500 text-3xl text-left pt-5 w-full px-3">
           View
         </h1>
-        <Post key={post.id} data={post} currentUser={currentUser} />
+        <Post key={post.id} data={post} currentUser={currentUser} setPaginator={setPaginator} />
         <div className="p-3 w-full space-y-2">
           <CommmentCreator user={currentUser} />
-          <Comment user={currentUser} />
-          <Comment user={currentUser} />
+          <Comment user={currentUser} paginator={paginator} />
+          <Comment user={currentUser} paginator={paginator} />
         </div>
       </div>
       <SpacesTab
@@ -43,7 +45,7 @@ export default function SinglePost() {
           'streetwear',
           'fitness',
         ]}
-      />
+        />
     </div>
   );
 }
@@ -66,14 +68,26 @@ function CommmentCreator({ user }) {
             type="text"
             placeholder="Speak you mind..."
             autoFocus={true}
-          />
+            />
         </form>
       </div>
     </div>
   );
 }
 
-function Comment({ user }) {
+function Comment({ user, paginator }) {
+  const contentRef = createRef();
+
+  function paginate() {
+    const content = contentRef.current?.innerText;
+    const strip = content.replace(/[^0-9]/g, "");
+    console.log(strip);
+
+    return paginator.ready().then(() => {
+      paginator.goToPage(Number(strip));
+    });
+  }
+  
   return (
     <div className="flex p-3 rounded-lg hover:bg-gray-200">
       <div className="w-16 h-16 mt-2 rounded-full shadow-lg flex-shrink-0">
@@ -81,7 +95,7 @@ function Comment({ user }) {
           className="w-full h-full object-cover rounded-full block shadow-lg"
           src={user?.photoURL}
           alt={user?.displayName}
-        />
+          />
       </div>
       <div className="w-auto flex flex-col p-2 text-sm">
         <div className="font-semibold mb-1">
@@ -89,11 +103,11 @@ function Comment({ user }) {
           &#183; <div className="font-light inline">19 Day ago</div>
         </div>
         <div className="mb-2">
-          <p>
+          <div ref={contentRef}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-            id augue rutrum, ultrices tellus quis, consectetur risus. Cras vel
+            id augue rutrum, <div  onClick={paginate} className='text-indigo-400 inline-block hover:underline cursor-pointer'>page 5</div> tellus quis, consectetur risus. Cras vel
             molestie nunc, et maximus odio.
-          </p>
+          </div>
         </div>
       </div>
       <div className="grow flex items-center">

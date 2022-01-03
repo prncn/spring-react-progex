@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { PDFviewer } from "../components/post";
 import { useAuth } from "../controller/Firebase";
 import { getPostById, getUserById } from "../controller/QueryService";
@@ -50,35 +50,37 @@ const fileList = [
 export default function Docs() {
   const auth = useAuth();
 
-  const data = {
-    name: "main",
-    items: fileList,
-  };
+  const data = useMemo(() => ({ 
+    name: "main", 
+    items: fileList
+  }), []);
 
   const [activeDoc, setActiveDoc] = useState();
   const [fileSystem, setFileSystem] = useState(data);
-  const [user, setUser] = useState();
-  const [savedPosts, setSavedPosts] = useState([]);
   const getName = (name, url) => {
     setActiveDoc(url);
   };
 
   useEffect(() => {
     (async () => {
-      if(auth !== undefined) {
+      if (auth !== undefined) {
         const [user, response] = await getUserById(auth?.uid);
-        if("savedPosts" in user) {
-          for(const savedPostId of user.savedPosts) {
+        console.log(response);
+        if ("savedPosts" in user) {
+          for (const savedPostId of user.savedPosts) {
             const savedPost = await getPostById(savedPostId);
             console.log(savedPost.data);
-            data.items = data.items.concat({name: savedPost.data.title, url:savedPost.data.url});
+            data.items = data.items.concat({
+              name: savedPost.data.title,
+              url: savedPost.data.url,
+            });
           }
           console.log(data);
-          setFileSystem(data)
+          setFileSystem(data);
         }
       }
     })();
-  }, [auth]);
+  }, [auth, data]);
 
   function RecursiveDrawFolder({ name, items, pass, url, opened = false }) {
     const [showChildren, setShowChildren] = useState(opened);
@@ -98,24 +100,30 @@ export default function Docs() {
 
     return (
       <div className="text-white space-y-4 flex flex-col">
-        <div className="flex w-full h-10"
-          onMouseEnter={e => setHovered(true)}
-          onMouseLeave={e => setHovered(false)}
+        <div
+          className="flex w-full h-10"
+          onMouseEnter={(e) => setHovered(true)}
+          onMouseLeave={(e) => setHovered(false)}
         >
           <button
             onClick={handleClick}
-            className={`flex-grow text-left flex hover:bg-gray-800 ${items ? "rounded-l-lg" : "rounded-lg"} items-center p-2`}
+            className={`flex-grow text-left flex hover:bg-gray-800 ${
+              items ? "rounded-l-lg" : "rounded-lg"
+            } items-center p-2`}
           >
             {items && <IconFolder fill={items.length} />}
             <span className="ml-2">{name}</span>
           </button>
-          {items && 
+          {items && (
             <button
               onClick={addFolder}
-              className={`hover:bg-gray-800 rounded-r px-2 h-full flex items-center justify-center ${hovered ? 'visible' : 'invisible'}`}
+              className={`hover:bg-gray-800 rounded-r px-2 h-full flex items-center justify-center ${
+                hovered ? "visible" : "invisible"
+              }`}
             >
               <IconPlus />
-            </button>}
+            </button>
+          )}
         </div>
         <div className="relative flex flex-col left-4 border-gray-500 px-4 transition">
           {showChildren &&
