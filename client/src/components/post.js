@@ -7,8 +7,11 @@ import ViewSDKClient from '../controller/ViewSDKClient';
 import { Link } from 'react-router-dom';
 import {
   checkIfPostLikedByUser,
+  checkIfPostSavedByUser,
   likePost,
   unlikePost,
+  savePost,
+  unsavePost
 } from '../controller/QueryService';
 
 export function timeDifference(previous) {
@@ -46,6 +49,7 @@ export default function Post({ data, offline, idn, currentUser }) {
   useEffect(() => {
     (async () => {
       setLiked(await checkIfPostLikedByUser(data.id, currentUser?.uid));
+      setSaved(await checkIfPostSavedByUser(data.id, currentUser?.uid));
       setIsLoading(false);
     })();
   }, [currentUser?.uid, data.id]);
@@ -62,7 +66,12 @@ export default function Post({ data, offline, idn, currentUser }) {
 
   function toggleSaved(e) {
     e.preventDefault();
-    setSaved(!saved);
+    if (!saved) {
+      savePost(data.id, currentUser?.uid);
+    } else {
+      unsavePost(data.id, currentUser?.uid);
+    }
+    setLiked(!saved);
   }
 
   return (

@@ -80,4 +80,16 @@ public class PostController {
             throws InterruptedException, ExecutionException {
         return postService.likePost(data.getPostId(), data.getUserId(), false);
     }
+
+
+    @PostMapping(value = "/posts/{id}/save")
+    public String savePost(@RequestBody PostUserJoin data) throws InterruptedException, ExecutionException {
+        return postService.savePost(data.getPostId(), data.getUserId(), true);
+    }
+
+    @DeleteMapping(value = "/posts/{id}/save")
+    public String unsavePost(@RequestBody PostUserJoin data)
+            throws InterruptedException, ExecutionException {
+        return postService.savePost(data.getPostId(), data.getUserId(), false);
+    }
 }

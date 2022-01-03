@@ -100,6 +100,17 @@ export default function Profile() {
         }
         setData(likedPosts);
         break;
+      
+      case 'Saved':
+        const savedPostsIds = user.savedPosts;
+        let savedPosts = [];
+        for (const id of savedPostsIds) {
+          const { data } = await getPostById(id);
+          savedPosts.push(data);
+        }
+        setData(savedPosts);
+        break;
+
 
       default:
         setData(userPosts);

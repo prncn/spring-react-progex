@@ -38,6 +38,8 @@ public class UserService {
         user.setPhotoURL(userDoc.getString("photoURL"));
         user.setEmail(userDoc.getString("email"));
         user.setLikedPosts((ArrayList<String>) userDoc.get("likedPosts"));
+        user.setSavedPosts((ArrayList<String>) userDoc.get("savedPosts"));
+
 
         return user;
     }

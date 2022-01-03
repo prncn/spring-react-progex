@@ -227,6 +227,60 @@ export async function checkIfPostLikedByUser(postId, userId) {
   }
 }
 
+
+export async function unsavePost(postId, userId) {
+  const endpoint = `http://localhost:8080/api/posts/${postId}/save`;
+  try {
+    const response = await fetch(endpoint, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        postId,
+      }),
+    });
+    return response.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+export async function savePost(postId, userId) {
+  const endpoint = `http://localhost:8080/api/posts/${postId}/save`;
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        postId,
+      }),
+    });
+    return response.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+export async function checkIfPostSavedByUser(postId, userId) {
+  if (userId !== undefined) {
+    const [data, response] = await getUserById(userId);
+    if (response) {
+      const savedPosts = data.savedPosts || [];
+      return savedPosts.includes(postId);
+    }
+  }
+}
+
+
+
+
 export async function fetchUnsplashedImage(searchTerm) {
   const endpoint = `https://api.unsplash.com/search/photos?query=${searchTerm}&per_page=1&page=1`;
   try {
