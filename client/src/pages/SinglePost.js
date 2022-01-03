@@ -5,6 +5,7 @@ import { useAuth } from '../controller/Firebase';
 import { NavTab, SpacesTab } from './Dashboard';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import IconHeart from '../icons/heart';
+import { PDFviewer } from '../components/PDFviewer';
 
 export default function SinglePost() {
   const currentUser = useAuth();
@@ -21,7 +22,9 @@ export default function SinglePost() {
         <h1 className="font-bold text-gray-500 text-3xl text-left pt-5 w-full px-3">
           View
         </h1>
-        <Post key={post.id} data={post} currentUser={currentUser} setPaginator={setPaginator} />
+        <Post key={post.id} data={post} currentUser={currentUser}>
+          <PDFviewer file={post.url} title={post.title} setPaginator={setPaginator} embedMode='SIZED_CONTAINER' />
+        </Post>
         <div className="p-3 w-full space-y-2">
           <CommmentCreator user={currentUser} />
           <Comment user={currentUser} paginator={paginator} />

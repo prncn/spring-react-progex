@@ -2,8 +2,7 @@ import '../index.css';
 import IconComment from '../icons/comment';
 import IconBook from '../icons/book';
 import IconHeart from '../icons/heart';
-import { useEffect, useMemo, useState } from 'react';
-import ViewSDKClient from '../controller/ViewSDKClient';
+import { useEffect,  useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   checkIfPostLikedByUser,
@@ -41,7 +40,7 @@ export function timeDifference(previous) {
   }
 }
 
-export default function Post({ data, idn, currentUser, setPaginator }) {
+export default function Post({ data, currentUser, children }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -119,37 +118,8 @@ export default function Post({ data, idn, currentUser, setPaginator }) {
           <div className="font-light inline">{timeDifference(data.date)}</div>
         </div>
         <div className="pb-3">{data.description}</div>
-        <PDFviewer idn={idn} file={data.url} title={data.title} embedMode='SIZED_CONTAINER' setPaginator={setPaginator} />
+        {children}
       </div>
-    </div>
-  );
-}
-
-export function PDFviewer({ idn = 0, file, title, height = '96', embedMode = 'IN_LINE', scroll = true, setPaginator }) {
-  const viewSDKClient = useMemo(() => new ViewSDKClient(), []);
-
-  useEffect(() => {
-    if (file === null) return;
-    viewSDKClient.ready().then(() => {
-      viewSDKClient.previewFile(file, title, `pdf-div-${idn}`, {
-        embedMode,
-        showPrintPDF: false,
-        dockPageControls: false,
-      });
-    });
-  });
-  
-  useEffect(() => {
-    if(setPaginator) {
-      setPaginator(viewSDKClient);
-    }
-  }, [setPaginator, viewSDKClient]);
-
-  return (
-    <div
-      className={`in-line-container rounded-xl h-${height} overflow-y-auto`} 
-    >
-      <div id={`pdf-div-${idn}`} className='h-full w-full' style={{ height: `${scroll && '850px'}` }}/>
     </div>
   );
 }

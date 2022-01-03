@@ -16,7 +16,7 @@ export const placeholder = [
       seconds: 1638807536,
       nanos: 782000000,
     },
-    url: 'https://www.nga.gov/content/dam/ngaweb/Education/learning-resources/an-eye-for-art/AnEyeforArt-RembrandtVanRijn.pdf',
+    url: 'https://www.tagg.org/pdftest.pdf',
   },
   {
     id: '6',
@@ -31,13 +31,13 @@ export const placeholder = [
       seconds: 1638807536,
       nanos: 782000000,
     },
-    url: 'https://imma.ie/wp-content/uploads/2018/10/whatisconceptualart.pdf',
+    url: 'https://www.tagg.org/pdftest.pdf',
   },
   {
     id: '11',
     user: {
       id: '9',
-      displayName: 'Sulli',
+      displayName: 'Loading...',
       photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'What is Conceptual Art',
@@ -46,13 +46,13 @@ export const placeholder = [
       seconds: 1638807536,
       nanos: 782000000,
     },
-    url: 'https://imma.ie/wp-content/uploads/2018/10/whatisconceptualart.pdf',
+    url: 'https://www.tagg.org/pdftest.pdf',
   },
   {
     id: '7',
     user: {
       id: '3',
-      displayName: 'Aysha',
+      displayName: 'Loading...',
       photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'Big Short Guide',
@@ -61,13 +61,13 @@ export const placeholder = [
       seconds: 1638807536,
       nanos: 782000000,
     },
-    url: 'https://www.sprengel-museum.de/images/PDF/BIG-short-guide-en.pdf',
+    url: 'https://www.tagg.org/pdftest.pdf',
   },
   {
     id: '13',
     user: {
       id: '29',
-      displayName: 'Aysha',
+      displayName: 'Loading...',
       photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
     },
     title: 'Big Short Guide',
@@ -76,7 +76,7 @@ export const placeholder = [
       seconds: 1638807536,
       nanos: 782000000,
     },
-    url: 'https://www.sprengel-museum.de/images/PDF/BIG-short-guide-en.pdf',
+    url: 'https://www.tagg.org/pdftest.pdf',
   },
 ];
 

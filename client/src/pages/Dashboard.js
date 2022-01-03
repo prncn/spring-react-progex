@@ -12,6 +12,8 @@ import {
   IconProfile,
 } from "../icons/NavIcons";
 import IconHome from "../icons/home";
+import { lightbox, PDFviewer } from "../components/PDFviewer";
+import ViewSDKClient from "../controller/ViewSDKClient";
 
 export default function Dashboard() {
   const [data, setData] = useState(placeholder);
@@ -35,7 +37,9 @@ export default function Dashboard() {
           Posts
         </h1>
         {data.map((post, i) => (
-          <Post key={post.id} data={post} idn={i} currentUser={currentUser} />
+          <Post key={post.id} data={post} currentUser={currentUser}>
+            <PDFviewer idn={i} file={post.url} title={post.title} embedMode='SIZED_CONTAINER' />
+          </Post>
         ))}
       </div>
       <SpacesTab
@@ -129,12 +133,14 @@ export default function Dashboard() {
 }
 
 function Stories({ storyposts }) {
+  const sdk = new ViewSDKClient();
   return (
     <div className="w-full p-4">
       <ul className="flex justify-around">
         {storyposts.map((item, i) => (
           <li key={i} className="flex flex-col justify-center items-center">
-            <div className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block cursor-pointer animate-gradient-xy">
+            <div className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block cursor-pointer animate-gradient-xy"
+            onClick={() => lightbox(sdk, item.url, item.title)}>
               <img
                 src={item.user.photoURL}
                 className="rounded-full w-20 h-20 object-cover"
@@ -198,7 +204,7 @@ export function NavTab({ currentUser, active }) {
               minute: "numeric",
             })}
           </p>
-          <p className="font-medium text-sm">{currentUser?.displayName}</p>
+          <p className="font-semibold text-sm">{currentUser?.displayName}</p>
           <p className="font-light text-sm">{currentUser?.email}</p>
         </div>
       </div>

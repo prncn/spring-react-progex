@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { PDFviewer } from "../components/post";
+import { PDFviewer } from "../components/PDFviewer";
 import { useAuth } from "../controller/Firebase";
 import { getPosts } from "../controller/QueryService";
 import { NavTab } from "./Dashboard";

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { PDFviewer } from "../components/post";
+import { PDFviewer } from "../components/PDFviewer";
 import { useAuth } from "../controller/Firebase";
 import { getPostById, getUserById } from "../controller/QueryService";
 import { IconFolder, IconPlus } from "../icons/FileIcons";
@@ -147,7 +147,7 @@ export default function Docs() {
         <div className="h-full flex-1">
           <div className="flex flex-col text-white w-full h-full grow space-y-4">
             {activeDoc && (
-              <PDFviewer file={activeDoc} title={"someting"} height="full" />
+              <PDFviewer file={activeDoc} title={"Selected document"} height="full" />
             )}
           </div>
         </div>

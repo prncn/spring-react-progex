@@ -9,6 +9,7 @@ import {
 } from '../controller/QueryService';
 import Post from '../components/post';
 import { prominent } from 'color.js';
+import { PDFviewer } from '../components/PDFviewer';
 
 export default function Profile() {
   const [data, setData] = useState([]);
@@ -112,17 +113,6 @@ export default function Profile() {
         setData(savedPosts);
         break;
 
-
-        case 'Saved':
-          const savedPostsIds = user.savedPosts;
-          let savedPosts = [];
-          for (const id of savedPostsIds) {
-            const { data } = await getPostById(id);
-            savedPosts.push(data);
-          }
-          setData(savedPosts);
-          break;
-
       default:
         setData(userPosts);
         break;
@@ -190,7 +180,9 @@ export default function Profile() {
           </button>
         </div>
         {data.map((post, i) => (
-          <Post key={post.id} data={post} idn={i} currentUser={currentUser} />
+          <Post key={post.id} data={post} currentUser={currentUser}>
+            <PDFviewer idn={i} file={post.url} title={post.title} embedMode='SIZED_CONTAINER'/>
+          </Post>
         ))}
       </div>
       <SpacesTab
