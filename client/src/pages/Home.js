@@ -3,7 +3,7 @@ import {
   LoginForm,
   SignupForm,
   ResetPasswordForm,
-} from '../components/homeForms';
+} from '../components/HomeForms';
 import { forwardRef } from 'react';
 
 export const Input = forwardRef((props, ref) => {

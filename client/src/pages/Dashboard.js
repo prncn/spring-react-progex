@@ -1,5 +1,5 @@
 import "../index.css";
-import Post from "../components/post";
+import Post from "../components/Post";
 import React, { useState, useEffect } from "react";
 import { logout, useAuth } from "../controller/Firebase";
 import { useNavigate } from "react-router";
