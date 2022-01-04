@@ -7,7 +7,7 @@ import {
   getPostByUser as getPostsOfUser,
   getUserById,
 } from '../controller/QueryService';
-import Post from '../components/post';
+import Post from '../components/Post';
 import { prominent } from 'color.js';
 import { PDFviewer } from '../components/PDFviewer';
 

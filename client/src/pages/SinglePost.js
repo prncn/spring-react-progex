@@ -1,5 +1,5 @@
 import "../index.css";
-import Post from "../components/Post";
+import Post, { timeDifference } from "../components/Post";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../controller/Firebase";
 import { NavTab, SpacesTab } from "./Dashboard";
@@ -23,10 +23,10 @@ export default function SinglePost() {
       user: {
         id: "2",
         displayName: "Erykah",
-        photoURL: "https://i.imgur.com/ncnHn9I.jpg",
+        photoURL: "https://i.imgur.com/Ks2oou4.jpg",
       },
       content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum1",
       date: {
         seconds: 1638807536,
         nanos: 782000000,
@@ -50,7 +50,7 @@ export default function SinglePost() {
   useEffect(() => {
     (async () => {
       setCommentData(commentPlaceholder);
-    })()
+    })();
   }, []);
 
   return (
@@ -89,7 +89,7 @@ export default function SinglePost() {
 
 function CommmentCreator({ user }) {
   return (
-    <div className="flex p-3 rounded-lg hover:bg-indigo-100 bg-indigo-200">
+    <div className="flex p-3 rounded-lg bg-indigo-100">
       <div className="w-16 h-16 mt-2 rounded-full shadow-lg flex-shrink-0">
         <img
           className="w-full h-full object-cover rounded-full shadow-lg"
@@ -97,15 +97,21 @@ function CommmentCreator({ user }) {
           alt={user?.displayName}
         />
       </div>
-      <div className="w-4/5 flex flex-col p-2 text-sm">
-        <div className="font-semibold mb-1 text-indigo-400">me</div>
-        <form className="w-full">
-          <input
+      <div className="w-full flex flex-col p-2 text-sm">
+        <div className="font-semibold text-indigo-400">me</div>
+        <form className="w-full flex">
+          <textarea
             className="appearance-none bg-transparent border-indigo-300 w-full mr-3 py-3 leading-tight focus:outline-none"
             type="text"
             placeholder="Speak you mind..."
             autoFocus={true}
           />
+          <button
+            type="submit"
+            className="self-end rounded-full h-2/3 py-2 px-5 bg-gray-50 hover:bg-gray-100"
+          >
+            Send.
+          </button>
         </form>
       </div>
     </div>
@@ -123,12 +129,12 @@ function Comment({ data, paginator }) {
 
   function Highlight({ children }) {
     return (
-      <strong
+      <div
         onClick={() => paginate(children)}
-        className="text-indigo-400 hover:underline cursor-pointer"
+        className="text-indigo-400 hover:underline cursor-pointer inline-block"
       >
         {children}
-      </strong>
+      </div>
     );
   }
 
@@ -143,13 +149,14 @@ function Comment({ data, paginator }) {
       </div>
       <div className="w-auto flex flex-col p-2 text-sm">
         <div className="font-semibold mb-1">
-          {data.displayName + " "}
-          &#183; <div className="font-light inline">{data.date}</div>
+          {data.user.displayName + " "}
+          &#183;{" "}
+          <div className="font-light inline">{timeDifference(data.date)}</div>
         </div>
         <div className="mb-2">
           <Highlighter
             highlightTag={Highlight}
-            searchWords="page"
+            searchWords={[/page\s[0-9]/g]}
             textToHighlight={data.content}
           />
         </div>

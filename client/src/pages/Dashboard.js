@@ -1,6 +1,6 @@
 import "../index.css";
 import Post from "../components/Post";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { logout, useAuth } from "../controller/Firebase";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -14,6 +14,7 @@ import {
 import IconHome from "../icons/home";
 import { lightbox, PDFviewer } from "../components/PDFviewer";
 import ViewSDKClient from "../controller/ViewSDKClient";
+import { useDropzone } from "react-dropzone";
 
 export default function Dashboard() {
   const [data, setData] = useState(placeholder);
@@ -38,7 +39,12 @@ export default function Dashboard() {
         </h1>
         {data.map((post, i) => (
           <Post key={post.id} data={post} currentUser={currentUser}>
-            <PDFviewer idn={i} file={post.url} title={post.title} embedMode='SIZED_CONTAINER' />
+            <PDFviewer
+              idn={i}
+              file={post.url}
+              title={post.title}
+              embedMode="SIZED_CONTAINER"
+            />
           </Post>
         ))}
       </div>
@@ -52,51 +58,99 @@ export default function Dashboard() {
       />
     </div>
   );
+}
 
-  function PostCreator({ currentUser }) {
-    const [title, setTitle] = useState();
-    const [url, setUrl] = useState();
-    const pfpIcon = currentUser?.photoURL;
-    const [show, setShow] = useState(false);
+const activeStyle = {
+  borderColor: "#2196f3",
+};
 
-    const handleSubmit = (event) => {
-      event.preventDefault();
-      createPost(
-        {
-          ...currentUser,
-          id: currentUser?.uid,
-        },
-        title,
-        title,
-        url
-      );
-      console.log(title);
-      getPosts().then(([data, response]) => {
-        setData(data);
-      });
-    };
+const acceptStyle = {
+  borderColor: "#00e676",
+};
 
-    function handleReveal(e) {
-      e.preventDefault();
-      if (!show) {
-        setShow(true);
-      }
+const rejectStyle = {
+  borderColor: "#be185d",
+};
+
+const baseStyle = {
+  width: "100%",
+  height: "100%",
+  display: "flex",
+  borderRadius: "0.75em",
+  padding: "0.75rem",
+  borderWidth: 2,
+  borderColor: "#a5b4fc",
+  borderStyle: "dashed",
+  transition: "border .24s ease-in-out",
+};
+
+function PostCreator({ currentUser }) {
+  const [title, setTitle] = useState();
+  const [description, setDescription] = useState();
+  const [url, setUrl] = useState();
+  const pfpIcon = currentUser?.photoURL;
+  const [show, setShow] = useState(false);
+  
+  const onDrop = useCallback(acceptedFiles => {
+    setUrl(acceptedFiles.at(-1)?.path)
+  }, []);
+
+  const {
+    getRootProps,
+    getInputProps,
+    isDragActive,
+    isDragAccept,
+    isDragReject,
+  } = useDropzone({ accept: "application/pdf", onDrop });
+
+  const style = useMemo(
+    () => ({
+      ...baseStyle,
+      ...(isDragActive ? activeStyle : {}),
+      ...(isDragAccept ? acceptStyle : {}),
+      ...(isDragReject ? rejectStyle : {}),
+    }),
+    [isDragActive, isDragReject, isDragAccept]
+  );
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    createPost(
+      {
+        ...currentUser,
+        id: currentUser?.uid,
+      },
+      title,
+      description,
+      url
+    );
+    console.log(title);
+  };
+
+  function handleReveal(e) {
+    e.preventDefault();
+    if (!show) {
+      setShow(true);
     }
+  }
 
-    return (
-      <div
-        onClick={handleReveal}
-        className="w-full h-40 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 animate-gradient-y transition-all"
-      >
+
+  return (
+    <div className="w-full h-40 mb-2">
+      {!show ? (
         <div
-          className={
-            show ? "hidden" : "self-end w-1/3 text-3xl text-white font-semibold"
-          }
+          onClick={handleReveal}
+          className="w-full h-40 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 animate-gradient-y transition-all"
         >
-          Hi, {currentUser?.displayName}. ✋ <br />{" "}
-          <p className="font-light"> Share your docs here. </p>
+          <div className={"self-end w-1/3 text-3xl text-white font-semibold"}>
+            Hi, {currentUser?.displayName}. ✋ <br />{" "}
+            <p className="font-light"> Share your docs here. </p>
+          </div>
         </div>
-        <div className={show ? "w-full h-full flex" : "hidden"}>
+      ) : (
+        <div className="bg-indigo-100 p-2 mb-3 rounded-b-xl">
+        <div {...getRootProps({ style })}>
+          <input {...getInputProps()} />
           <div className="w-20">
             <div className="w-16 h-16 mt-2 rounded-full">
               <img
@@ -106,30 +160,42 @@ export default function Dashboard() {
               />
             </div>
           </div>
-          <form className="w-full h-full flex flex-col">
-            <input
-              className="bg-transparent w-3/4 p-3 text-gray-50 placeholder-gray-300 font-semibold text-lg focus:outline-none"
-              placeholder="Title your Doc..."
-              value={title}
-              onInput={(event) => setTitle(event.target.value)}
-            ></input>
-            <input
-              className="bg-transparent w-3/4 p-3 text-gray-50 placeholder-gray-300 text-sm focus:outline-none h-auto"
-              placeholder="URL to your Doc..."
-              value={url}
-              onInput={(event) => setUrl(event.target.value)}
-            ></input>
+          <form className="w-full h-full flex">
+            <div className="flex flex-col w-full">
+              <input
+                className="py-1 bg-transparent text-lg focus:outline-none"
+                placeholder="Post Title"
+                value={title}
+                onInput={(event) => setTitle(event.target.value)}
+                spellCheck="false"
+              ></input>
+              <textarea
+                className="py-1 bg-transparent text-sm focus:outline-none resize-none"
+                placeholder="Description"
+                value={description}
+                onInput={(event) => setDescription(event.target.value)}
+                spellCheck="false"
+              ></textarea>
+              <input
+                className="py-1 bg-transparent text-sm focus:outline-none text-gray-500"
+                placeholder="Document URL or drag your file here"
+                value={url}
+                onInput={(event) => setUrl(event.target.value)}
+                spellCheck="false"
+              ></input>
+            </div>
             <button
               onClick={handleSubmit}
-              className="bg-gray-100 text-black font-semibold px-5 py-2 rounded-full place-self-end mt-auto hover:bg-gray-200"
+              className="bg-gray-50 px-5 py-2 rounded-full self-end mt-auto hover:bg-gray-100"
             >
               <span>Send.</span>
             </button>
           </form>
         </div>
-      </div>
-    );
-  }
+        </div>
+      )}
+    </div>
+  );
 }
 
 function Stories({ storyposts }) {
@@ -139,8 +205,10 @@ function Stories({ storyposts }) {
       <ul className="flex justify-around">
         {storyposts.map((item, i) => (
           <li key={i} className="flex flex-col justify-center items-center">
-            <div className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block cursor-pointer animate-gradient-xy"
-            onClick={() => lightbox(sdk, item.url, item.title)}>
+            <div
+              className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block cursor-pointer animate-gradient-xy"
+              onClick={() => lightbox(sdk, item.url, item.title)}
+            >
               <img
                 src={item.user.photoURL}
                 className="rounded-full w-20 h-20 object-cover"
