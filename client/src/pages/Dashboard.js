@@ -97,7 +97,6 @@ function PostCreator({ currentUser }) {
 
   const {
     getRootProps,
-    getInputProps,
     isDragActive,
     isDragAccept,
     isDragReject,
@@ -150,7 +149,6 @@ function PostCreator({ currentUser }) {
       ) : (
         <div className="bg-indigo-100 p-2 mb-3 rounded-b-xl">
         <div {...getRootProps({ style })}>
-          <input {...getInputProps()} />
           <div className="w-20">
             <div className="w-16 h-16 mt-2 rounded-full">
               <img

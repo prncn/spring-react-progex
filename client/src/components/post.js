@@ -43,14 +43,11 @@ export function timeDifference(previous) {
 export default function Post({ data, currentUser, children }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  console.log(isLoading);
 
   useEffect(() => {
     (async () => {
       setLiked(await checkIfPostLikedByUser(data.id, currentUser?.uid));
       setSaved(await checkIfPostSavedByUser(data.id, currentUser?.uid));
-      setIsLoading(false);
     })();
   }, [currentUser?.uid, data.id]);
 

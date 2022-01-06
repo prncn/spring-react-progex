@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { Link, useParams } from "react-router-dom";
 import { PDFviewer } from "../components/PDFviewer";
 import { useAuth } from "../controller/Firebase";
@@ -28,7 +29,7 @@ export default function Explore() {
     "streetwear",
     "slow jazz",
   ];
-  const colors = ["green", "indigo", "blue", "yellow"];
+  const colors = ["green", "indigo", "blue"];
   let color = colors[Math.floor(Math.random() * colors.length)];
   const [data, setData] = useState([]);
 
@@ -40,7 +41,7 @@ export default function Explore() {
   }
 
   useEffect(() => {
-    if("spaceId" in params) {
+    if ("spaceId" in params) {
       (async () => {
         const postsData = await getPosts();
         setData(postsData.data);
@@ -53,35 +54,59 @@ export default function Explore() {
       <NavTab currentUser={auth} active="spaces" />
       <div className="bg-gray-100 w-full">
         {"spaceId" in params ? (
-          <div className="p-5">
-            <h1 className="text-4xl font-semibold text-gray-500">
+          <div className="p-1">
+            <h1 className="ml-1 mt-10 text-lg font-semibold">
               {params.spaceId}
             </h1>
-            <div className="mt-5 flex flex-wrap">
-              {data.map((post, i) => (
-                <Link to={`/view?id=${post.id}`} state={post} key={i}>
-                  <div className="h-80 w-56 m-2 overflow-hidden relative">
-                    <PDFviewer
-                      idn={i}
-                      file={post.url}
-                      title={post.title}
-                      embedMode="SIZED_CONTAINER"
-                      height="80"
-                      className="overflow-hidden"
-                      scroll={false}
-                    />
-                    <div className="bg-black w-full h-full absolute top-0 left-0 hover:opacity-30 opacity-0 transition rounded-lg" />
+            <p className="ml-1 font-light">{data.length} documents</p>
+            <DragDropContext>
+              <Droppable droppableId="spacesDND">
+                {(provided) => (
+                  <div
+                    className="flex flex-wrap mt-5"
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                  >
+                    {data.map((post, i) => (
+                      <Draggable key={post.id} draggableId={post.id} index={i}>
+                        {(provided) => (
+                          <Link
+                            to={`/view?id=${post.id}`}
+                            state={post}
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            <div className="h-60 w-44 m-1 overflow-hidden relative bg-red-400">
+                              <PDFviewer
+                                idn={i}
+                                file={post.url}
+                                title={post.title}
+                                embedMode="SIZED_CONTAINER"
+                                height="60"
+                                className="overflow-hidden"
+                                scroll={false}
+                                rounded={false}
+                              />
+                              <div className="bg-black w-full h-full absolute top-0 left-0 hover:opacity-30 opacity-0 transition" />
+                            </div>
+                          </Link>
+                        )}
+                      </Draggable>
+                    ))}
                   </div>
-                </Link>
-              ))}
-            </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </div>
         ) : (
-          <div className="grid grid-cols-6 grid-rows-4 gap-4 p-10 overflow-auto">
+          <div className="flex flex-wrap p-2">
             {spaces.map((name) => (
               <Link to={`/spaces/${encodeURIComponent(name)}`}>
                 <div
-                  className={`h-40 col-span-${rand()} row-span-1 bg-post-img hover:bg-${color}-400 bg-${color}-300 rounded-lg font-semibold text-2xl text-white p-4 cursor-pointer`}
+                  className={`overflow-hidden h-40 w-${
+                    40 * rand()
+                  } m-1 bg-post-img hover:bg-${color}-400 bg-${color}-300 rounded-lg font-semibold text-2xl text-white p-4 cursor-pointer`}
                 >
                   {name}
                 </div>

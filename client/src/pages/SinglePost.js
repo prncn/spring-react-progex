@@ -8,6 +8,36 @@ import IconHeart from "../icons/heart";
 import { PDFviewer } from "../components/PDFviewer";
 import Highlighter from "react-highlight-words";
 
+const commentPlaceholder = [
+  {
+    id: "1",
+    user: {
+      id: "2",
+      displayName: "Erykah",
+      photoURL: "https://i.imgur.com/Ks2oou4.jpg",
+    },
+    content:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum1",
+    date: {
+      seconds: 1638807536,
+      nanos: 782000000,
+    },
+  },
+  {
+    id: "2",
+    user: {
+      id: "3",
+      displayName: "Grace",
+      photoURL: "https://i.imgur.com/NDFE7BQ.jpg",
+    },
+    content: "Checkout out this thing I found on page 6 by clicking on it.",
+    date: {
+      seconds: 1638807536,
+      nanos: 782000000,
+    },
+  },
+];
+
 export default function SinglePost() {
   const currentUser = useAuth();
   const [searchParams] = useSearchParams();
@@ -16,36 +46,6 @@ export default function SinglePost() {
   const post = useLocation().state;
   const [paginator, setPaginator] = useState();
   const [commentData, setCommentData] = useState([]);
-
-  const commentPlaceholder = [
-    {
-      id: "1",
-      user: {
-        id: "2",
-        displayName: "Erykah",
-        photoURL: "https://i.imgur.com/Ks2oou4.jpg",
-      },
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum1",
-      date: {
-        seconds: 1638807536,
-        nanos: 782000000,
-      },
-    },
-    {
-      id: "2",
-      user: {
-        id: "3",
-        displayName: "Grace",
-        photoURL: "https://i.imgur.com/NDFE7BQ.jpg",
-      },
-      content: "Checkout out this thing I found on page 6 by clicking on it.",
-      date: {
-        seconds: 1638807536,
-        nanos: 782000000,
-      },
-    },
-  ];
 
   useEffect(() => {
     (async () => {
@@ -70,7 +70,7 @@ export default function SinglePost() {
         </Post>
         <div className="p-3 w-full space-y-2">
           <CommmentCreator user={currentUser} />
-          {commentPlaceholder.map((comment, i) => (
+          {commentData.map((comment, i) => (
             <Comment key={i} data={comment} paginator={paginator} />
           ))}
         </div>
