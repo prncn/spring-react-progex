@@ -52,7 +52,6 @@ public class PostService {
                 .limit(limit);
 
         return getPostList(postsCollection);
-
     }
 
     public List<Post> getPostList(Query query) throws ExecutionException, InterruptedException {
@@ -63,12 +62,11 @@ public class PostService {
 
         for (QueryDocumentSnapshot document : documents) {
             String id = document.getId();
-            Post post = getPostById(id);
+            Post post = getPostById(id, document);
             posts.add(post);
         }
 
         return posts;
-
     }
 
     /**
@@ -123,16 +121,13 @@ public class PostService {
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    public Post getPostById(String id) throws InterruptedException, ExecutionException {
+    public Post getPostById(String id, DocumentSnapshot doc) throws InterruptedException, ExecutionException {
         // Create empty post object. This will be filled up later on with values from
         // the retrieved document
         Post post = new Post();
 
-        // Retrieve post from firestore based on the given id
-        // @TODO: what happens if the post with the given id doesn't exist?
-        DocumentSnapshot doc = firestore.collection("posts").document(id).get().get();
         if (doc == null) {
-            return null;
+            doc = firestore.collection("posts").document(id).get().get();
         }
 
         post.setId(doc.getId());
@@ -197,23 +192,7 @@ public class PostService {
         }
         ApiFuture<WriteResult> writeResult = userRef.update(field, fieldList);
         return writeResult.get().getUpdateTime().toString();
-    
+
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
