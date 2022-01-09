@@ -129,8 +129,11 @@ public class PostService {
         Post post = new Post();
 
         // Retrieve post from firestore based on the given id
-        // @TODO: what happens if the post with the given id doesn't exist?
-        DocumentSnapshot doc = firestore.collection("posts").document(id).get().get();
+        DocumentSnapshot doc = firestore
+                .collection("posts")
+                .document(id)
+                .get()
+                .get();
         if (doc == null) {
             return null;
         }
@@ -146,10 +149,14 @@ public class PostService {
         DocumentSnapshot userDoc = userFuture.get();
 
         if (userDoc.exists()) {
-            UserService us = new UserService(firestore);
-            User user = us.getUserById(ds.getId());
+            UserService userService = new UserService(firestore);
+
+            User user = userService.getUserById(ds.getId());
             post.setUser(user);
         }
+
+        CommentService commentService = new CommentService(firestore);
+        post.setComments(commentService.getCommentsFromPost(id));
 
         return post;
     }
@@ -199,21 +206,4 @@ public class PostService {
         return writeResult.get().getUpdateTime().toString();
     
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
