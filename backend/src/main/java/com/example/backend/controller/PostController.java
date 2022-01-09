@@ -40,6 +40,7 @@ public class PostController {
         if (!(user instanceof String)) {
             return postService.getPostList(limit);
         } else {
+            //Get all posts from user
             return postService.getPostList(limit, user);
         }
     }

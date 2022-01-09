@@ -4,23 +4,11 @@ import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.annotation.DocumentId;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
-public class Post {
-
+public class Comment {
     @DocumentId
     private String id;
     private User user;
-
-    private String title;
     private String description;
     private Timestamp date;
-
-    private String url;
-    private Double likeCount = (double) 0;
-    private Double saveCount = (double) 0;
-
-    private List<Comment> comments;
 }
