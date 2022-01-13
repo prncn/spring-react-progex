@@ -73,8 +73,7 @@ export default function Post({ data, currentUser, children }) {
 
   return (
     <div
-      className="flex rounded-lg lg:my-3 my-1 pt-2 px-2 mx-4 text-white bg-gray-800 hover:bg-gray-900 transition text-sm"
-      style={{ width: '98%' }}
+      className="flex w-full my-1 rounded-lg pt-2 px-2 mx-4 text-black bg-gray-50 hover:bg-gray-100 transition text-sm"
     >
       <div className="w-20 pl-4 rounded-lg">
         <div className="w-16 h-16 mt-2 rounded-full shadow-lg">
@@ -87,18 +86,18 @@ export default function Post({ data, currentUser, children }) {
         <div className="h-2/3">
           <div className="h-full px-2 mt-8 flex flex-col justify-around items-center">
             <button
-              className="hover:bg-gray-800 p-4 rounded-full shadow-xl"
+              className="hover:bg-gray-200 p-4 rounded-full shadow-xl"
               onClick={toggleLiked}
             >
               <IconHeart filled={liked} />
             </button>
             <Link to={`/view?id=${data.id}`} state={data}>
-              <button className="hover:bg-gray-800 p-4 rounded-full">
+              <button className="hover:bg-gray-200 p-4 rounded-full">
                 <IconComment />
               </button>
             </Link>
             <button
-              className="hover:bg-gray-800 p-4 rounded-full"
+              className="hover:bg-gray-200 p-4 rounded-full"
               onClick={toggleSaved}
             >
               <IconBook filled={saved} />
@@ -108,11 +107,12 @@ export default function Post({ data, currentUser, children }) {
       </div>
       <div className="flex justify-center align-center flex-col p-2 w-full">
         <div
-          className={`font-semibold mb-1 w-1/3`}
+          className={`font-semibold mb-1 w-1/3 flex`}
         >
           <Link to={`/profile/${data.user.id}`}>{data.user.displayName}</Link>{' '}
           &#183;{' '}
-          <div className="font-light inline">{timeDifference(data.date)}</div>
+          <div className="font-light">{timeDifference(data.date)}</div>
+          <div className='ml-auto'>...</div>
         </div>
         <div className="pb-3">{data.description}</div>
         {children}

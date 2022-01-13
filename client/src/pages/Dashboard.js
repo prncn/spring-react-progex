@@ -24,6 +24,7 @@ export default function Dashboard() {
   useEffect(() => {
     (async () => {
       const { data } = await getPosts();
+      console.log(data);
       setData(data);
     })();
   }, []);
