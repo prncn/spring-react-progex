@@ -1,39 +1,35 @@
 import "../index.css";
 import Post from "../components/Post";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { logout, useAuth } from "../controller/Firebase";
-import { useNavigate } from "react-router";
+import React, { useState, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { createPost, getPosts, placeholder } from "../controller/QueryService";
-import {
-  IconLogout,
-  IconExplore,
-  IconDocs,
-  IconProfile,
-} from "../icons/NavIcons";
-import IconHome from "../icons/home";
+import api from "../controller/QueryService";
 import { lightbox, PDFviewer } from "../components/PDFviewer";
 import ViewSDKClient from "../controller/ViewSDKClient";
 import { useDropzone } from "react-dropzone";
+import { useAuth } from "../controller/Firebase";
+import { NavTab } from "../components/NavTab";
+import { useQuery } from "react-query";
 
 export default function Dashboard() {
-  const [data, setData] = useState(placeholder);
+  // const [data, setData] = useState(placeholder);
   const currentUser = useAuth();
   console.log(currentUser);
 
-  useEffect(() => {
-    (async () => {
-      const { data } = await getPosts();
-      console.log(data);
-      setData(data);
-    })();
-  }, []);
+  let { isLoading, error, data } = useQuery("postData", api.getPosts(), {
+    staleTime: 100000,
+  });
+
+  if (isLoading) {
+    data = api.placeholder;
+  };
+
+  if (error) return "An error has occurred: " + error.message;
 
   return (
     <div className="flex min-h-screen justify-center divide-x">
       <NavTab currentUser={currentUser} active="dash" />
       <div className="flex flex-col items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
-        <Stories storyposts={data.slice(0, 5)} />
+        {/* <Stories storyposts={data.slice(0, 6)} /> */}
         <PostCreator currentUser={currentUser} />
         <h1 className="font-bold text-gray-500 text-3xl text-left pt-10 w-full px-3">
           Posts
@@ -115,7 +111,7 @@ function PostCreator({ currentUser }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    createPost(
+    api.createPost(
       {
         ...currentUser,
         id: currentUser?.uid,
@@ -143,7 +139,7 @@ function PostCreator({ currentUser }) {
           className="w-full h-40 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 animate-gradient-y transition-all"
         >
           <div className={"self-end w-1/3 text-3xl text-white font-semibold"}>
-            Hi, {currentUser?.displayName}. ✋ <br />{" "}
+            Hi, {currentUser?.displayName}. <br />{" "}
             <p className="font-light"> Share your docs here. </p>
           </div>
         </div>
@@ -218,84 +214,6 @@ function Stories({ storyposts }) {
           </li>
         ))}
       </ul>
-    </div>
-  );
-}
-
-export function NavTab({ currentUser, active }) {
-  const navigate = useNavigate();
-
-  async function handleLogout(e) {
-    e.preventDefault();
-
-    try {
-      await logout();
-      navigate("/login");
-    } catch (error) {
-      console.error(error);
-      alert(error);
-    }
-  }
-
-  function NavLink({ path, children }) {
-    return (
-      <Link
-        to={`/${path === "profile" ? path + `/${currentUser?.uid}` : path}`}
-      >
-        <button
-          className={`dashboard-nav__btn ${
-            active === path ? "bg-indigo-100 text-indigo-400" : ""
-          }`}
-        >
-          {children}
-          <span>{path}</span>
-        </button>
-      </Link>
-    );
-  }
-
-  return (
-    <div className="sticky h-screen top-0 md:flex flex-col hidden">
-      <div className="w-72 h-24 border rounded-lg m-4 ml-auto flex p-3 bg-gray-50">
-        <div className="w-16 h-16 rounded-full shadow-md overflow-visible">
-          <img
-            className="w-full h-full object-cover rounded-full"
-            src={currentUser?.photoURL}
-            alt="pfp_icon"
-          />
-        </div>
-        <div className="ml-2">
-          <p>
-            {new Date().toLocaleTimeString("en-GB", {
-              hour: "numeric",
-              minute: "numeric",
-            })}
-          </p>
-          <p className="font-semibold text-sm">{currentUser?.displayName}</p>
-          <p className="font-light text-sm">{currentUser?.email}</p>
-        </div>
-      </div>
-      <div className="flex flex-col items-end mx-4 mb-auto">
-        <div className="flex flex-col w-72 text-left text-gray-600 text-xl">
-          <NavLink path="dash">
-            <IconHome />
-          </NavLink>
-          <NavLink path="spaces">
-            <IconExplore />
-          </NavLink>
-          <NavLink path="docs">
-            <IconDocs />
-          </NavLink>
-          <NavLink path="profile">
-            <IconProfile />
-          </NavLink>
-          <button onClick={handleLogout} className="dashboard-nav__btn">
-            <IconLogout />
-            <span>logout</span>
-          </button>
-        </div>
-      </div>
-      <div className="m-4 font-semibold text-3xl ml-auto mt-auto">Murdoc.</div>
     </div>
   );
 }

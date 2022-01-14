@@ -1,15 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAuth, _updateEmail, _updatePassword } from '../controller/Firebase';
 import { useNavigate, useParams } from 'react-router';
-import { NavTab, SpacesTab } from './Dashboard';
-import {
-  getPostById,
-  getPostByUser as getPostsOfUser,
-  getUserById,
-} from '../controller/QueryService';
+import api from '../controller/QueryService';
 import Post from '../components/Post';
 import { prominent } from 'color.js';
 import { PDFviewer } from '../components/PDFviewer';
+import { NavTab } from '../components/NavTab';
+import { SpacesTab } from './Dashboard';
 
 export default function Profile() {
   const [data, setData] = useState([]);
@@ -29,7 +26,7 @@ export default function Profile() {
   const params = useParams();
   useEffect(() => {
     (async () => {
-      const [data, response] = await getUserById(params.userId);
+      const [data, response] = await api.getUserById(params.userId);
       console.log(response);
       setUser(data);
     })();
@@ -68,7 +65,7 @@ export default function Profile() {
 
   useEffect(() => {
     (async () => {
-      const [data, status] = await getPostsOfUser(user.id);
+      const [data, status] = await api.getPostsOfUser(user.id);
       console.log(status);
       setUserPosts(data);
       setData(data);
@@ -97,7 +94,7 @@ export default function Profile() {
         const likedPostsIds = user.likedPosts;
         let likedPosts = [];
         for (const id of likedPostsIds) {
-          const { data } = await getPostById(id);
+          const { data } = await api.getPostById(id);
           likedPosts.push(data);
         }
         setData(likedPosts);
@@ -107,7 +104,7 @@ export default function Profile() {
         const savedPostsIds = user.savedPosts;
         let savedPosts = [];
         for (const id of savedPostsIds) {
-          const { data } = await getPostById(id);
+          const { data } = await api.getPostById(id);
           savedPosts.push(data);
         }
         setData(savedPosts);

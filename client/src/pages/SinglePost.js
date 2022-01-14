@@ -2,11 +2,12 @@ import "../index.css";
 import Post, { timeDifference } from "../components/Post";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../controller/Firebase";
-import { NavTab, SpacesTab } from "./Dashboard";
 import { useLocation, useSearchParams } from "react-router-dom";
-import IconHeart from "../icons/heart";
+import { IconHeart } from "../icons/PostIcons";
 import { PDFviewer } from "../components/PDFviewer";
 import Highlighter from "react-highlight-words";
+import { NavTab } from "../components/NavTab";
+import { SpacesTab } from "./Dashboard";
 
 const commentPlaceholder = [
   {

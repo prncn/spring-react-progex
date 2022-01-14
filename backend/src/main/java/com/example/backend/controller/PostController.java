@@ -59,8 +59,8 @@ public class PostController {
         return postService.updatePost(post);
     }
 
-    @DeleteMapping(value = "/posts")
-    public String deletePost(@RequestHeader String id) throws InterruptedException, ExecutionException {
+    @DeleteMapping(value = "/posts/{id}")
+    public String deletePost(@PathVariable String id) throws InterruptedException, ExecutionException {
         return postService.deletePost(id);
     }
 

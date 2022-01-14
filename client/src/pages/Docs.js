@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { PDFviewer } from "../components/PDFviewer";
 import { useAuth } from "../controller/Firebase";
-import { getPostById, getUserById } from "../controller/QueryService";
+import api from "../controller/QueryService";
 import { IconFolder, IconPlus } from "../icons/FileIcons";
-import { NavTab } from "./Dashboard";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { NavTab } from "../components/NavTab";
 
 let fileList = {
   id: "f4f97a43-2725-4a50-a90b-feab448ad6c5",
@@ -91,11 +91,11 @@ export default function Docs() {
   useEffect(() => {
     (async () => {
       if (auth !== undefined) {
-        const [user, response] = await getUserById(auth?.uid);
+        const [user, response] = await api.getUserById(auth?.uid);
         console.log(response);
         let fetchedPosts = [];
         for (const id of user.savedPosts) {
-          const post = await getPostById(id);
+          const post = await api.getPostById(id);
           fetchedPosts.push(post.data);
         }
         setSavedPosts(fetchedPosts);

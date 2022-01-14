@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { Link, useParams } from "react-router-dom";
+import { NavTab } from "../components/NavTab";
 import { PDFviewer } from "../components/PDFviewer";
 import { useAuth } from "../controller/Firebase";
-import { getPosts } from "../controller/QueryService";
-import { NavTab } from "./Dashboard";
+import api from "../controller/QueryService";
 
 export default function Explore() {
   const auth = useAuth();
@@ -43,7 +43,7 @@ export default function Explore() {
   useEffect(() => {
     if ("spaceId" in params) {
       (async () => {
-        const postsData = await getPosts();
+        const postsData = await api.getPosts();
         setData(postsData.data);
       })();
     }
