@@ -191,7 +191,7 @@ public class PostService {
             fieldList.remove(postId);
         }
         ApiFuture<WriteResult> writeResult = userRef.update(field, fieldList);
-        return writeResult.get().getUpdateTime().toString();
+        return writeResult.toString();
 
     }
 
