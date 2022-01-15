@@ -1,35 +1,34 @@
 import "../index.css";
 import Post from "../components/Post";
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../controller/QueryService";
-import { lightbox, PDFviewer } from "../components/PDFviewer";
-import ViewSDKClient from "../controller/ViewSDKClient";
+import { PDFviewer } from "../components/PDFviewer";
 import { useDropzone } from "react-dropzone";
 import { useAuth } from "../controller/Firebase";
 import { NavTab } from "../components/NavTab";
-import { useQuery } from "react-query";
 
 export default function Dashboard() {
-  // const [data, setData] = useState(placeholder);
+  const [data, setData] = useState(api.placeholder);
   const currentUser = useAuth();
-  console.log(currentUser);
-
-  let { isLoading, error, data } = useQuery("postData", api.getPosts(), {
-    staleTime: 100000,
-  });
-
-  if (isLoading) {
-    data = api.placeholder;
-  };
-
-  if (error) return "An error has occurred: " + error.message;
+  
+  useEffect(() => {
+    (async () => {
+      const session = window.sessionStorage.getItem('POST_CACHE');
+      if(session) {
+        setData(JSON.parse(session));
+      } else {
+        const res = await api.getPosts();
+        window.sessionStorage.setItem('POST_CACHE', JSON.stringify(res));
+        setData(res);
+      }
+    })();
+  }, []);
 
   return (
     <div className="flex min-h-screen justify-center divide-x">
-      <NavTab currentUser={currentUser} active="dash" />
+      <NavTab currentUser={currentUser} data={data.slice(0, 6)} />
       <div className="flex flex-col items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
-        {/* <Stories storyposts={data.slice(0, 6)} /> */}
         <PostCreator currentUser={currentUser} />
         <h1 className="font-bold text-gray-500 text-3xl text-left pt-10 w-full px-3">
           Posts
@@ -55,6 +54,9 @@ export default function Dashboard() {
       />
     </div>
   );
+
+  
+  
 }
 
 const activeStyle = {
@@ -193,31 +195,6 @@ function PostCreator({ currentUser }) {
   );
 }
 
-function Stories({ storyposts }) {
-  const sdk = new ViewSDKClient();
-  return (
-    <div className="w-full p-4">
-      <ul className="flex justify-around">
-        {storyposts.map((item, i) => (
-          <li key={i} className="flex flex-col justify-center items-center">
-            <div
-              className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block cursor-pointer animate-gradient-xy"
-              onClick={() => lightbox(sdk, item.url, item.title)}
-            >
-              <img
-                src={item.user.photoURL}
-                className="rounded-full w-20 h-20 object-cover"
-                alt="pfp_st"
-              />
-            </div>
-            <p className="text-sm text-gray-700">{item.user.displayName}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 export function SpacesTab({ spaces }) {
   return (
     <div className="sticky top-0 min-h-screen h-full hidden xl:block">
@@ -237,3 +214,4 @@ export function SpacesTab({ spaces }) {
     </div>
   );
 }
+

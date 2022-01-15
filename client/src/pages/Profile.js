@@ -61,7 +61,6 @@ export default function Profile() {
         setLoading(false);
       });
   }
-  console.log(handleUpdate);
 
   useEffect(() => {
     (async () => {
@@ -149,7 +148,7 @@ export default function Profile() {
             <span
               className={
                 `font-bold text-3xl text-left ` +
-                (activeTab === 'Posts' ? 'text-gray-500' : 'text-gray-300')
+                (activeTab === 'Posts' ? 'text-gray-500' : 'text-gray-300 hover:text-gray-400')
               }
             >
               Posts
@@ -159,7 +158,7 @@ export default function Profile() {
             <span
               className={
                 `font-bold text-3xl text-left ` +
-                (activeTab === 'Liked' ? 'text-gray-500' : 'text-gray-300')
+                (activeTab === 'Liked' ? 'text-gray-500' : 'text-gray-300 hover:text-gray-400')
               }
             >
               Liked
@@ -169,7 +168,7 @@ export default function Profile() {
             <span
               className={
                 `font-bold text-3xl text-left ` +
-                (activeTab === 'Saved' ? 'text-gray-500' : 'text-gray-300')
+                (activeTab === 'Saved' ? 'text-gray-500' : 'text-gray-300 hover:text-gray-400')
               }
             >
               Saved

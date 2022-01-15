@@ -1,8 +1,10 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../controller/Firebase";
+import ViewSDKClient from "../controller/ViewSDKClient";
 import { IconDocs, IconExplore, IconHome, IconLogout, IconProfile } from "../icons/NavIcons";
+import { lightbox } from "./PDFviewer";
 
-export function NavTab({ currentUser, active }) {
+export function NavTab({ currentUser, data }) {
     const navigate = useNavigate();
   
     async function handleLogout(e) {
@@ -74,7 +76,34 @@ export function NavTab({ currentUser, active }) {
             </button>
           </div>
         </div>
+        {/* <Stories data={data}/> */}
         <div className="m-4 font-semibold text-3xl ml-auto mt-auto">Murdoc.</div>
+      </div>
+    );
+  }
+
+  function Stories({ data }) {
+    const storyposts = data.slice(0, 6);
+    const sdk = new ViewSDKClient();
+    return (
+      <div className="w-72">
+        <ul className="flex flex-wrap">
+          {storyposts.map((item, i) => (
+            <li key={i} className="flex flex-col justify-center items-center">
+              <div
+                className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 m-1 block cursor-pointer animate-gradient-xy"
+                onClick={() => lightbox(sdk, item.url, item.title)}
+              >
+                <img
+                  src={item.user.photoURL}
+                  className="rounded-full w-20 h-20 object-cover"
+                  alt="pfp_st"
+                />
+              </div>
+              <p className="text-sm text-gray-700">{item.user.displayName}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     );
   }

@@ -1,9 +1,9 @@
-/**
- * this.placeholder list of posts data. This will be passed
- * to getPosts() when the Spring server is offline.
- */
 export default class QueryService {
-  placeholder = [
+  /**
+   * this.placeholder list of posts data. This will be passed
+   * to getPosts() when the Spring server is offline.
+   */
+  static placeholder = [
     {
       id: "5",
       user: {
@@ -86,7 +86,7 @@ export default class QueryService {
    * @returns Array. First entry is the resulting data, which is a this.placeholder
    * in case of a fetch error. Second entry is a success response.
    */
-  async getPosts() {
+  static async getPosts() {
     const url = "http://localhost:8080/api/posts?limit=20";
     try {
       console.log("Fetching Posts...");
@@ -100,7 +100,7 @@ export default class QueryService {
     }
   }
 
-  async getPostById(id) {
+  static async getPostById(id) {
     const url = `http://localhost:8080/api/posts/${id}`;
     try {
       const response = await fetch(url, {
@@ -117,7 +117,7 @@ export default class QueryService {
     }
   }
 
-  async getPostByUser(user) {
+  static async getPostsOfUser(user) {
     const url = `http://localhost:8080/api/posts?user=${user}`;
     try {
       const response = await fetch(url);
@@ -138,7 +138,7 @@ export default class QueryService {
    * @param {string} url - URL of PDF file
    * @returns
    */
-  async createPost(user, title, description, url) {
+  static async createPost(user, title, description, url) {
     const endpoint = "http://localhost:8080/api/posts/";
     return this.HTTPMethodWrapper("POST", endpoint, {
       user,
@@ -148,7 +148,7 @@ export default class QueryService {
     });
   }
 
-  async deletePost(id) {
+  static async deletePost(id) {
     const endpoint = `http://localhost:8080/api/posts/${id}`;
     try {
       const response = await fetch(endpoint, {
@@ -163,7 +163,7 @@ export default class QueryService {
     }
   }
 
-  async getUserById(id) {
+  static async getUserById(id) {
     const url = `http://localhost:8080/api/users/${id}`;
     try {
       const response = await fetch(url);
@@ -175,7 +175,7 @@ export default class QueryService {
     }
   }
 
-  async HTTPMethodWrapper(method, endpoint, body) {
+  static async HTTPMethodWrapper(method, endpoint, body) {
     try {
       const response = await fetch(endpoint, {
         method,
@@ -190,7 +190,7 @@ export default class QueryService {
     }
   }
 
-  async likePost(postId, userId) {
+  static async likePost(postId, userId) {
     const endpoint = `http://localhost:8080/api/posts/${postId}/like`;
     return this.HTTPMethodWrapper("POST", endpoint, {
       userId,
@@ -198,7 +198,7 @@ export default class QueryService {
     });
   }
 
-  async unlikePost(postId, userId) {
+  static async unlikePost(postId, userId) {
     const endpoint = `http://localhost:8080/api/posts/${postId}/like`;
     return this.HTTPMethodWrapper("DELETE", endpoint, {
       userId,
@@ -206,7 +206,7 @@ export default class QueryService {
     });
   }
 
-  async savePost(postId, userId) {
+  static async savePost(postId, userId) {
     const endpoint = `http://localhost:8080/api/posts/${postId}/save`;
     return this.HTTPMethodWrapper("POST", endpoint, {
       userId,
@@ -214,7 +214,7 @@ export default class QueryService {
     });
   }
 
-  async unsavePost(postId, userId) {
+  static async unsavePost(postId, userId) {
     const endpoint = `http://localhost:8080/api/posts/${postId}/save`;
     return this.HTTPMethodWrapper("DELETE", endpoint, {
       userId,
@@ -222,7 +222,7 @@ export default class QueryService {
     });
   }
 
-  async checkIfPostLikedByUser(postId, userId) {
+  static async checkIfPostLikedByUser(postId, userId) {
     if (userId !== undefined) {
       const [data, response] = await this.getUserById(userId);
       if (response) {
@@ -232,7 +232,7 @@ export default class QueryService {
     }
   }
 
-  async checkIfPostSavedByUser(postId, userId) {
+  static async checkIfPostSavedByUser(postId, userId) {
     if (userId !== undefined) {
       const [data, response] = await this.getUserById(userId);
       if (response) {
@@ -242,7 +242,7 @@ export default class QueryService {
     }
   }
 
-  async fetchUnsplashedImage(searchTerm) {
+  static async fetchUnsplashedImage(searchTerm) {
     const endpoint = `https://api.unsplash.com/search/photos?query=${searchTerm}&per_page=1&page=1`;
     try {
       const response = await fetch(endpoint, {
