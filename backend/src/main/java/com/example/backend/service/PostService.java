@@ -127,6 +127,7 @@ public class PostService {
         Post post = new Post();
 
         if (doc == null) {
+            // Retrieve post from firestore based on the given id
             doc = firestore.collection("posts").document(id).get().get();
         }
 
@@ -141,10 +142,14 @@ public class PostService {
         DocumentSnapshot userDoc = userFuture.get();
 
         if (userDoc.exists()) {
-            UserService us = new UserService(firestore);
-            User user = us.getUserById(ds.getId());
+            UserService userService = new UserService(firestore);
+
+            User user = userService.getUserById(ds.getId());
             post.setUser(user);
         }
+
+        CommentService commentService = new CommentService(firestore);
+        post.setComments(commentService.getCommentsFromPost(id));
 
         return post;
     }
@@ -194,5 +199,4 @@ public class PostService {
         return writeResult.toString();
 
     }
-
 }
