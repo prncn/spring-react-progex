@@ -5,21 +5,21 @@ import { Link } from "react-router-dom";
 import api from "../controller/QueryService";
 import { PDFviewer } from "../components/PDFviewer";
 import { useDropzone } from "react-dropzone";
-import { useAuth } from "../controller/Firebase";
+import { uploadFile, useAuth } from "../controller/Firebase";
 import { NavTab } from "../components/NavTab";
 
 export default function Dashboard() {
   const [data, setData] = useState(api.placeholder);
   const currentUser = useAuth();
-  
+
   useEffect(() => {
     (async () => {
-      const session = window.sessionStorage.getItem('POST_CACHE');
-      if(session) {
+      const session = window.sessionStorage.getItem("POST_CACHE");
+      if (session) {
         setData(JSON.parse(session));
       } else {
         const res = await api.getPosts();
-        window.sessionStorage.setItem('POST_CACHE', JSON.stringify(res));
+        window.sessionStorage.setItem("POST_CACHE", JSON.stringify(res));
         setData(res);
       }
     })();
@@ -30,7 +30,7 @@ export default function Dashboard() {
       <NavTab currentUser={currentUser} data={data.slice(0, 6)} />
       <div className="flex flex-col items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
         <PostCreator currentUser={currentUser} />
-        <h1 className="font-bold text-gray-500 text-3xl text-left pt-10 w-full px-3">
+        <h1 className="font-bold text-gray-500 text-3xl text-left pt-10 pb-5 w-full px-3">
           Posts
         </h1>
         {data.map((post, i) => (
@@ -54,9 +54,6 @@ export default function Dashboard() {
       />
     </div>
   );
-
-  
-  
 }
 
 const activeStyle = {
@@ -77,7 +74,7 @@ const baseStyle = {
   display: "flex",
   borderRadius: "0.75em",
   padding: "0.75rem",
-  borderWidth: 2,
+  borderWidth: 4,
   borderColor: "#a5b4fc",
   borderStyle: "dashed",
   transition: "border .24s ease-in-out",
@@ -86,20 +83,21 @@ const baseStyle = {
 function PostCreator({ currentUser }) {
   const [title, setTitle] = useState();
   const [description, setDescription] = useState();
-  const [url, setUrl] = useState();
+  const [url, setURL] = useState();
   const pfpIcon = currentUser?.photoURL;
   const [show, setShow] = useState(false);
-  
-  const onDrop = useCallback(acceptedFiles => {
-    setUrl(acceptedFiles.at(-1)?.path)
+
+  const onDrop = useCallback(async (acceptedFiles) => {
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles.at(-1);
+      setURL("Uploading...");
+      const downloadURL = await uploadFile(file);
+      setURL(downloadURL);
+    }
   }, []);
 
-  const {
-    getRootProps,
-    isDragActive,
-    isDragAccept,
-    isDragReject,
-  } = useDropzone({ accept: "application/pdf", onDrop });
+  const { getRootProps, isDragActive, isDragAccept, isDragReject } =
+    useDropzone({ accept: "application/pdf", onDrop });
 
   const style = useMemo(
     () => ({
@@ -111,18 +109,27 @@ function PostCreator({ currentUser }) {
     [isDragActive, isDragReject, isDragAccept]
   );
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    api.createPost(
-      {
-        ...currentUser,
-        id: currentUser?.uid,
-      },
-      title,
-      description,
-      url
-    );
-    console.log(title);
+    let completed_flag = false;
+    [title, description, url].forEach((item) => {
+      if (/^ *$/.test(item)) {
+        completed_flag = true;
+      }
+    });
+
+    if (url !== "Uploading..." && completed_flag) {
+      api.createPost(
+        { ...currentUser, id: currentUser?.uid },
+        title,
+        description,
+        url
+      );
+      console.log(title);
+
+      const res = await api.getPosts();
+      window.sessionStorage.setItem("POST_CACHE", JSON.stringify(res));
+    }
   };
 
   function handleReveal(e) {
@@ -131,7 +138,6 @@ function PostCreator({ currentUser }) {
       setShow(true);
     }
   }
-
 
   return (
     <div className="w-full h-40 mb-2">
@@ -146,49 +152,49 @@ function PostCreator({ currentUser }) {
           </div>
         </div>
       ) : (
-        <div className="bg-indigo-100 p-2 mb-3 rounded-b-xl">
-        <div {...getRootProps({ style })}>
-          <div className="w-20">
-            <div className="w-16 h-16 mt-2 rounded-full">
-              <img
-                className="w-full h-full object-cover rounded-full block shadow-lg"
-                src={pfpIcon}
-                alt="pfp_icon"
-              />
+        <div className="bg-white p-2 mb-3 rounded-b-xl">
+          <div {...getRootProps({ style })}>
+            <div className="w-20">
+              <div className="w-16 h-16 mt-2 rounded-full">
+                <img
+                  className="w-full h-full object-cover rounded-full block shadow-lg"
+                  src={pfpIcon}
+                  alt="pfp_icon"
+                />
+              </div>
             </div>
+            <form className="w-full h-full flex">
+              <div className="flex flex-col w-full">
+                <input
+                  className="py-1 bg-transparent text-lg focus:outline-none"
+                  placeholder="Post Title"
+                  value={title}
+                  onInput={(event) => setTitle(event.target.value)}
+                  spellCheck="false"
+                ></input>
+                <textarea
+                  className="py-1 bg-transparent text-sm focus:outline-none resize-none"
+                  placeholder="Description"
+                  value={description}
+                  onInput={(event) => setDescription(event.target.value)}
+                  spellCheck="false"
+                ></textarea>
+                <input
+                  className="py-1 bg-transparent text-sm focus:outline-none text-gray-500"
+                  placeholder="Document URL or drag your file here"
+                  value={url}
+                  onInput={(event) => setURL(event.target.value)}
+                  spellCheck="false"
+                ></input>
+              </div>
+              <button
+                onClick={handleSubmit}
+                className="bg-gray-50 px-5 py-2 rounded-full self-end mt-auto hover:bg-gray-100"
+              >
+                <span>Send.</span>
+              </button>
+            </form>
           </div>
-          <form className="w-full h-full flex">
-            <div className="flex flex-col w-full">
-              <input
-                className="py-1 bg-transparent text-lg focus:outline-none"
-                placeholder="Post Title"
-                value={title}
-                onInput={(event) => setTitle(event.target.value)}
-                spellCheck="false"
-              ></input>
-              <textarea
-                className="py-1 bg-transparent text-sm focus:outline-none resize-none"
-                placeholder="Description"
-                value={description}
-                onInput={(event) => setDescription(event.target.value)}
-                spellCheck="false"
-              ></textarea>
-              <input
-                className="py-1 bg-transparent text-sm focus:outline-none text-gray-500"
-                placeholder="Document URL or drag your file here"
-                value={url}
-                onInput={(event) => setUrl(event.target.value)}
-                spellCheck="false"
-              ></input>
-            </div>
-            <button
-              onClick={handleSubmit}
-              className="bg-gray-50 px-5 py-2 rounded-full self-end mt-auto hover:bg-gray-100"
-            >
-              <span>Send.</span>
-            </button>
-          </form>
-        </div>
         </div>
       )}
     </div>
@@ -214,4 +220,3 @@ export function SpacesTab({ spaces }) {
     </div>
   );
 }
-

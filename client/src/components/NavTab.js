@@ -23,7 +23,7 @@ export function NavTab({ currentUser, data }) {
       return (
         <NavLink
           to={`/${path === "profile" ? path + `/${currentUser?.uid}` : path}`}
-          className={({ isActive }) => isActive && "bg-indigo-100 text-indigo-400 rounded-lg"}
+          className={({ isActive }) => isActive ? "bg-indigo-100 text-indigo-400 rounded-lg" : ""}
         >
           <button
             className={`dashboard-nav__btn`}

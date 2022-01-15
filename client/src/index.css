@@ -64,3 +64,11 @@ code {
     transform: translateY(0);
   }
 }
+
+.hidescrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hidescrollbar {
+  -ms-overflow-style: none;
+}

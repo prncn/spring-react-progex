@@ -32,7 +32,7 @@ export function PDFviewer({ idn = 0, file, title, height = '96', embedMode = 'IN
   
     return (
       <div
-        className={`${rounded && 'rounded-xl'} h-${height} overflow-y-auto`} 
+        className={`${rounded && 'rounded-xl'} h-${height} overflow-y-auto hidescrollbar`} 
       >
         <div id={`pdf-div-${idn}`} className='h-full w-full' style={{ height: `${scroll && '850px'}` }}/>
       </div>

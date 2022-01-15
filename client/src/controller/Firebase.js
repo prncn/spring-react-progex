@@ -13,6 +13,8 @@ import {
   updateProfile,
 } from '@firebase/auth';
 import { useState, useEffect } from 'react';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { async } from '@firebase/util';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBGVejgoBEWRT5w4HIRMKOe5IoRpcndWHo',
@@ -37,6 +39,17 @@ const photoURL = images[Math.random() * images.length];
 initializeApp(firebaseConfig);
 export const auth = getAuth();
 export const db = getFirestore();
+const storage = getStorage();
+
+
+
+export async function uploadFile(file) {
+  const storageRef = ref(storage, file.path);
+  const snapshot = await uploadBytes(storageRef, file)
+  console.log(`Uploaded file ${snapshot.metadata.bucket} to cloud.`);
+  const downloadURL = await getDownloadURL(snapshot.ref);
+  return downloadURL;
+}
 
 export function signup(email, password, displayName) {
   return createUserWithEmailAndPassword(auth, email, password).then((res) => {

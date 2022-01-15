@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { Link, useParams } from "react-router-dom";
 import { NavTab } from "../components/NavTab";
 import { PDFviewer } from "../components/PDFviewer";
@@ -44,7 +43,7 @@ export default function Explore() {
     if ("spaceId" in params) {
       (async () => {
         const postsData = await api.getPosts();
-        setData(postsData.data);
+        setData(postsData);
       })();
     }
   }, [params]);
@@ -58,46 +57,26 @@ export default function Explore() {
             <h1 className="ml-1 mt-10 text-lg font-semibold">
               {params.spaceId}
             </h1>
-            <p className="ml-1 font-light">{data.length} documents</p>
-            <DragDropContext>
-              <Droppable droppableId="spacesDND">
-                {(provided) => (
-                  <div
-                    className="flex flex-wrap mt-5"
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                  >
-                    {data.map((post, i) => (
-                      <Draggable key={post.id} draggableId={post.id} index={i}>
-                        {(provided) => (
-                          <Link
-                            to={`/view?id=${post.id}`}
-                            state={post}
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <div className="h-60 w-44 m-1 overflow-hidden relative bg-red-400">
-                              <PDFviewer
-                                idn={i}
-                                file={post.url}
-                                title={post.title}
-                                embedMode="SIZED_CONTAINER"
-                                height="60"
-                                className="overflow-hidden"
-                                scroll={false}
-                                rounded={false}
-                              />
-                              <div className="bg-black w-full h-full absolute top-0 left-0 hover:opacity-30 opacity-0 transition" />
-                            </div>
-                          </Link>
-                        )}
-                      </Draggable>
-                    ))}
+            <p className="ml-1 font-light">{data?.length} documents</p>
+            <div className="flex flex-wrap mt-5">
+              {data.map((post, i) => (
+                <Link to={`/view?id=${post.id}`} state={post}>
+                  <div className="h-60 w-44 m-1 overflow-hidden relative bg-red-400">
+                    <PDFviewer
+                      idn={i}
+                      file={post.url}
+                      title={post.title}
+                      embedMode="SIZED_CONTAINER"
+                      height="60"
+                      className="overflow-hidden"
+                      scroll={false}
+                      rounded={false}
+                    />
+                    <div className="bg-black w-full h-full absolute top-0 left-0 hover:opacity-30 opacity-0 transition" />
                   </div>
-                )}
-              </Droppable>
-            </DragDropContext>
+                </Link>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="flex flex-wrap p-2">
