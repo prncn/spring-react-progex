@@ -5,6 +5,7 @@ import {
   IconHeart,
   IconDotMenu,
   IconTrash,
+  IconEdit,
 } from "../icons/PostIcons";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -131,25 +132,30 @@ export default function Post({ data, currentUser, children }) {
           <Link to={`/profile/${data.user.id}`}>{data.user.displayName}</Link>
           <span className="mx-2 font-bold">&#183;</span>
           <div className="font-light">{timeDifference(data.date)}</div>
-          <span
+          {(data.user.id === currentUser?.uid) && <span
             className="ml-auto text-gray-500 hover:text-gray-800 cursor-pointer relative"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             ref={menuRef}
           >
             <IconDotMenu />
             <div
-              className={`bg-gray-50 rounded-lg w-40 absolute right-0 top-6 transition ${
+              className={`bg-gray-50 rounded-lg w-40 absolute right-0 border top-6 transition overflow-hidden ${
                 isMenuOpen ? "visible" : "invisible"
               }`}
             >
               <div 
                 onClick={deleteHandler} 
-                className="text-red-400 p-2 rounded-lg border flex space-x-2 items-center hover:bg-red-200">
+                className="text-red-400 p-2 flex space-x-2 items-center hover:bg-red-200">
                 <IconTrash />
                 <span>Delete</span>
               </div>
+              <div 
+                className="text-gray-600 p-2 flex space-x-2 items-center hover:bg-gray-200">
+                <IconEdit />
+                <span>Edit</span>
+              </div>
             </div>
-          </span>
+          </span>}
         </div>
         <div className="pb-3">{data.description}</div>
         {children}

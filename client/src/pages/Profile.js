@@ -1,18 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useAuth, _updateEmail, _updatePassword } from '../controller/Firebase';
-import { useNavigate, useParams } from 'react-router';
-import api from '../controller/QueryService';
-import Post from '../components/Post';
-import { prominent } from 'color.js';
-import { PDFviewer } from '../components/PDFviewer';
-import { NavTab } from '../components/NavTab';
-import { SpacesTab } from './Dashboard';
+import React, { useEffect, useRef, useState } from "react";
+import { useAuth, _updateEmail, _updatePassword } from "../controller/Firebase";
+import { useNavigate, useParams } from "react-router";
+import api from "../controller/QueryService";
+import Post from "../components/Post";
+import { prominent } from "color.js";
+import { PDFviewer } from "../components/PDFviewer";
+import { NavTab } from "../components/NavTab";
+import { SpacesTab } from "./Dashboard";
 
 export default function Profile() {
   const [data, setData] = useState([]);
   const [userPosts, setUserPosts] = useState([]);
   const [user, setUser] = useState({});
-  const [activeTab, setActiveTab] = useState('Posts');
+  const [activeTab, setActiveTab] = useState("Posts");
 
   const currentUser = useAuth();
   const emailRef = useRef();
@@ -36,7 +36,7 @@ export default function Profile() {
     e.preventDefault();
 
     if (passwordRef.current.value !== passwordConfirmRef.current.value) {
-      alert('Passwords do not match');
+      alert("Passwords do not match");
     }
 
     setLoading(true);
@@ -52,10 +52,10 @@ export default function Profile() {
 
     Promise.all(promises)
       .then(() => {
-        navigate('/');
+        navigate("/");
       })
       .catch(() => {
-        alert('Profile could not be updated, try again');
+        alert("Profile could not be updated, try again");
       })
       .finally(() => {
         setLoading(false);
@@ -72,7 +72,7 @@ export default function Profile() {
       if (user?.photoURL !== undefined) {
         const color = await prominent(user.photoURL, {
           amount: 3,
-          format: 'hex',
+          format: "hex",
           sample: 30,
           group: 30,
         });
@@ -85,11 +85,11 @@ export default function Profile() {
     setActiveTab(currentTab);
 
     switch (currentTab) {
-      case 'Posts':
+      case "Posts":
         setData(userPosts);
         break;
 
-      case 'Liked':
+      case "Liked":
         const likedPostsIds = user.likedPosts;
         let likedPosts = [];
         for (const id of likedPostsIds) {
@@ -98,8 +98,8 @@ export default function Profile() {
         }
         setData(likedPosts);
         break;
-      
-      case 'Saved':
+
+      case "Saved":
         const savedPostsIds = user.savedPosts;
         let savedPosts = [];
         for (const id of savedPostsIds) {
@@ -119,14 +119,13 @@ export default function Profile() {
     <div className="flex min-h-screen justify-center divide-x">
       <NavTab currentUser={currentUser} active="profile" />
       <div className="flex flex-col items-center xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
-        <div className='w-full h-4' style={{backgroundColor: profilePalette[2]}}></div>
         <div
-          className={`w-full h-40 flex rounded-b-xl p-3`}
+          className={`w-full h-32 flex justify-end rounded-b-xl p-3 relative`}
           style={{
             backgroundImage: `linear-gradient(to bottom right, ${profilePalette[2]}, ${profilePalette[0]})`,
           }}
         >
-          <div className="w-32 h-32 rounded-full">
+          <div className="w-32 h-32 rounded-full absolute -bottom-10 left-10 border-4 border-gray-50">
             <img
               className="w-full h-full object-cover rounded-full"
               src={user?.photoURL}
@@ -134,41 +133,54 @@ export default function Profile() {
             />
           </div>
           <div className="flex flex-col p-4 h-full">
-            <div className="text-3xl text-white font-semibold mb-auto">
+            <div className="text-3xl text-white font-semibold">
               {user.displayName}
             </div>
             <div className=" text-white font-light">
-              <strong className="font-semibold">799</strong> Followers
+              {user.likedPosts?.length} Docs Liked
             </div>
-            <div className=" text-white font-light">239 Following</div>
+            <div className=" text-white font-light">
+              {user.savedPosts?.length} Docs Saved
+            </div>
+          </div>
+          <div className="h-full">
+            <div className="py-2 px-6 border border-white rounded-full text-white font-semibold cursor-pointer hover:shadow transition">
+              <span className="opactiy-100">Follow</span>
+            </div>
           </div>
         </div>
-        <div className="flex self-start mt-5 space-x-5 m-3">
-          <button onClick={() => switchTab('Posts')}>
+        <div className="flex self-start mt-14 space-x-5 m-3">
+          <button onClick={() => switchTab("Posts")}>
             <span
               className={
                 `font-bold text-3xl text-left ` +
-                (activeTab === 'Posts' ? 'text-gray-500' : 'text-gray-300 hover:text-gray-400')
+                (activeTab === "Posts"
+                  ? "text-gray-500"
+                  : "text-gray-300 hover:text-gray-400")
               }
             >
               Posts
             </span>
           </button>
-          <button onClick={() => switchTab('Liked')}>
+          <button onClick={() => switchTab("Liked")}>
             <span
               className={
                 `font-bold text-3xl text-left ` +
-                (activeTab === 'Liked' ? 'text-gray-500' : 'text-gray-300 hover:text-gray-400')
+                (activeTab === "Liked"
+                  ? "text-gray-500"
+                  : "text-gray-300 hover:text-gray-400")
               }
             >
               Liked
             </span>
           </button>
-          <button onClick={() => switchTab('Saved')}>
+          <button onClick={() => switchTab("Saved")}>
             <span
               className={
                 `font-bold text-3xl text-left ` +
-                (activeTab === 'Saved' ? 'text-gray-500' : 'text-gray-300 hover:text-gray-400')
+                (activeTab === "Saved"
+                  ? "text-gray-500"
+                  : "text-gray-300 hover:text-gray-400")
               }
             >
               Saved
@@ -177,16 +189,21 @@ export default function Profile() {
         </div>
         {data.map((post, i) => (
           <Post key={post.id} data={post} currentUser={currentUser}>
-            <PDFviewer idn={i} file={post.url} title={post.title} embedMode='SIZED_CONTAINER'/>
+            <PDFviewer
+              idn={i}
+              file={post.url}
+              title={post.title}
+              embedMode="SIZED_CONTAINER"
+            />
           </Post>
         ))}
       </div>
       <SpacesTab
         spaces={[
-          'distributedsystems',
-          'illustrations',
-          'streetwear',
-          'fitness',
+          "distributedsystems",
+          "illustrations",
+          "streetwear",
+          "fitness",
         ]}
       />
     </div>
