@@ -20,9 +20,9 @@ public class FirebaseInitializer {
         File credentials;
 
         try {
-            credentials = new File(path);
-        } catch (Exception e) {
             credentials = new File("backend/" + path);
+        } catch (Exception e) {
+            credentials = new File(path);
         }
 
         FirebaseOptions options = FirebaseOptions.builder()

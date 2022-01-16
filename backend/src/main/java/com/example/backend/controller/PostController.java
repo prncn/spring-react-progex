@@ -2,17 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.model.Post;
 import com.example.backend.service.PostService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.Data;
 
@@ -31,17 +21,19 @@ public class PostController {
 
     @GetMapping(value = "/posts")
     public List<Post> getAllPost(@RequestParam(required = false) Integer limit,
-            @RequestParam(required = false) String user)
+            @RequestParam(required = false) String user, @RequestParam(value = "category", required = false) String category)
             throws ExecutionException, InterruptedException {
         if (limit == null) {
             limit = 50;
         }
 
-        if (!(user instanceof String)) {
-            return postService.getPostList(limit);
-        } else {
+        if (user instanceof String) {
             //Get all posts from user
             return postService.getPostList(limit, user);
+        } else if (category instanceof String){
+            return postService.getPostsFromCategory(category, limit);
+        } else{
+            return postService.getPostList(limit);
         }
     }
 
@@ -60,9 +52,9 @@ public class PostController {
         return postService.updatePost(post);
     }
 
-    @DeleteMapping(value = "/posts")
-    public String deletePost(@RequestHeader String id) throws InterruptedException, ExecutionException {
-        return postService.deletePost(id);
+    @DeleteMapping(value = "/posts/{id}")
+    public String deletePost(@PathVariable String id, @RequestBody Post post) throws InterruptedException, ExecutionException {
+        return postService.deletePost(id, post.getCategory());
     }
 
     @Data
