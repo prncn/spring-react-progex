@@ -17,6 +17,7 @@ public class Post {
     private String title;
     private String description;
     private Timestamp date;
+    private String category;
 
     private String url;
     private Double likeCount = (double) 0;
