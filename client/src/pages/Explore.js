@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { PDFviewer } from "../components/PDFviewer";
-import { useAuth } from "../controller/Firebase";
 import { getPosts } from "../controller/QueryService";
 import { NavTab } from "./Dashboard";
+import { useAuth } from "../context/AuthContext";
 
 export default function Explore() {
-  const auth = useAuth();
+  //const auth = useAuth();
+  const { currentUser } = useAuth();
   const params = useParams();
   const spaces = [
     "illustration",
@@ -50,7 +51,7 @@ export default function Explore() {
 
   return (
     <div className="flex min-h-screen">
-      <NavTab currentUser={auth} active="spaces" />
+      <NavTab currentUser={currentUser} active="spaces" />
       <div className="bg-gray-100 w-full">
         {"spaceId" in params ? (
           <div className="p-5">

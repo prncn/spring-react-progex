@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { PDFviewer } from "../components/PDFviewer";
-import { useAuth } from "../controller/Firebase";
 import { getPostById, getUserById } from "../controller/QueryService";
 import { IconFolder, IconPlus } from "../icons/FileIcons";
 import { NavTab } from "./Dashboard";
+import { useAuth } from "../context/AuthContext";
 
 const fileList = [
   {
@@ -48,7 +48,8 @@ const fileList = [
 ];
 
 export default function Docs() {
-  const auth = useAuth();
+  //const auth = useAuth();
+  const { currentUser } = useAuth();
 
   const data = useMemo(() => ({ 
     name: "main", 
@@ -63,8 +64,8 @@ export default function Docs() {
 
   useEffect(() => {
     (async () => {
-      if (auth !== undefined) {
-        const [user, response] = await getUserById(auth?.uid);
+      if (currentUser !== undefined) {
+        const [user, response] = await getUserById(currentUser?.uid);
         console.log(response);
         if ("savedPosts" in user) {
           for (const savedPostId of user.savedPosts) {
@@ -80,7 +81,7 @@ export default function Docs() {
         }
       }
     })();
-  }, [auth, data]);
+  }, [currentUser, data]);
 
   function RecursiveDrawFolder({ name, items, pass, url, opened = false }) {
     const [showChildren, setShowChildren] = useState(opened);
@@ -137,7 +138,7 @@ export default function Docs() {
 
   return (
     <div className="flex min-h-screen">
-      <NavTab currentUser={auth} active="docs" />
+      <NavTab currentUser={currentUser} active="docs" />
       <div className="bg-gray-900 w-full flex p-10">
         <div className="w-1/2 xl:w-1/3 h-full mr-10">
           <div className="h-full w-full rounded-lg border border-white p-4">

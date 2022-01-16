@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useAuth, _updateEmail, _updatePassword } from '../controller/Firebase';
 import { useNavigate, useParams } from 'react-router';
 import { NavTab, SpacesTab } from './Dashboard';
 import {
@@ -10,6 +9,7 @@ import {
 import Post from '../components/post';
 import { prominent } from 'color.js';
 import { PDFviewer } from '../components/PDFviewer';
+import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
   const [data, setData] = useState([]);
@@ -17,7 +17,7 @@ export default function Profile() {
   const [user, setUser] = useState({});
   const [activeTab, setActiveTab] = useState('Posts');
 
-  const currentUser = useAuth();
+  const {currentUser, _updateEmail, _updatePassword} = useAuth();
   const emailRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();

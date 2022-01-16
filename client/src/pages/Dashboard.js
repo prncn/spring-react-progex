@@ -1,7 +1,6 @@
 import "../index.css";
 import Post from "../components/post";
 import React, { useState, useEffect } from "react";
-import { logout, useAuth } from "../controller/Firebase";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import { createPost, getPosts, placeholder } from "../controller/QueryService";
@@ -14,10 +13,11 @@ import {
 import IconHome from "../icons/home";
 import { lightbox, PDFviewer } from "../components/PDFviewer";
 import ViewSDKClient from "../controller/ViewSDKClient";
+import { useAuth } from "../context/AuthContext";
 
 export default function Dashboard() {
   const [data, setData] = useState(placeholder);
-  const currentUser = useAuth();
+  const {currentUser}= useAuth();
   console.log(currentUser);
 
   useEffect(() => {
@@ -157,6 +157,7 @@ function Stories({ storyposts }) {
 
 export function NavTab({ currentUser, active }) {
   const navigate = useNavigate();
+  const {logout} = useAuth();
 
   async function handleLogout(e) {
     e.preventDefault();

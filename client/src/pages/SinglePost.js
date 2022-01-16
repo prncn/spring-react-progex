@@ -1,14 +1,14 @@
 import '../index.css';
 import Post from '../components/post';
 import React, { createRef, useState } from 'react';
-import { useAuth } from '../controller/Firebase';
 import { NavTab, SpacesTab } from './Dashboard';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import IconHeart from '../icons/heart';
 import { PDFviewer } from '../components/PDFviewer';
+import { useAuth } from "../context/AuthContext";
 
 export default function SinglePost() {
-  const currentUser = useAuth();
+  const { currentUser } = useAuth();
   const [searchParams] = useSearchParams();
   const post_id_url = searchParams.get('id');
   console.log(post_id_url);
