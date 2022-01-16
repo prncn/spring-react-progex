@@ -4,14 +4,7 @@ import com.example.backend.model.Post;
 import com.example.backend.model.User;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.Timestamp;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.FieldValue;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.Query;
-import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.google.cloud.firestore.QuerySnapshot;
-import com.google.cloud.firestore.WriteResult;
+import com.google.cloud.firestore.*;
 import com.google.cloud.firestore.Query.Direction;
 
 import org.springframework.stereotype.Service;
@@ -54,6 +47,15 @@ public class PostService {
         return getPostList(postsCollection);
     }
 
+    public List<Post> getPostsFromCategory(String category, Integer limit) throws ExecutionException, InterruptedException {
+        Query postsCollection = firestore.collection("posts")
+                .orderBy("date", Direction.DESCENDING)
+                .whereEqualTo("category", category)
+                .limit(limit);
+
+        return getPostList(postsCollection);
+    }
+
     public List<Post> getPostList(Query query) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> future = query.get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
@@ -81,6 +83,7 @@ public class PostService {
         post.setDate(Timestamp.now()); // get local current time
 
         String userId = post.getUser().getId();
+        String category = post.getCategory();
         DocumentReference userRef = firestore.collection("users").document(userId);
         Map<String, Object> postData = new HashMap<>();
         postData.put("date", post.getDate());
@@ -90,6 +93,8 @@ public class PostService {
         postData.put("title", post.getTitle());
         postData.put("url", post.getUrl());
         postData.put("userId", userRef);
+        postData.put("category", category);
+        createOrIncrementCategoryCounter(category);
 
         ApiFuture<WriteResult> collectionsApiFuture = firestore.collection("posts").document().set(postData);
         return collectionsApiFuture.get().getUpdateTime().toString();
@@ -108,8 +113,13 @@ public class PostService {
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
-    public String deletePost(String id) throws InterruptedException, ExecutionException {
-        ApiFuture<WriteResult> writeResult = firestore.collection("posts").document(id).delete();
+    public String deletePost(String id, String postCategory) throws InterruptedException, ExecutionException {
+        DocumentReference docRef = firestore.collection("posts").document(id);
+        CollectionReference collectionRef = docRef.collection("comments");
+
+        ApiFuture<WriteResult> writeResult = docRef.delete();
+        deleteCollection(collectionRef, 10);
+        deleteOrDecrementCategoryCounter(postCategory);
         return writeResult.get().getUpdateTime().toString();
     }
 
@@ -136,6 +146,7 @@ public class PostService {
         post.setDescription(doc.getString("description"));
         post.setDate(doc.getTimestamp("date"));
         post.setUrl(doc.getString("url"));
+        post.setCategory(doc.getString("category"));
 
         DocumentReference ds = (DocumentReference) doc.get("userId");
         ApiFuture<DocumentSnapshot> userFuture = ds.get();
@@ -158,7 +169,7 @@ public class PostService {
      * (Un)like or (un)save a post by incrementing the corrensponding
      * field count on the post and passing a post reference to the user
      * 
-     * @param filed             - Field should be either list of likes or saved
+     * @param field             - Field should be either list of likes or saved
      *                          documents
      * @param postId            - Ref to post
      * @param userId            - Ref to user
@@ -198,5 +209,57 @@ public class PostService {
         ApiFuture<WriteResult> writeResult = userRef.update(field, fieldList);
         return writeResult.toString();
 
+    }
+
+    public void createOrIncrementCategoryCounter(String postCategory) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = firestore.collection("category")
+                .document("SDXBXH2B5iRjgIbebWMR");
+
+        DocumentSnapshot docSnap = docRef.get().get();
+
+        if(!docSnap.getData().containsKey(postCategory)){
+            Map<String, Object> update = new HashMap<>();
+            update.put(postCategory, 1);
+
+            docRef.set(update, SetOptions.merge());
+        } else {
+            docRef.update(postCategory, FieldValue.increment(1));
+        }
+    }
+
+    public void deleteOrDecrementCategoryCounter(String postCategory) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = firestore.collection("category")
+                .document("SDXBXH2B5iRjgIbebWMR");
+
+        DocumentSnapshot docSnap = docRef.get().get();
+        if(docSnap.getData().containsKey(postCategory)){
+            docRef.update(postCategory, FieldValue.increment(-1));
+            if(docSnap.getDouble(postCategory) >= 0){
+                docRef.update(postCategory, FieldValue.delete());
+            }
+        }
+    }
+
+    /** Delete a collection in batches to avoid out-of-memory errors.
+     * Batch size may be tuned based on document size (atmost 1MB) and application requirements.
+     */
+    void deleteCollection(CollectionReference collection, int batchSize) {
+        try {
+            // retrieve a small batch of documents to avoid out-of-memory errors
+            ApiFuture<QuerySnapshot> future = collection.limit(batchSize).get();
+            int deleted = 0;
+            // future.get() blocks on document retrieval
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+            for (QueryDocumentSnapshot document : documents) {
+                document.getReference().delete();
+                ++deleted;
+            }
+            if (deleted >= batchSize) {
+                // retrieve and delete another batch
+                deleteCollection(collection, batchSize);
+            }
+        } catch (Exception e) {
+            System.err.println("Error deleting collection : " + e.getMessage());
+        }
     }
 }
