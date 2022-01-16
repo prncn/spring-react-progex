@@ -1,11 +1,6 @@
 import "../index.css";
 import Post from "../components/Post";
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  useEffect,
-} from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../controller/QueryService";
 import { lightbox, PDFviewer } from "../components/PDFviewer";
@@ -33,35 +28,46 @@ export default function Dashboard() {
     })();
   }, []);
 
+  const [revealLoader, setRevealLoader] = useState(false);
+
   return (
-    <div className="flex min-h-screen justify-between divide-x">
-      <NavTab currentUser={currentUser} data={data.slice(0, 6)} />
-      <div className="flex flex-col items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
-        <PostCreator currentUser={currentUser} />
-        <h1 className="font-bold text-gray-500 text-3xl text-left pt-10 pb-5 w-full px-3">
-          Posts
-        </h1>
-        {data.map((post, i) => (
-          <Post key={post.id} data={post} currentUser={currentUser}>
-            <PDFviewer
-              idn={i}
-              file={post.url}
-              title={post.title}
-              embedMode="SIZED_CONTAINER"
-            />
-          </Post>
-        ))}
+    <>
+      <div className="bg-black w-full h-2">
+        {revealLoader && (
+          <div className="h-full bg-gradient-to-r to-red-300 from-indigo-500 animate-progress" />
+        )}
       </div>
-      <SpacesTab
-        spaces={[
-          "distributedsystems",
-          "illustrations",
-          "streetwear",
-          "fitness",
-        ]}
-        data={data.slice(0, 3)}
-      />
-    </div>
+      <div className="flex min-h-screen justify-between divide-x">
+        <NavTab currentUser={currentUser} data={data.slice(0, 6)} />
+        <div className="flex flex-col items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
+          <PostCreator currentUser={currentUser} setRevealLoader={setRevealLoader}/>
+          <h1
+            className="font-bold text-gray-500 text-3xl text-left pt-10 pb-5 w-full px-3"
+          >
+            Posts
+          </h1>
+          {data.map((post, i) => (
+            <Post key={post.id} data={post} currentUser={currentUser}>
+              <PDFviewer
+                idn={i}
+                file={post.url}
+                title={post.title}
+                embedMode="SIZED_CONTAINER"
+              />
+            </Post>
+          ))}
+        </div>
+        <SpacesTab
+          spaces={[
+            "distributedsystems",
+            "illustrations",
+            "streetwear",
+            "fitness",
+          ]}
+          data={data.slice(0, 3)}
+        />
+      </div>
+    </>
   );
 }
 
@@ -89,21 +95,22 @@ const baseStyle = {
   transition: "border .24s ease-in-out",
 };
 
-function PostCreator({ currentUser }) {
+function PostCreator({ currentUser, setRevealLoader }) {
   const [title, setTitle] = useState();
   const [description, setDescription] = useState();
   const [url, setURL] = useState();
   const pfpIcon = currentUser?.photoURL;
   const [show, setShow] = useState(false);
-
+  
   const onDrop = useCallback(async (acceptedFiles) => {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles.at(-1);
       setURL("Uploading...");
+      setRevealLoader(true);
       const downloadURL = await uploadFile(file);
       setURL(downloadURL);
     }
-  }, []);
+  }, [setRevealLoader]);
 
   const { getRootProps, isDragActive, isDragAccept, isDragReject } =
     useDropzone({ accept: "application/pdf", onDrop });

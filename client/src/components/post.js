@@ -12,6 +12,8 @@ import { Link } from "react-router-dom";
 import api from "../controller/QueryService";
 import { Img } from "react-image";
 import anonIcon from "../img/img_258083.png";
+import { deleteFile } from "../controller/Firebase";
+import { confirmAlert } from "react-confirm-alert";
 
 export function timeDifference(previous) {
   previous = previous.seconds / 1000;
@@ -90,10 +92,25 @@ export default function Post({ data, currentUser, children }) {
   }
 
   function deleteHandler() {
-    if (window.confirm("Sure you want to delete this?")) {
-      api.deletePost(data.id);
-    }
+    confirmAlert({
+      title: "Confirm to submit",
+      message: "Really delete this post?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => {
+            api.deletePost(data.id);
+            deleteFile(data.url);
+          },
+        },
+        {
+          label: "No",
+        },
+      ],
+    });
   }
+
+  function editHandler() {}
 
   return (
     <div className="flex w-full border-b pt-2 px-2 mx-4 text-black bg-gray-50 hover:bg-gray-100 transition text-sm">
@@ -153,7 +170,10 @@ export default function Post({ data, currentUser, children }) {
                   <IconTrash />
                   <span>Delete</span>
                 </div>
-                <div className="text-gray-600 p-2 flex space-x-2 items-center hover:bg-gray-200">
+                <div
+                  onClick={editHandler}
+                  className="text-gray-600 p-2 flex space-x-2 items-center hover:bg-gray-200"
+                >
                   <IconEdit />
                   <span>Edit</span>
                 </div>

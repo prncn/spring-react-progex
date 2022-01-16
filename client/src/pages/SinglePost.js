@@ -10,35 +10,35 @@ import { NavTab } from "../components/NavTab";
 import { SpacesTab } from "./Dashboard";
 import api from "../controller/QueryService";
 
-const commentPlaceholder = [
-  {
-    id: "1",
-    user: {
-      id: "2",
-      displayName: "Erykah",
-      photoURL: "https://i.imgur.com/Ks2oou4.jpg",
-    },
-    content:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum1",
-    date: {
-      seconds: 1638807536,
-      nanos: 782000000,
-    },
-  },
-  {
-    id: "2",
-    user: {
-      id: "3",
-      displayName: "Grace",
-      photoURL: "https://i.imgur.com/NDFE7BQ.jpg",
-    },
-    content: "Checkout out this thing I found on page 6 by clicking on it.",
-    date: {
-      seconds: 1638807536,
-      nanos: 782000000,
-    },
-  },
-];
+// const commentPlaceholder = [
+//   {
+//     id: "1",
+//     user: {
+//       id: "2",
+//       displayName: "Erykah",
+//       photoURL: "https://i.imgur.com/Ks2oou4.jpg",
+//     },
+//     content:
+//       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum1",
+//     date: {
+//       seconds: 1638807536,
+//       nanos: 782000000,
+//     },
+//   },
+//   {
+//     id: "2",
+//     user: {
+//       id: "3",
+//       displayName: "Grace",
+//       photoURL: "https://i.imgur.com/NDFE7BQ.jpg",
+//     },
+//     content: "Checkout out this thing I found on page 6 by clicking on it.",
+//     date: {
+//       seconds: 1638807536,
+//       nanos: 782000000,
+//     },
+//   },
+// ];
 
 export default function SinglePost() {
   const [searchParams] = useSearchParams();

@@ -80,6 +80,7 @@ export default function Profile() {
       }
     })();
   }, [user]);
+  console.log(handleUpdate.name);
 
   async function switchTab(currentTab) {
     setActiveTab(currentTab);

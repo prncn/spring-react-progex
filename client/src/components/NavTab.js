@@ -85,7 +85,7 @@ export function NavTab({ currentUser }) {
             </button>
           </div>
         </div>
-        <div className={`absolute -bottom-10 right-0 font-semibold text-3xl ${typeDark}`}>Murdoc.</div>
+        <div className={`absolute -bottom-10 right-5 font-semibold text-3xl ${typeDark}`}>Murdoc.</div>
       </div>
     );
   }

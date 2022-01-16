@@ -1,7 +1,7 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { doc, setDoc } from 'firebase/firestore';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -11,26 +11,32 @@ import {
   updatePassword,
   updateEmail,
   updateProfile,
-} from '@firebase/auth';
-import { useState, useEffect } from 'react';
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+} from "@firebase/auth";
+import { useState, useEffect } from "react";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyBGVejgoBEWRT5w4HIRMKOe5IoRpcndWHo',
-  authDomain: 'prog-ex.firebaseapp.com',
-  projectId: 'prog-ex',
-  storageBucket: 'prog-ex.appspot.com',
-  messagingSenderId: '435059451981',
-  appId: '1:435059451981:web:231d082cb78c8648149404',
-  measurementId: 'G-CRLNDZDZKZ',
+  apiKey: "AIzaSyBGVejgoBEWRT5w4HIRMKOe5IoRpcndWHo",
+  authDomain: "prog-ex.firebaseapp.com",
+  projectId: "prog-ex",
+  storageBucket: "prog-ex.appspot.com",
+  messagingSenderId: "435059451981",
+  appId: "1:435059451981:web:231d082cb78c8648149404",
+  measurementId: "G-CRLNDZDZKZ",
 };
 
 const images = [
-  'https://i.imgur.com/NDFE7BQ.jpg',
-  'https://i.imgur.com/Ks2oou4.jpg',
-  'https://i.imgur.com/kLcZbQT.jpeg',
-  'https://i.imgur.com/ncnHn9I.jpg',
-  'https://pic.onlinewebfonts.com/svg/img_258083.png',
+  "https://i.imgur.com/NDFE7BQ.jpg",
+  "https://i.imgur.com/Ks2oou4.jpg",
+  "https://i.imgur.com/kLcZbQT.jpeg",
+  "https://i.imgur.com/ncnHn9I.jpg",
+  "https://pic.onlinewebfonts.com/svg/img_258083.png",
 ];
 
 const photoURL = images[Math.floor(Math.random() * images.length)];
@@ -42,10 +48,17 @@ const storage = getStorage();
 
 export async function uploadFile(file) {
   const storageRef = ref(storage, file.path);
-  const snapshot = await uploadBytes(storageRef, file)
+  const snapshot = await uploadBytes(storageRef, file);
   console.log(`Uploaded file ${snapshot.metadata.bucket} to cloud.`);
   const downloadURL = await getDownloadURL(snapshot.ref);
   return downloadURL;
+}
+
+export async function deleteFile(url) {
+  const storageRef = ref(storage, url);
+  deleteObject(storageRef)
+    .then(() => console.log(`Deleted file ${url}`))
+    .catch((error) => console.error(error));
 }
 
 export function signup(email, password, displayName) {
@@ -56,13 +69,13 @@ export function signup(email, password, displayName) {
       photoURL,
     });
     try {
-      setDoc(doc(db, 'users', res.user.uid), {
+      setDoc(doc(db, "users", res.user.uid), {
         displayName,
         photoURL,
         likedPosts: [],
       });
     } catch (e) {
-      console.error('Error adding document: ', e);
+      console.error("Error adding document: ", e);
     }
   });
 }
