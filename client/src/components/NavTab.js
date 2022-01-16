@@ -3,9 +3,11 @@ import { logout } from "../controller/Firebase";
 import { IconDocs, IconExplore, IconHome, IconLogout, IconProfile } from "../icons/NavIcons";
 import anonIcon from "../img/img_258083.png";
 import { Img } from "react-image";
+import { useEffect, useState } from "react";
 
 export function NavTab({ currentUser }) {
     const navigate = useNavigate();
+    const [typeDark, setTypeDark] = useState('text-black');
   
     async function handleLogout(e) {
       e.preventDefault();
@@ -34,9 +36,16 @@ export function NavTab({ currentUser }) {
         </NavLink>
       );
     }
+
+    useEffect(() => {
+      window.onscroll = () =>
+        window.pageYOffset === 0 ? setTypeDark('text-black') : setTypeDark('text-white');
+  
+      return () => (window.onscroll = null);
+    });
   
     return (
-      <div className="sticky flex-1 top-0 md:flex flex-col hidden bg-white" style={{ height: '90vh' }}>
+      <div className="sticky top-0 md:flex flex-col hidden bg-white" style={{ height: '94vh' }}>
         <div className="w-72 h-24 border rounded-lg m-4 ml-auto flex p-3 bg-gray-50">
           <div className="w-16 h-16 rounded-full shadow-md overflow-visible">
             <Img
@@ -76,7 +85,7 @@ export function NavTab({ currentUser }) {
             </button>
           </div>
         </div>
-        <div className="absolute -bottom-10 right-0 font-semibold text-3xl text-white">Murdoc.</div>
+        <div className={`absolute -bottom-10 right-0 font-semibold text-3xl ${typeDark}`}>Murdoc.</div>
       </div>
     );
   }

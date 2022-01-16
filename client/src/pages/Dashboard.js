@@ -189,16 +189,17 @@ function PostCreator({ currentUser }) {
                   spellCheck="false"
                 ></textarea>
                 <input
-                  className="py-1 bg-transparent text-sm focus:outline-none text-gray-500"
-                  placeholder="Document URL or drag your file here"
+                  className="py-1 bg-transparent text-sm w-1/3 focus:outline-none text-gray-500"
+                  placeholder="Drag your file here"
                   value={url}
                   onInput={(event) => setURL(event.target.value)}
                   spellCheck="false"
+                  disabled="true"
                 ></input>
               </div>
               <button
                 onClick={handleSubmit}
-                className="bg-gray-50 px-5 py-2 rounded-full self-end mt-auto hover:bg-gray-100"
+                className="bg-gray-100 px-8 py-2 rounded-full self-end mt-auto hover:bg-gray-200"
               >
                 <span>Send.</span>
               </button>
@@ -214,11 +215,11 @@ export function SpacesTab({ spaces, data }) {
   return (
     <div
       className="sticky top-0 bg-white hidden xl:block flex-1"
-      style={{ height: "90vh" }}
+      style={{ height: "94vh" }}
     >
       <div className="w-80 rounded-lg border m-4 py-6 bg-gray-50">
         <h1 className="text-xl font-semibold mb-4 pl-6">Spaces for you</h1>
-        <div className="font-semibold divide-y m-4">
+        <div className="font-semibold divide-y">
           {spaces.map((space, i) => (
             <Link to={`/spaces/${space}`} key={i}>
               <div className="py-3 px-6 hover:bg-gray-200 cursor-pointer">

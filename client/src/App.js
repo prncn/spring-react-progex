@@ -12,26 +12,10 @@ import { QueryClient, QueryClientProvider } from "react-query";
 const queryClient = new QueryClient();
 
 export default function App() {
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const handleScroll = () => {
-    const position = window.pageYOffset;
-    setScrollPosition(position);
-  };
-
-  // useEffect(() => {
-  //   window.addEventListener("scroll", handleScroll, { passive: true });
-
-  //   return () => {
-  //     window.removeEventListener("scroll", handleScroll);
-  //   };
-  // }, []);
-
-  console.log(scrollPosition);
-
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <div className="h-screen bg-white mt-5">
+        <div className="h-screen bg-white">
           <Router>
             <Routes>
               <Route path="/dash" element={<Dashboard />} />
