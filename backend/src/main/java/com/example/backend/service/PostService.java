@@ -48,6 +48,15 @@ public class PostService {
 
     }
 
+    public List<Post> getPostsFromCategory(String category, Integer limit) throws ExecutionException, InterruptedException {
+        Query postsCollection = firestore.collection("posts")
+                .orderBy("date", Direction.DESCENDING)
+                .whereEqualTo("category", category)
+                .limit(limit);
+
+        return getPostList(postsCollection);
+    }
+
     public List<Post> getPostList(Query query) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> future = query.get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
@@ -258,14 +267,5 @@ public class PostService {
         } catch (Exception e) {
             System.err.println("Error deleting collection : " + e.getMessage());
         }
-    }
-
-    public List<Post> getPostsFromCategory(String category, Integer limit) throws ExecutionException, InterruptedException {
-        Query postsCollection = firestore.collection("posts")
-                .orderBy("date", Direction.DESCENDING)
-                .whereEqualTo("category", category)
-                .limit(limit);
-
-        return getPostList(postsCollection);
     }
 }
