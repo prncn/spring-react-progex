@@ -1,13 +1,14 @@
 import "../index.css";
 import Post, { timeDifference } from "../components/Post";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../controller/Firebase";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { IconHeart } from "../icons/PostIcons";
+import { IconHeart, IconTrash } from "../icons/PostIcons";
 import { PDFviewer } from "../components/PDFviewer";
 import Highlighter from "react-highlight-words";
 import { NavTab } from "../components/NavTab";
 import { SpacesTab } from "./Dashboard";
+import api from "../controller/QueryService";
 
 const commentPlaceholder = [
   {
@@ -40,19 +41,20 @@ const commentPlaceholder = [
 ];
 
 export default function SinglePost() {
-  const currentUser = useAuth();
   const [searchParams] = useSearchParams();
-  const post_id_url = searchParams.get("id");
-  console.log(post_id_url);
+  const currentUser = useAuth();
+  const postId = searchParams.get("id");
+
   const post = useLocation().state;
   const [paginator, setPaginator] = useState();
   const [commentData, setCommentData] = useState([]);
 
   useEffect(() => {
     (async () => {
-      setCommentData(commentPlaceholder);
+      const postData = await api.getPostById(postId);
+      setCommentData(postData.data.comments);
     })();
-  }, []);
+  }, [postId]);
 
   return (
     <div className="flex min-h-screen justify-center divide-x">
@@ -70,9 +72,15 @@ export default function SinglePost() {
           />
         </Post>
         <div className="p-3 w-full space-y-2">
-          <CommmentCreator user={currentUser} />
+          <CommmentCreator />
           {commentData.map((comment, i) => (
-            <Comment key={i} data={comment} paginator={paginator} />
+            <Comment
+              key={i}
+              data={comment}
+              paginator={paginator}
+              currentUser={currentUser}
+              postId={post.id}
+            />
           ))}
         </div>
       </div>
@@ -86,40 +94,58 @@ export default function SinglePost() {
       />
     </div>
   );
-}
 
-function CommmentCreator({ user }) {
-  return (
-    <div className="flex p-3 rounded-lg bg-indigo-100">
-      <div className="w-16 h-16 mt-2 rounded-full shadow-lg flex-shrink-0">
-        <img
-          className="w-full h-full object-cover rounded-full shadow-lg"
-          src={user?.photoURL}
-          alt={user?.displayName}
-        />
-      </div>
-      <div className="w-full flex flex-col p-2 text-sm">
-        <div className="font-semibold text-indigo-400">me</div>
-        <form className="w-full flex">
-          <textarea
-            className="appearance-none bg-transparent border-indigo-300 w-full mr-3 py-3 leading-tight focus:outline-none"
-            type="text"
-            placeholder="Speak you mind..."
-            autoFocus={true}
+  function CommmentCreator() {
+    const commentRef = useRef();
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      if ("current" in commentRef && currentUser) {
+        api.createComment(
+          post.id,
+          { id: currentUser.uid },
+          commentRef.current.value
+        );
+        setCommentData(post?.comments);
+      }
+    }
+
+    return (
+      <div className="flex p-3 rounded-lg text-white bg-black">
+        <div className="w-16 h-16 mt-2 rounded-full shadow-lg flex-shrink-0">
+          <img
+            className="w-full h-full object-cover rounded-full shadow-lg"
+            src={currentUser?.photoURL}
+            alt={currentUser?.displayName}
           />
-          <button
-            type="submit"
-            className="self-end rounded-full h-2/3 py-2 px-5 bg-gray-50 hover:bg-gray-100"
-          >
-            Send.
-          </button>
-        </form>
+        </div>
+        <div className="w-full flex flex-col p-2 text-sm">
+          <div className="font-semibold">me</div>
+          <form className="w-full flex">
+            <textarea
+              className="appearance-none bg-transparent w-full mr-3 py-3 leading-tight focus:outline-none"
+              type="text"
+              placeholder="Speak you mind..."
+              autoFocus={true}
+              spellCheck="false"
+              ref={commentRef}
+            />
+            <button
+              className="self-end rounded-full h-2/3 py-2 px-5 bg-gray-50 hover:bg-gray-100 text-black"
+              onClick={handleSubmit}
+            >
+              Send.
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
-function Comment({ data, paginator }) {
+function Comment({ data, paginator, currentUser, postId }) {
+  const [liked, setLiked] = useState(false);
+
   function paginate(content) {
     const strip = content.replace(/[^0-9]/g, "");
 
@@ -139,6 +165,17 @@ function Comment({ data, paginator }) {
     );
   }
 
+  function handleDelete() {
+    api.deleteComment(postId, data.id)
+    window.location.reload();
+  }
+
+  function toggleLiked() {
+    setLiked(!liked);
+  }
+
+  console.log(data.user.id === currentUser?.uid);
+
   return (
     <div className="flex p-3 rounded-lg hover:bg-gray-200">
       <div className="w-16 h-16 mt-2 rounded-full shadow-lg flex-shrink-0">
@@ -148,7 +185,7 @@ function Comment({ data, paginator }) {
           alt={data.user.displayName}
         />
       </div>
-      <div className="w-auto flex flex-col p-2 text-sm">
+      <div className="w-full flex flex-col p-2 text-sm">
         <div className="font-semibold mb-1">
           {data.user.displayName + " "}
           &#183;{" "}
@@ -158,14 +195,20 @@ function Comment({ data, paginator }) {
           <Highlighter
             highlightTag={Highlight}
             searchWords={[/page\s[0-9]/g]}
-            textToHighlight={data.content}
+            textToHighlight={data.description}
           />
         </div>
       </div>
-      <div className="grow flex items-center">
-        <button className="rounded-full hover:bg-gray-300 p-3">
-          <IconHeart />
-        </button>
+      <div className="flex items-center">
+        {data.user.id === currentUser?.uid ? (
+          <button className="rounded-full hover:bg-gray-300 p-3" onClick={handleDelete}>
+            <IconTrash />
+          </button>
+        ) : (
+          <button className="rounded-full hover:bg-gray-300 p-3" onClick={toggleLiked}>
+            <IconHeart />
+          </button>
+        )}
       </div>
     </div>
   );

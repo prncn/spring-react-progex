@@ -184,7 +184,7 @@ export default class QueryService {
         },
         body: JSON.stringify(body),
       });
-      return response.json();
+      return await response.json();
     } catch (error) {
       console.error(error);
     }
@@ -240,6 +240,19 @@ export default class QueryService {
         return savedPosts.includes(postId);
       }
     }
+  }
+
+  static async createComment(postId, user, description) {
+    const endpoint = `http://localhost:8080/api/posts/${postId}/comments`;
+    return this.HTTPMethodWrapper("POST", endpoint, {
+      user,
+      description,
+    });
+  }
+
+  static async deleteComment(postId, commentId) {
+    const endpoint = `http://localhost:8080/api/posts/${postId}/comments/${commentId}`;
+    return this.HTTPMethodWrapper("DELETE", endpoint);
   }
 
   static async fetchUnsplashedImage(searchTerm) {

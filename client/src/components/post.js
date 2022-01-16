@@ -10,6 +10,8 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../controller/QueryService";
+import { Img } from "react-image";
+import anonIcon from "../img/img_258083.png";
 
 export function timeDifference(previous) {
   previous = previous.seconds / 1000;
@@ -88,7 +90,7 @@ export default function Post({ data, currentUser, children }) {
   }
 
   function deleteHandler() {
-    if(window.confirm("Sure you want to delete this?")) {
+    if (window.confirm("Sure you want to delete this?")) {
       api.deletePost(data.id);
     }
   }
@@ -98,9 +100,9 @@ export default function Post({ data, currentUser, children }) {
       <div className="w-20 pl-4 rounded-lg">
         <div className="w-16 h-16 mt-2 rounded-full shadow-lg">
           <Link to={`/profile/${data.user.id}`}>
-            <img
+            <Img
               className="w-full h-full object-cover rounded-full block shadow-lg transition-all"
-              src={data.user.photoURL}
+              src={[data.user.photoURL, anonIcon]}
               alt={data.user.displayName}
             />
           </Link>
@@ -132,30 +134,32 @@ export default function Post({ data, currentUser, children }) {
           <Link to={`/profile/${data.user.id}`}>{data.user.displayName}</Link>
           <span className="mx-2 font-bold">&#183;</span>
           <div className="font-light">{timeDifference(data.date)}</div>
-          {(data.user.id === currentUser?.uid) && <span
-            className="ml-auto text-gray-500 hover:text-gray-800 cursor-pointer relative"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            ref={menuRef}
-          >
-            <IconDotMenu />
-            <div
-              className={`bg-gray-50 rounded-lg w-40 absolute right-0 border top-6 transition overflow-hidden ${
-                isMenuOpen ? "visible" : "invisible"
-              }`}
+          {data.user.id === currentUser?.uid && (
+            <span
+              className="ml-auto text-gray-500 hover:text-gray-800 cursor-pointer relative"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              ref={menuRef}
             >
-              <div 
-                onClick={deleteHandler} 
-                className="text-red-400 p-2 flex space-x-2 items-center hover:bg-red-200">
-                <IconTrash />
-                <span>Delete</span>
+              <IconDotMenu />
+              <div
+                className={`bg-gray-50 rounded-lg w-40 absolute right-0 border top-6 transition overflow-hidden ${
+                  isMenuOpen ? "visible" : "invisible"
+                }`}
+              >
+                <div
+                  onClick={deleteHandler}
+                  className="text-red-400 p-2 flex space-x-2 items-center hover:bg-red-200"
+                >
+                  <IconTrash />
+                  <span>Delete</span>
+                </div>
+                <div className="text-gray-600 p-2 flex space-x-2 items-center hover:bg-gray-200">
+                  <IconEdit />
+                  <span>Edit</span>
+                </div>
               </div>
-              <div 
-                className="text-gray-600 p-2 flex space-x-2 items-center hover:bg-gray-200">
-                <IconEdit />
-                <span>Edit</span>
-              </div>
-            </div>
-          </span>}
+            </span>
+          )}
         </div>
         <div className="pb-3">{data.description}</div>
         {children}

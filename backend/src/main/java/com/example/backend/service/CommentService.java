@@ -1,8 +1,6 @@
 package com.example.backend.service;
 
 import com.example.backend.model.Comment;
-import com.example.backend.model.Post;
-import com.example.backend.model.User;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.*;
@@ -70,7 +68,7 @@ public class CommentService {
         DocumentReference userRef = firestore.collection("users").document(userId);
 
         Map<String, Object> commentData = new HashMap<>();
-        commentData.put("date", comment.getDate());
+        commentData.put("date", Timestamp.now());
         commentData.put("description", comment.getDescription());
         commentData.put("userId", userRef);
 

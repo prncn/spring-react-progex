@@ -1,12 +1,20 @@
 import "../index.css";
 import Post from "../components/Post";
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+} from "react";
 import { Link } from "react-router-dom";
 import api from "../controller/QueryService";
-import { PDFviewer } from "../components/PDFviewer";
+import { lightbox, PDFviewer } from "../components/PDFviewer";
 import { useDropzone } from "react-dropzone";
 import { uploadFile, useAuth } from "../controller/Firebase";
 import { NavTab } from "../components/NavTab";
+import ViewSDKClient from "../controller/ViewSDKClient";
+import { Img } from "react-image";
+import anonIcon from "../img/img_258083.png";
 
 export default function Dashboard() {
   const [data, setData] = useState(api.placeholder);
@@ -26,7 +34,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="flex min-h-screen justify-center divide-x">
+    <div className="flex min-h-screen justify-between divide-x">
       <NavTab currentUser={currentUser} data={data.slice(0, 6)} />
       <div className="flex flex-col items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
         <PostCreator currentUser={currentUser} />
@@ -51,6 +59,7 @@ export default function Dashboard() {
           "streetwear",
           "fitness",
         ]}
+        data={data.slice(0, 3)}
       />
     </div>
   );
@@ -118,7 +127,7 @@ function PostCreator({ currentUser }) {
       }
     });
 
-    if (url !== "Uploading..." && completed_flag) {
+    if (url !== "Uploading..." && !completed_flag) {
       api.createPost(
         { ...currentUser, id: currentUser?.uid },
         title,
@@ -127,8 +136,8 @@ function PostCreator({ currentUser }) {
       );
       console.log(title);
 
-      const res = await api.getPosts();
-      window.sessionStorage.setItem("POST_CACHE", JSON.stringify(res));
+      window.sessionStorage.clear();
+      window.location.reload();
     }
   };
 
@@ -144,7 +153,7 @@ function PostCreator({ currentUser }) {
       {!show ? (
         <div
           onClick={handleReveal}
-          className="w-full h-40 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 animate-gradient-y transition-all"
+          className="w-full h-40 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 animate-gradient-y transition-all shadow-xl"
         >
           <div className={"self-end w-1/3 text-3xl text-white font-semibold"}>
             Hi, {currentUser?.displayName}. <br />{" "}
@@ -201,12 +210,15 @@ function PostCreator({ currentUser }) {
   );
 }
 
-export function SpacesTab({ spaces }) {
+export function SpacesTab({ spaces, data }) {
   return (
-    <div className="sticky top-0 min-h-screen h-full hidden xl:block">
-      <div className="w-80 h-96 rounded-lg border m-4 py-6 right-20 bg-gray-50">
+    <div
+      className="sticky top-0 bg-white hidden xl:block flex-1"
+      style={{ height: "90vh" }}
+    >
+      <div className="w-80 rounded-lg border m-4 py-6 bg-gray-50">
         <h1 className="text-xl font-semibold mb-4 pl-6">Spaces for you</h1>
-        <div className="font-semibold divide-y">
+        <div className="font-semibold divide-y m-4">
           {spaces.map((space, i) => (
             <Link to={`/spaces/${space}`} key={i}>
               <div className="py-3 px-6 hover:bg-gray-200 cursor-pointer">
@@ -217,6 +229,46 @@ export function SpacesTab({ spaces }) {
           ))}
         </div>
       </div>
+      {data && (
+        <div className="w-80 rounded-lg border m-4 py-6 bg-gray-50">
+          <h1 className="text-xl font-semibold mb-4 pl-6">
+            Highlights by Users
+          </h1>
+          <div className="flex justify-center">
+            <Stories data={data} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Stories({ data }) {
+  const storyposts = data.slice(0, 3);
+  const sdk = new ViewSDKClient();
+  return (
+    <div className="w-72">
+      <ul className="flex flex-wrap justify-around">
+        {storyposts.map((item, i) => (
+          <li key={i} className="flex flex-col justify-center items-center">
+            <div
+              className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 m-1 block cursor-pointer animate-gradient-xy"
+              onClick={() => lightbox(sdk, item.url, item.title)}
+            >
+              <Img
+                src={[item.user.photoURL, anonIcon]}
+                className="rounded-full w-16 h-16 object-cover"
+                alt="pfp_st"
+              />
+            </div>
+            <Link to={`/profile/${item.user.id}`}>
+              <p className="text-sm text-gray-700 font-light">
+                {item.user.displayName}
+              </p>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

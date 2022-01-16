@@ -14,7 +14,6 @@ import {
 } from '@firebase/auth';
 import { useState, useEffect } from 'react';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { async } from '@firebase/util';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBGVejgoBEWRT5w4HIRMKOe5IoRpcndWHo',
@@ -34,14 +33,12 @@ const images = [
   'https://pic.onlinewebfonts.com/svg/img_258083.png',
 ];
 
-const photoURL = images[Math.random() * images.length];
+const photoURL = images[Math.floor(Math.random() * images.length)];
 
 initializeApp(firebaseConfig);
 export const auth = getAuth();
 export const db = getFirestore();
 const storage = getStorage();
-
-
 
 export async function uploadFile(file) {
   const storageRef = ref(storage, file.path);
@@ -52,6 +49,7 @@ export async function uploadFile(file) {
 }
 
 export function signup(email, password, displayName) {
+  console.log();
   return createUserWithEmailAndPassword(auth, email, password).then((res) => {
     updateProfile(res.user, {
       displayName,

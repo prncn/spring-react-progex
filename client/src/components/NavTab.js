@@ -1,10 +1,10 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../controller/Firebase";
-import ViewSDKClient from "../controller/ViewSDKClient";
 import { IconDocs, IconExplore, IconHome, IconLogout, IconProfile } from "../icons/NavIcons";
-import { lightbox } from "./PDFviewer";
+import anonIcon from "../img/img_258083.png";
+import { Img } from "react-image";
 
-export function NavTab({ currentUser, data }) {
+export function NavTab({ currentUser }) {
     const navigate = useNavigate();
   
     async function handleLogout(e) {
@@ -23,7 +23,7 @@ export function NavTab({ currentUser, data }) {
       return (
         <NavLink
           to={`/${path === "profile" ? path + `/${currentUser?.uid}` : path}`}
-          className={({ isActive }) => isActive ? "bg-indigo-100 text-indigo-400 rounded-lg" : ""}
+          className={({ isActive }) => isActive ? "bg-black text-white rounded shadow-xl" : ""}
         >
           <button
             className={`dashboard-nav__btn`}
@@ -36,24 +36,24 @@ export function NavTab({ currentUser, data }) {
     }
   
     return (
-      <div className="sticky h-screen top-0 md:flex flex-col hidden">
+      <div className="sticky flex-1 top-0 md:flex flex-col hidden bg-white" style={{ height: '90vh' }}>
         <div className="w-72 h-24 border rounded-lg m-4 ml-auto flex p-3 bg-gray-50">
           <div className="w-16 h-16 rounded-full shadow-md overflow-visible">
-            <img
+            <Img
               className="w-full h-full object-cover rounded-full"
-              src={currentUser?.photoURL}
+              src={[currentUser?.photoURL, anonIcon]}
               alt="pfp_icon"
             />
           </div>
-          <div className="ml-2">
+          <div className="ml-2 text-sm">
             <p>
               {new Date().toLocaleTimeString("en-GB", {
                 hour: "numeric",
                 minute: "numeric",
               })}
             </p>
-            <p className="font-semibold text-sm">{currentUser?.displayName}</p>
-            <p className="font-light text-sm">{currentUser?.email}</p>
+            <p className="font-semibold">{currentUser?.displayName}</p>
+            <p className="font-light">{currentUser?.email}</p>
           </div>
         </div>
         <div className="flex flex-col items-end mx-4 mb-auto">
@@ -76,34 +76,9 @@ export function NavTab({ currentUser, data }) {
             </button>
           </div>
         </div>
-        {/* <Stories data={data}/> */}
-        <div className="m-4 font-semibold text-3xl ml-auto mt-auto">Murdoc.</div>
+        <div className="absolute -bottom-10 right-0 font-semibold text-3xl text-white">Murdoc.</div>
       </div>
     );
   }
 
-  function Stories({ data }) {
-    const storyposts = data.slice(0, 6);
-    const sdk = new ViewSDKClient();
-    return (
-      <div className="w-72">
-        <ul className="flex flex-wrap">
-          {storyposts.map((item, i) => (
-            <li key={i} className="flex flex-col justify-center items-center">
-              <div
-                className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 m-1 block cursor-pointer animate-gradient-xy"
-                onClick={() => lightbox(sdk, item.url, item.title)}
-              >
-                <img
-                  src={item.user.photoURL}
-                  className="rounded-full w-20 h-20 object-cover"
-                  alt="pfp_st"
-                />
-              </div>
-              <p className="text-sm text-gray-700">{item.user.displayName}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
+  

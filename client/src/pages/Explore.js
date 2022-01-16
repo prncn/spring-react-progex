@@ -60,7 +60,7 @@ export default function Explore() {
             <p className="ml-1 font-light">{data?.length} documents</p>
             <div className="flex flex-wrap mt-5">
               {data.map((post, i) => (
-                <Link to={`/view?id=${post.id}`} state={post}>
+                <Link to={`/view?id=${post.id}`} state={post} key={i}>
                   <div className="h-60 w-44 m-1 overflow-hidden relative bg-red-400">
                     <PDFviewer
                       idn={i}
@@ -80,8 +80,8 @@ export default function Explore() {
           </div>
         ) : (
           <div className="flex flex-wrap p-2">
-            {spaces.map((name) => (
-              <Link to={`/spaces/${encodeURIComponent(name)}`}>
+            {spaces.map((name, i) => (
+              <Link to={`/spaces/${encodeURIComponent(name)}`} key={i}>
                 <div
                   className={`overflow-hidden h-40 w-${
                     40 * rand()

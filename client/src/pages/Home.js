@@ -54,9 +54,6 @@ export default function Home({ form }) {
         {form === 'reset' && <ResetPasswordForm />}
       </div>
       <div className="invisible lg:visible h-full w-1/4 fixed top-0 right-0 bg-gradient-to-tr from-red-300 to-indigo-500 hover:from-indigo-400 animate-gradient-y">
-        {Array(10).fill('murdoc').map((a, i) => (
-          <p className={`text-gray-100 font-semibold text-5xl leading-9 tracking-tighter absolute top-${i*8} -left-2`}>{a}</p>
-        ))}
       </div>
     </div>
   );
