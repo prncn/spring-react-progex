@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { PDFviewer } from "../components/PDFviewer";
+<<<<<<< HEAD
 import { useAuth } from "../controller/Firebase";
 import api from "../controller/QueryService";
 import { IconFolder, IconPlus } from "../icons/FileIcons";
@@ -38,11 +39,28 @@ let fileList = {
     },
   ],
 };
+=======
+import { getPostById, getUserById } from "../controller/QueryService";
+import { IconFolder, IconPlus } from "../icons/FileIcons";
+import { NavTab } from "./Dashboard";
+import { useAuth } from "../context/AuthContext";
+>>>>>>> sam
 
 
 export default function Docs() {
+<<<<<<< HEAD
   const auth = useAuth();
   
+=======
+  //const auth = useAuth();
+  const { currentUser } = useAuth();
+
+  const data = useMemo(() => ({ 
+    name: "main", 
+    items: fileList
+  }), []);
+
+>>>>>>> sam
   const [activeDoc, setActiveDoc] = useState();
   const [fileSystem, setFileSystem] = useState(fileList);
   const [savedPosts, setSavedPosts] = useState([]);
@@ -90,8 +108,13 @@ export default function Docs() {
 
   useEffect(() => {
     (async () => {
+<<<<<<< HEAD
       if (auth !== undefined) {
         const [user, response] = await api.getUserById(auth?.uid);
+=======
+      if (currentUser !== undefined) {
+        const [user, response] = await getUserById(currentUser?.uid);
+>>>>>>> sam
         console.log(response);
         let fetchedPosts = [];
         for (const id of user.savedPosts) {
@@ -102,7 +125,11 @@ export default function Docs() {
         setHasFetched(true);
       }
     })();
+<<<<<<< HEAD
   }, [auth]);
+=======
+  }, [currentUser, data]);
+>>>>>>> sam
 
   useEffect(() => {
     if (hasFetched) {
@@ -203,7 +230,7 @@ export default function Docs() {
 
   return (
     <div className="flex min-h-screen">
-      <NavTab currentUser={auth} active="docs" />
+      <NavTab currentUser={currentUser} active="docs" />
       <div className="bg-gray-900 w-full flex p-10">
         <div className="w-1/2 xl:w-1/3 h-full mr-10">
           <DragDropContext onDragEnd={onDragEnd}>

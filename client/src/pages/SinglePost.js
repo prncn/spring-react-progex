@@ -1,7 +1,7 @@
 import "../index.css";
 import Post, { timeDifference } from "../components/Post";
 import React, { useEffect, useRef, useState } from "react";
-import { useAuth } from "../controller/Firebase";
+import { useAuth } from "../context/AuthContext";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { IconHeart, IconTrash } from "../icons/PostIcons";
 import { PDFviewer } from "../components/PDFviewer";

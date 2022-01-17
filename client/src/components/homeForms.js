@@ -2,7 +2,8 @@ import '../index.css';
 import { Input } from '../pages/Home';
 import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signin, signup, resetPassword } from '../controller/Firebase';
+//import { signin, signup, resetPassword } from '../controller/Firebase';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Form component to handle login by user
@@ -13,6 +14,7 @@ export function LoginForm() {
   const passwordRef = useRef();
   const [loading, setLoading] = useState();
   const navigate = useNavigate();
+  const {signin}  = useAuth();
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -71,6 +73,7 @@ export function ResetPasswordForm() {
   const emailRef = useRef();
   const [loading, setLoading] = useState();
   const [setMessage] = useState(); // used to display messages to the user
+  const {resetPassword} = useAuth();
 
   async function handleresetPasword(e) {
     e.preventDefault();
@@ -126,6 +129,7 @@ export function SignupForm() {
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
   const [loading, setLoading] = useState();
+  const {signup} = useAuth();
 
   const navigate = useNavigate();
 
