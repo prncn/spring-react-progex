@@ -9,7 +9,7 @@ export function lightbox(SDKclient, file, title) {
   });
 }
 
-export function PDFviewer({ idn = 0, file, title, height = '96', embedMode = 'IN_LINE', scroll = true, setPaginator }) {
+export function PDFviewer({ idn = 0, file, title, height = '96', embedMode = 'IN_LINE', scroll = true, setPaginator, rounded = true }) {
     const viewSDKClient = useMemo(() => new ViewSDKClient(), []);
   
     useEffect(() => {
@@ -29,10 +29,9 @@ export function PDFviewer({ idn = 0, file, title, height = '96', embedMode = 'IN
       }
     }, [setPaginator, viewSDKClient]);
 
-  
     return (
       <div
-        className={`rounded-xl h-${height} overflow-y-auto`} 
+        className={`${rounded && 'rounded-xl'} h-${height} overflow-y-auto hidescrollbar`} 
       >
         <div id={`pdf-div-${idn}`} className='h-full w-full' style={{ height: `${scroll && '850px'}` }}/>
       </div>

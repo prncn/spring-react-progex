@@ -1,20 +1,61 @@
-import '../index.css';
-import Post from '../components/post';
-import React, { createRef, useState } from 'react';
-import { useAuth } from '../controller/Firebase';
-import { NavTab, SpacesTab } from './Dashboard';
-import { useLocation, useSearchParams } from 'react-router-dom';
-import IconHeart from '../icons/heart';
-import { PDFviewer } from '../components/PDFviewer';
+import "../index.css";
+import Post, { timeDifference } from "../components/Post";
+import React, { useEffect, useRef, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { IconHeart, IconTrash } from "../icons/PostIcons";
+import { PDFviewer } from "../components/PDFviewer";
+import Highlighter from "react-highlight-words";
+import { NavTab } from "../components/NavTab";
+import { SpacesTab } from "./Dashboard";
+import api from "../controller/QueryService";
+
+// const commentPlaceholder = [
+//   {
+//     id: "1",
+//     user: {
+//       id: "2",
+//       displayName: "Erykah",
+//       photoURL: "https://i.imgur.com/Ks2oou4.jpg",
+//     },
+//     content:
+//       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id augue rutrum1",
+//     date: {
+//       seconds: 1638807536,
+//       nanos: 782000000,
+//     },
+//   },
+//   {
+//     id: "2",
+//     user: {
+//       id: "3",
+//       displayName: "Grace",
+//       photoURL: "https://i.imgur.com/NDFE7BQ.jpg",
+//     },
+//     content: "Checkout out this thing I found on page 6 by clicking on it.",
+//     date: {
+//       seconds: 1638807536,
+//       nanos: 782000000,
+//     },
+//   },
+// ];
 
 export default function SinglePost() {
-  const currentUser = useAuth();
   const [searchParams] = useSearchParams();
-  const post_id_url = searchParams.get('id');
-  console.log(post_id_url);
+  const currentUser = useAuth();
+  const postId = searchParams.get("id");
+
   const post = useLocation().state;
   const [paginator, setPaginator] = useState();
-  
+  const [commentData, setCommentData] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const postData = await api.getPostById(postId);
+      setCommentData(postData.data.comments);
+    })();
+  }, [postId]);
+
   return (
     <div className="flex min-h-screen justify-center divide-x">
       <NavTab currentUser={currentUser} active="dash" />
@@ -23,90 +64,151 @@ export default function SinglePost() {
           View
         </h1>
         <Post key={post.id} data={post} currentUser={currentUser}>
-          <PDFviewer file={post.url} title={post.title} setPaginator={setPaginator} embedMode='SIZED_CONTAINER' />
+          <PDFviewer
+            file={post.url}
+            title={post.title}
+            setPaginator={setPaginator}
+            embedMode="SIZED_CONTAINER"
+          />
         </Post>
         <div className="p-3 w-full space-y-2">
-          <CommmentCreator user={currentUser} />
-          <Comment user={currentUser} paginator={paginator} />
-          <Comment user={currentUser} paginator={paginator} />
+          <CommmentCreator />
+          {commentData.map((comment, i) => (
+            <Comment
+              key={i}
+              data={comment}
+              paginator={paginator}
+              currentUser={currentUser}
+              postId={post.id}
+            />
+          ))}
         </div>
       </div>
       <SpacesTab
         spaces={[
-          'distributedsystems',
-          'illustrations',
-          'streetwear',
-          'fitness',
+          "distributedsystems",
+          "illustrations",
+          "streetwear",
+          "fitness",
         ]}
-        />
+      />
     </div>
   );
-}
 
-function CommmentCreator({ user }) {
-  return (
-    <div className="flex p-3 rounded-lg hover:bg-indigo-100 bg-indigo-200">
-      <div className="w-16 h-16 mt-2 rounded-full shadow-lg flex-shrink-0">
-        <img
-          className="w-full h-full object-cover rounded-full shadow-lg"
-          src={user?.photoURL}
-          alt={user?.displayName}
-        />
-      </div>
-      <div className="w-4/5 flex flex-col p-2 text-sm">
-        <div className="font-semibold mb-1 text-indigo-400">me</div>
-        <form className="w-full">
-          <input
-            className="appearance-none bg-transparent border-indigo-300 w-full mr-3 py-3 leading-tight focus:outline-none"
-            type="text"
-            placeholder="Speak you mind..."
-            autoFocus={true}
+  function CommmentCreator() {
+    const commentRef = useRef();
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      if ("current" in commentRef && currentUser) {
+        api.createComment(
+          post.id,
+          { id: currentUser.uid },
+          commentRef.current.value
+        );
+        setCommentData(post?.comments);
+      }
+    }
+
+    return (
+      <div className="flex p-3 rounded-lg text-white bg-black">
+        <div className="w-16 h-16 mt-2 rounded-full shadow-lg flex-shrink-0">
+          <img
+            className="w-full h-full object-cover rounded-full shadow-lg"
+            src={currentUser?.photoURL}
+            alt={currentUser?.displayName}
+          />
+        </div>
+        <div className="w-full flex flex-col p-2 text-sm">
+          <div className="font-semibold">me</div>
+          <form className="w-full flex">
+            <textarea
+              className="appearance-none bg-transparent w-full mr-3 py-3 leading-tight focus:outline-none"
+              type="text"
+              placeholder="Speak you mind..."
+              autoFocus={true}
+              spellCheck="false"
+              ref={commentRef}
             />
-        </form>
+            <button
+              className="self-end rounded-full h-2/3 py-2 px-5 bg-gray-50 hover:bg-gray-100 text-black"
+              onClick={handleSubmit}
+            >
+              Send.
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
-function Comment({ user, paginator }) {
-  const contentRef = createRef();
+function Comment({ data, paginator, currentUser, postId }) {
+  const [liked, setLiked] = useState(false);
 
-  function paginate() {
-    const content = contentRef.current?.innerText;
+  function paginate(content) {
     const strip = content.replace(/[^0-9]/g, "");
-    console.log(strip);
 
     return paginator.ready().then(() => {
       paginator.goToPage(Number(strip));
     });
   }
-  
+
+  function Highlight({ children }) {
+    return (
+      <div
+        onClick={() => paginate(children)}
+        className="text-indigo-400 hover:underline cursor-pointer inline-block"
+      >
+        {children}
+      </div>
+    );
+  }
+
+  function handleDelete() {
+    api.deleteComment(postId, data.id)
+    window.location.reload();
+  }
+
+  function toggleLiked() {
+    setLiked(!liked);
+  }
+
+  console.log(data.user.id === currentUser?.uid);
+
   return (
     <div className="flex p-3 rounded-lg hover:bg-gray-200">
       <div className="w-16 h-16 mt-2 rounded-full shadow-lg flex-shrink-0">
         <img
           className="w-full h-full object-cover rounded-full block shadow-lg"
-          src={user?.photoURL}
-          alt={user?.displayName}
-          />
+          src={data.user.photoURL}
+          alt={data.user.displayName}
+        />
       </div>
-      <div className="w-auto flex flex-col p-2 text-sm">
+      <div className="w-full flex flex-col p-2 text-sm">
         <div className="font-semibold mb-1">
-          {user?.displayName + ' '}
-          &#183; <div className="font-light inline">19 Day ago</div>
+          {data.user.displayName + " "}
+          &#183;{" "}
+          <div className="font-light inline">{timeDifference(data.date)}</div>
         </div>
         <div className="mb-2">
-          <div ref={contentRef}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-            id augue rutrum, <div  onClick={paginate} className='text-indigo-400 inline-block hover:underline cursor-pointer'>page 5</div> tellus quis, consectetur risus. Cras vel
-            molestie nunc, et maximus odio.
-          </div>
+          <Highlighter
+            highlightTag={Highlight}
+            searchWords={[/page\s[0-9]/g]}
+            textToHighlight={data.description}
+          />
         </div>
       </div>
-      <div className="grow flex items-center">
-        <button className="rounded-full hover:bg-gray-300 p-3">
-          <IconHeart />
-        </button>
+      <div className="flex items-center">
+        {data.user.id === currentUser?.uid ? (
+          <button className="rounded-full hover:bg-gray-300 p-3" onClick={handleDelete}>
+            <IconTrash />
+          </button>
+        ) : (
+          <button className="rounded-full hover:bg-gray-300 p-3" onClick={toggleLiked}>
+            <IconHeart />
+          </button>
+        )}
       </div>
     </div>
   );

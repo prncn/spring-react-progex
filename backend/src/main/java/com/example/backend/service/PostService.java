@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -48,7 +47,8 @@ public class PostService {
         return getPostList(postsCollection);
     }
 
-    public List<Post> getPostsFromCategory(String category, Integer limit) throws ExecutionException, InterruptedException {
+    public List<Post> getPostsFromCategory(String category, Integer limit)
+            throws ExecutionException, InterruptedException {
         Query postsCollection = firestore.collection("posts")
                 .orderBy("date", Direction.DESCENDING)
                 .whereEqualTo("category", category)
@@ -65,7 +65,7 @@ public class PostService {
 
         for (QueryDocumentSnapshot document : documents) {
             String id = document.getId();
-            Post post = getPostById(id);
+            Post post = getPostById(id, document);
             posts.add(post);
         }
 
@@ -110,8 +110,14 @@ public class PostService {
      * @throws InterruptedException
      */
     public String updatePost(Post post) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture = firestore.collection("posts").document(post.getId()).set(post);
-        return collectionsApiFuture.get().getUpdateTime().toString();
+        DocumentReference docRef = firestore.collection("posts").document(post.getId());
+        Map<String, Object> updateData = new HashMap<>();
+        updateData.put("title", post.getTitle());
+        updateData.put("description", post.getDescription());
+        updateData.put("category", post.getCategory());
+
+        ApiFuture<WriteResult> future = docRef.update(updateData);
+        return future.get().getUpdateTime().toString();
     }
 
     public String deletePost(String id, String postCategory) throws InterruptedException, ExecutionException {
@@ -132,20 +138,18 @@ public class PostService {
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    public Post getPostById(String id) throws InterruptedException, ExecutionException {
+    public Post getPostById(String id, DocumentSnapshot doc) throws InterruptedException, ExecutionException {
         // Create empty post object. This will be filled up later on with values from
         // the retrieved document
         Post post = new Post();
-        UserService userService = new UserService(firestore);
-
-        // Retrieve post from firestore based on the given id
-        DocumentSnapshot doc = firestore
-                .collection("posts")
-                .document(id)
-                .get()
-                .get();
+        
         if (doc == null) {
-            return null;
+            // Retrieve post from firestore based on the given id
+            DocumentReference postRef = firestore.collection("posts").document(id);
+            doc = postRef.get().get();
+            if (!doc.exists()) { 
+                return null;
+            }
         }
 
         post.setId(doc.getId());
@@ -160,7 +164,7 @@ public class PostService {
         DocumentSnapshot userDoc = userFuture.get();
 
         if (userDoc.exists()) {
-            User user = userService.getUserById(ds.getId());
+            User user = ds.get().get().toObject(User.class);
             post.setUser(user);
         }
 
@@ -212,8 +216,8 @@ public class PostService {
             fieldList.remove(postId);
         }
         ApiFuture<WriteResult> writeResult = userRef.update(field, fieldList);
-        return writeResult.get().getUpdateTime().toString();
-    
+        return writeResult.toString();
+
     }
 
     public void createOrIncrementCategoryCounter(String postCategory) throws ExecutionException, InterruptedException {
@@ -222,7 +226,7 @@ public class PostService {
 
         DocumentSnapshot docSnap = docRef.get().get();
 
-        if(!docSnap.getData().containsKey(postCategory)){
+        if (!docSnap.getData().containsKey(postCategory)) {
             Map<String, Object> update = new HashMap<>();
             update.put(postCategory, 1);
 
@@ -237,16 +241,18 @@ public class PostService {
                 .document("SDXBXH2B5iRjgIbebWMR");
 
         DocumentSnapshot docSnap = docRef.get().get();
-        if(docSnap.getData().containsKey(postCategory)){
+        if (docSnap.getData().containsKey(postCategory)) {
             docRef.update(postCategory, FieldValue.increment(-1));
-            if(docSnap.getDouble(postCategory) >= 0){
+            if (docSnap.getDouble(postCategory) >= 0) {
                 docRef.update(postCategory, FieldValue.delete());
             }
         }
     }
 
-    /** Delete a collection in batches to avoid out-of-memory errors.
-     * Batch size may be tuned based on document size (atmost 1MB) and application requirements.
+    /**
+     * Delete a collection in batches to avoid out-of-memory errors.
+     * Batch size may be tuned based on document size (atmost 1MB) and application
+     * requirements.
      */
     void deleteCollection(CollectionReference collection, int batchSize) {
         try {

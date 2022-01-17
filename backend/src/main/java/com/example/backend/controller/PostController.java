@@ -41,7 +41,7 @@ public class PostController {
 
     @GetMapping(value = "/posts/{id}")
     public Post getPostById(@PathVariable String id) throws ExecutionException, InterruptedException {
-        return postService.getPostById(id);
+        return postService.getPostById(id, null);
     }
 
     @PostMapping(value = "/posts")

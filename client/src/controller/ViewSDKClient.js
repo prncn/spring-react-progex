@@ -25,7 +25,6 @@ class ViewSDKClient {
     if (divId) {
       config.divId = divId;
     }
-    /* Initialize the AdobeDC View object */
     this.adobeDCView = new window.AdobeDC.View(config);
 
     const previewFilePromise = this.adobeDCView.previewFile(
@@ -65,11 +64,9 @@ class ViewSDKClient {
   }
 
   registerSaveApiHandler() {
-    /* Define Save API Handler */
     const saveApiHandler = (metaData, content, options) => {
       console.log(metaData, content, options);
       return new Promise((resolve) => {
-        /* Dummy implementation of Save API, replace with your business logic */
         setTimeout(() => {
           const response = {
             code: window.AdobeDC.View.Enum.ApiResponseCode.SUCCESS,

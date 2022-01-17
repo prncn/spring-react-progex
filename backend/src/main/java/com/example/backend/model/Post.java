@@ -4,7 +4,6 @@ import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.annotation.DocumentId;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

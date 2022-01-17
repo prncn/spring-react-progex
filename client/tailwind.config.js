@@ -14,6 +14,7 @@ module.exports = {
       animation: {
         'gradient-y': 'gradient-y 5s ease infinite',
         'gradient-xy': 'gradient-xy 2s ease infinite',
+        'progress': 'progress 5s ease',
       },
       keyframes: {
         'gradient-y': {
@@ -35,6 +36,14 @@ module.exports = {
             'background-size': '200% 200%',
             'background-position': 'right center',
           },
+        },
+        'progress': {
+          '0%': {
+            'width': '0%',
+          },
+          '100%': {
+            'width': '100%'
+          }
         },
       },
     },

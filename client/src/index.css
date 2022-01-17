@@ -11,6 +11,7 @@ body {
 
 html {
   height: 100vh;
+  background-color: black;
 }
 
 code {
@@ -63,4 +64,12 @@ code {
   50% {
     transform: translateY(0);
   }
+}
+
+.hidescrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hidescrollbar {
+  -ms-overflow-style: none;
 }
