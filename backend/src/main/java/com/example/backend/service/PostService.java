@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -45,7 +46,6 @@ public class PostService {
                 .limit(limit);
 
         return getPostList(postsCollection);
-
     }
 
     public List<Post> getPostsFromCategory(String category, Integer limit) throws ExecutionException, InterruptedException {
@@ -136,6 +136,7 @@ public class PostService {
         // Create empty post object. This will be filled up later on with values from
         // the retrieved document
         Post post = new Post();
+        UserService userService = new UserService(firestore);
 
         // Retrieve post from firestore based on the given id
         DocumentSnapshot doc = firestore
@@ -159,8 +160,6 @@ public class PostService {
         DocumentSnapshot userDoc = userFuture.get();
 
         if (userDoc.exists()) {
-            UserService userService = new UserService(firestore);
-
             User user = userService.getUserById(ds.getId());
             post.setUser(user);
         }
@@ -267,5 +266,19 @@ public class PostService {
         } catch (Exception e) {
             System.err.println("Error deleting collection : " + e.getMessage());
         }
+    }
+
+    public Map<String, Integer> getCategories() throws ExecutionException, InterruptedException {
+        DocumentReference docRef = firestore.collection("category")
+                .document("SDXBXH2B5iRjgIbebWMR");
+        DocumentSnapshot docSnap = docRef.get().get();
+
+        Map<String, Object> docSnapMap = docSnap.getData();
+        Map<String, Integer> newMap = new HashMap<String, Integer>();
+
+        for (Map.Entry<String, Object> entry : docSnapMap.entrySet()) {
+            newMap.put(entry.getKey(), ((Number)entry.getValue()).intValue() );
+        }
+        return newMap;
     }
 }
