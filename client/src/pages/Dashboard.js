@@ -59,12 +59,6 @@ export default function Dashboard() {
           ))}
         </div>
         <SpacesTab
-          spaces={[
-            "distributedsystems",
-            "illustrations",
-            "streetwear",
-            "fitness",
-          ]}
           data={data.slice(0, 3)}
         />
       </div>
@@ -233,7 +227,23 @@ function PostCreator({ currentUser, setRevealLoader }) {
   );
 }
 
-export function SpacesTab({ spaces, data }) {
+export function SpacesTab({ data }) {
+  const [spaces, setSpaces] = useState({});
+
+  useEffect(() => {
+    (async () => {
+      // const session = sessionStorage.getItem('SPACES_DATA');
+      const session = false;
+      if(session) {
+        setSpaces(session);
+      } else {
+        const spacesData = await api.getSpaces();
+        setSpaces(spacesData);
+        sessionStorage.setItem('SPACES_DATA', JSON.stringify(spacesData));
+      }
+    })();
+  }, []);
+
   return (
     <div
       className="sticky top-0 bg-white hidden xl:block flex-1 z-0"
@@ -242,11 +252,11 @@ export function SpacesTab({ spaces, data }) {
       <div className="w-80 rounded-lg border m-4 py-6 bg-gray-50">
         <h1 className="text-xl font-semibold mb-4 pl-6">Spaces for you</h1>
         <div className="font-semibold divide-y">
-          {spaces.map((space, i) => (
+          {Object.keys(spaces).slice(0, 5).map((space, i) => (
             <Link to={`/spaces/${space}`} key={i}>
               <div className="py-3 px-6 hover:bg-gray-200 cursor-pointer">
-                <p>#{space}</p>
-                <p className="font-light text-sm">4124 Docs in this Space</p>
+                <p>{space}</p>
+                <p className="font-light text-sm"> {spaces[space]} Docs in this Space</p>
               </div>
             </Link>
           ))}

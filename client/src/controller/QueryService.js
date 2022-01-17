@@ -86,8 +86,11 @@ export default class QueryService {
    * @returns Array. First entry is the resulting data, which is a this.placeholder
    * in case of a fetch error. Second entry is a success response.
    */
-  static async getPosts() {
-    const url = "http://localhost:8080/api/posts?limit=20";
+  static async getPosts({category, user}) {
+    let url = "http://localhost:8080/api/posts?limit=20";
+    if(category) url = url.concat(`&category=${category}`);
+    if(user) url = url.concat(`&user=${user}`);
+    console.log(url);
     try {
       console.log("Fetching Posts...");
       const response = await fetch(url);
@@ -263,8 +266,16 @@ export default class QueryService {
     return this.HTTPMethodWrapper("DELETE", endpoint);
   }
 
-  static async get(params) {
-    
+  static async getSpaces(sorted = false) {
+    const endpoint = 'http://localhost:8080/api/categories';
+    try {
+      const response = await fetch(endpoint);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(error);
+      return {};
+    }
   }
 
   static async fetchUnsplashedImage(searchTerm) {
