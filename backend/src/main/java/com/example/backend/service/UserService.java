@@ -28,18 +28,19 @@ public class UserService {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    @SuppressWarnings("unchecked")
     public User getUserById(String userId) throws ExecutionException, InterruptedException {
         ApiFuture<DocumentSnapshot> future = firestore.collection("users").document(userId).get();
         DocumentSnapshot userDoc = future.get();
 
-        User user = new User();
-        user.setId(userDoc.getId());
-        user.setDisplayName(userDoc.getString("displayName"));
-        user.setPhotoURL(userDoc.getString("photoURL"));
-        user.setEmail(userDoc.getString("email"));
-        user.setLikedPosts((ArrayList<String>) userDoc.get("likedPosts"));
-        user.setSavedPosts((ArrayList<String>) userDoc.get("savedPosts"));
+        // User user = new User();
+        // user.setId(userDoc.getId());
+        // user.setDisplayName(userDoc.getString("displayName"));
+        // user.setPhotoURL(userDoc.getString("photoURL"));
+        // user.setEmail(userDoc.getString("email"));
+        // user.setLikedPosts((ArrayList<String>) userDoc.get("likedPosts"));
+        // user.setSavedPosts((ArrayList<String>) userDoc.get("savedPosts"));
+
+        User user = userDoc.toObject(User.class);
 
         return user;
     }
