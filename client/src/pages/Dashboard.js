@@ -1,34 +1,20 @@
 import "../index.css";
-<<<<<<< HEAD
 import Post from "../components/Post";
 import React, { useState, useMemo, useCallback, useEffect } from "react";
-=======
-import Post from "../components/post";
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
->>>>>>> sam
 import { Link } from "react-router-dom";
 import api from "../controller/QueryService";
 import { lightbox, PDFviewer } from "../components/PDFviewer";
 import { useDropzone } from "react-dropzone";
-import { uploadFile, useAuth } from "../controller/Firebase";
+import { uploadFile } from "../controller/Firebase";
 import { NavTab } from "../components/NavTab";
 import ViewSDKClient from "../controller/ViewSDKClient";
-<<<<<<< HEAD
 import { Img } from "react-image";
 import anonIcon from "../img/img_258083.png";
-
-export default function Dashboard() {
-  const [data, setData] = useState(api.placeholder);
-  const currentUser = useAuth();
-=======
 import { useAuth } from "../context/AuthContext";
 
 export default function Dashboard() {
-  const [data, setData] = useState(placeholder);
-  const {currentUser}= useAuth();
-  console.log(currentUser);
->>>>>>> sam
+  const [data, setData] = useState(api.placeholder);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     (async () => {
@@ -170,87 +156,7 @@ function PostCreator({ currentUser, setRevealLoader }) {
     }
   };
 
-<<<<<<< HEAD
   function handleReveal(e) {
-=======
-    return (
-      <div
-        onClick={handleReveal}
-        className="w-full h-40 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 animate-gradient-y transition-all"
-      >
-        <div
-          className={
-            show ? "hidden" : "self-end w-1/3 text-3xl text-white font-semibold"
-          }
-        >
-          Hi, {currentUser?.displayName}. ✋ <br />{" "}
-          <p className="font-light"> Share your docs here. </p>
-        </div>
-        <div className={show ? "w-full h-full flex" : "hidden"}>
-          <div className="w-20">
-            <div className="w-16 h-16 mt-2 rounded-full">
-              <img
-                className="w-full h-full object-cover rounded-full block shadow-lg"
-                src={pfpIcon}
-                alt="pfp_icon"
-              />
-            </div>
-          </div>
-          <form className="w-full h-full flex flex-col">
-            <input
-              className="bg-transparent w-3/4 p-3 text-gray-50 placeholder-gray-300 font-semibold text-lg focus:outline-none"
-              placeholder="Title your Doc..."
-              value={title}
-              onInput={(event) => setTitle(event.target.value)}
-            ></input>
-            <input
-              className="bg-transparent w-3/4 p-3 text-gray-50 placeholder-gray-300 text-sm focus:outline-none h-auto"
-              placeholder="URL to your Doc..."
-              value={url}
-              onInput={(event) => setUrl(event.target.value)}
-            ></input>
-            <button
-              onClick={handleSubmit}
-              className="bg-gray-100 text-black font-semibold px-5 py-2 rounded-full place-self-end mt-auto hover:bg-gray-200"
-            >
-              <span>Send.</span>
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
-}
-
-function Stories({ storyposts }) {
-  const sdk = new ViewSDKClient();
-  return (
-    <div className="w-full p-4">
-      <ul className="flex justify-around">
-        {storyposts.map((item, i) => (
-          <li key={i} className="flex flex-col justify-center items-center">
-            <div className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 block cursor-pointer animate-gradient-xy"
-            onClick={() => lightbox(sdk, item.url, item.title)}>
-              <img
-                src={item.user.photoURL}
-                className="rounded-full w-20 h-20 object-cover"
-                alt="pfp_st"
-              />
-            </div>
-            <p className="text-sm text-gray-700">{item.user.displayName}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-export function NavTab({ currentUser, active }) {
-  const navigate = useNavigate();
-  const {logout} = useAuth();
-
-  async function handleLogout(e) {
->>>>>>> sam
     e.preventDefault();
     if (!show) {
       setShow(true);
@@ -373,7 +279,7 @@ function Stories({ data }) {
               onClick={() => lightbox(sdk, item.url, item.title)}
             >
               <Img
-                src={[item.user.photoURL, anonIcon]}
+                src={[item.user?.photoURL, anonIcon]}
                 className="rounded-full w-16 h-16 object-cover"
                 alt="pfp_st"
               />

@@ -166,15 +166,21 @@ export default class QueryService {
   }
 
   static async getUserById(id) {
-    const url = `http://localhost:8080/api/users/${id}`;
+    const endpoint = `http://localhost:8080/api/users/${id}`;
     try {
-      const response = await fetch(url);
+      const response = await fetch(endpoint);
       const data = await response.json();
       return [data, response.ok];
     } catch (error) {
       console.error(error);
       return [{}, false];
     }
+  }
+
+  static async updateUser(id, updateData) {
+    const endpoint = `http://localhost:8080/api/users/${id}`;
+    console.log("FIRED API");
+    return this.HTTPMethodWrapper("PUT", endpoint, updateData);
   }
 
   static async HTTPMethodWrapper(method, endpoint, body) {
@@ -255,6 +261,10 @@ export default class QueryService {
   static async deleteComment(postId, commentId) {
     const endpoint = `http://localhost:8080/api/posts/${postId}/comments/${commentId}`;
     return this.HTTPMethodWrapper("DELETE", endpoint);
+  }
+
+  static async get(params) {
+    
   }
 
   static async fetchUnsplashedImage(searchTerm) {

@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { PDFviewer } from "../components/PDFviewer";
-<<<<<<< HEAD
-import { useAuth } from "../controller/Firebase";
 import api from "../controller/QueryService";
 import { IconFolder, IconPlus } from "../icons/FileIcons";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { NavTab } from "../components/NavTab";
+import { useAuth } from "../context/AuthContext";
 
 let fileList = {
   id: "f4f97a43-2725-4a50-a90b-feab448ad6c5",
@@ -39,28 +38,12 @@ let fileList = {
     },
   ],
 };
-=======
-import { getPostById, getUserById } from "../controller/QueryService";
-import { IconFolder, IconPlus } from "../icons/FileIcons";
-import { NavTab } from "./Dashboard";
-import { useAuth } from "../context/AuthContext";
->>>>>>> sam
 
 
 export default function Docs() {
-<<<<<<< HEAD
-  const auth = useAuth();
-  
-=======
   //const auth = useAuth();
   const { currentUser } = useAuth();
 
-  const data = useMemo(() => ({ 
-    name: "main", 
-    items: fileList
-  }), []);
-
->>>>>>> sam
   const [activeDoc, setActiveDoc] = useState();
   const [fileSystem, setFileSystem] = useState(fileList);
   const [savedPosts, setSavedPosts] = useState([]);
@@ -108,13 +91,8 @@ export default function Docs() {
 
   useEffect(() => {
     (async () => {
-<<<<<<< HEAD
-      if (auth !== undefined) {
-        const [user, response] = await api.getUserById(auth?.uid);
-=======
       if (currentUser !== undefined) {
-        const [user, response] = await getUserById(currentUser?.uid);
->>>>>>> sam
+        const [user, response] = await api.getUserById(currentUser?.uid);
         console.log(response);
         let fetchedPosts = [];
         for (const id of user.savedPosts) {
@@ -125,11 +103,7 @@ export default function Docs() {
         setHasFetched(true);
       }
     })();
-<<<<<<< HEAD
-  }, [auth]);
-=======
-  }, [currentUser, data]);
->>>>>>> sam
+  }, [currentUser]);
 
   useEffect(() => {
     if (hasFetched) {

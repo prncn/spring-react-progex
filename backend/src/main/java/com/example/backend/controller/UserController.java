@@ -2,8 +2,11 @@ package com.example.backend.controller;
 
 import com.example.backend.model.User;
 import com.example.backend.service.UserService;
+import com.google.gson.Gson;
+
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -22,13 +25,15 @@ public class UserController {
         return userService.getUserById(userId);
     }
 
-    @PutMapping(value = "/users")
-    public String updateUser(@RequestBody User user) throws ExecutionException, InterruptedException {
-        return userService.updateUser(user);
+    @SuppressWarnings("unchecked")
+    @PutMapping(value = "/users/{userId}")
+    public String updateUser(@PathVariable(value = "userId") String userId, @RequestBody String updateString) throws ExecutionException, InterruptedException {
+        HashMap<String, Object> updateData = new Gson().fromJson(updateString, HashMap.class);
+        return userService.updateUser(userId, updateData);
     }
 
-    @DeleteMapping(value = "/users")
-    public String deleteUser(@RequestBody String userId) throws ExecutionException, InterruptedException {
+    @DeleteMapping(value = "/users/{userId}")
+    public String deleteUser(@PathVariable(value = "userId") String userId) throws ExecutionException, InterruptedException {
         return userService.deleteUser(userId);
     }
 }

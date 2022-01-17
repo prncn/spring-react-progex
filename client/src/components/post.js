@@ -114,6 +114,8 @@ export default function Post({ data, currentUser, children }) {
               autoClose: 3000,
               theme: "dark",
             });
+            sessionStorage.clear();
+            window.location.reload();
           },
         },
         {

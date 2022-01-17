@@ -1,13 +1,14 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { logout } from "../controller/Firebase";
 import { IconDocs, IconExplore, IconHome, IconLogout, IconProfile } from "../icons/NavIcons";
 import anonIcon from "../img/img_258083.png";
 import { Img } from "react-image";
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 export function NavTab({ currentUser }) {
     const navigate = useNavigate();
     const [typeDark, setTypeDark] = useState('text-black');
+    const { logout }  = useAuth();
   
     async function handleLogout(e) {
       e.preventDefault();

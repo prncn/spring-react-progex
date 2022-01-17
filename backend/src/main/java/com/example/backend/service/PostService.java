@@ -142,10 +142,14 @@ public class PostService {
         // Create empty post object. This will be filled up later on with values from
         // the retrieved document
         Post post = new Post();
-
+        
         if (doc == null) {
             // Retrieve post from firestore based on the given id
-            doc = firestore.collection("posts").document(id).get().get();
+            DocumentReference postRef = firestore.collection("posts").document(id);
+            doc = postRef.get().get();
+            if (!doc.exists()) { 
+                return null;
+            }
         }
 
         post.setId(doc.getId());

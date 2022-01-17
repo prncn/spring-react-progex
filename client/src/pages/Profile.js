@@ -9,7 +9,7 @@ import { SpacesTab } from "./Dashboard";
 import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
-  const [data, setData] = useState([]);
+  const [postData, setData] = useState([]);
   const [userPosts, setUserPosts] = useState([]);
   const [user, setUser] = useState({});
   const [activeTab, setActiveTab] = useState("Posts");
@@ -93,9 +93,18 @@ export default function Profile() {
       case "Liked":
         const likedPostsIds = user.likedPosts;
         let likedPosts = [];
+        let validLikedIds = [];
         for (const id of likedPostsIds) {
           const { data } = await api.getPostById(id);
-          likedPosts.push(data);
+          console.log(data);
+          if(data.id !== '5') {
+            likedPosts.push(data);
+            validLikedIds.push(id);
+          }
+        }
+        if(likedPostsIds.length !== validLikedIds.length) {
+          console.log("FIRED");
+          api.updateUser(user.id, {likedPosts: validLikedIds});
         }
         setData(likedPosts);
         break;
@@ -103,9 +112,17 @@ export default function Profile() {
       case "Saved":
         const savedPostsIds = user.savedPosts;
         let savedPosts = [];
+        let validSavedIds = [];
         for (const id of savedPostsIds) {
           const { data } = await api.getPostById(id);
           savedPosts.push(data);
+          if(data !== null || data !== undefined) {
+            savedPosts.push(data);
+            validSavedIds.push(id);
+          }
+        }
+        if(savedPostsIds.length !== validSavedIds.length) {
+          api.updateUser(user.id, {savedPosts: validSavedIds});
         }
         setData(savedPosts);
         break;
@@ -135,7 +152,7 @@ export default function Profile() {
               style={{ backgroundColor: color }}
             />
           ))} */}
-          <div className="w-32 h-32 rounded-full absolute -bottom-10 left-10 border-4 border-gray-50" >
+          <div className="w-32 h-32 rounded-full absolute -bottom-10 left-10 border-4 border-gray-50 bg-gray-50" >
             <img
               className="w-full h-full object-cover rounded-full"
               src={user?.photoURL}
@@ -163,7 +180,7 @@ export default function Profile() {
           <button onClick={() => switchTab("Posts")}>
             <span
               className={
-                `font-bold text-3xl text-left ` +
+                `font-bold text-3xl text-left focus:outline-none ` +
                 (activeTab === "Posts"
                   ? "text-gray-500"
                   : "text-gray-300 hover:text-gray-400")
@@ -175,7 +192,7 @@ export default function Profile() {
           <button onClick={() => switchTab("Liked")}>
             <span
               className={
-                `font-bold text-3xl text-left ` +
+                `font-bold text-3xl text-left focus:outline-none ` +
                 (activeTab === "Liked"
                   ? "text-gray-500"
                   : "text-gray-300 hover:text-gray-400")
@@ -187,7 +204,7 @@ export default function Profile() {
           <button onClick={() => switchTab("Saved")}>
             <span
               className={
-                `font-bold text-3xl text-left ` +
+                `font-bold text-3xl text-left focus:outline-none ` +
                 (activeTab === "Saved"
                   ? "text-gray-500"
                   : "text-gray-300 hover:text-gray-400")
@@ -197,7 +214,7 @@ export default function Profile() {
             </span>
           </button>
         </div>
-        {data.map((post, i) => (
+        {postData.map((post, i) => (
           <Post key={post.id} data={post} currentUser={currentUser}>
             <PDFviewer
               idn={i}

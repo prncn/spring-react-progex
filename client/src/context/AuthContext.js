@@ -15,7 +15,7 @@ import { doc, setDoc } from 'firebase/firestore';
 
 const AuthContext = React.createContext();
 
-export function useAuth() {
+export function  useAuth() {
   return useContext(AuthContext);
 }
 
@@ -45,6 +45,7 @@ export function AuthProvider({ children }) {
           displayName,
           photoURL,
           likedPosts: [],
+          savedPosts: [],
         });
       } catch (e) {
         console.error('Error adding document: ', e);
