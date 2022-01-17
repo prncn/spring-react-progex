@@ -14,6 +14,9 @@ import { Img } from "react-image";
 import anonIcon from "../img/img_258083.png";
 import { deleteFile } from "../controller/Firebase";
 import { confirmAlert } from "react-confirm-alert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 export function timeDifference(previous) {
   previous = previous.seconds / 1000;
@@ -45,8 +48,13 @@ export function timeDifference(previous) {
 export default function Post({ data, currentUser, children }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
-  const menuRef = useRef(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [descInputValue, setDescInputValue] = useState(data.description);
+  const [editEnabled, setEditEnabled] = useState(false);
+
+  const menuRef = useRef(null);
+  const postContainerRef = useRef(null);
+  const descInputRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -99,8 +107,13 @@ export default function Post({ data, currentUser, children }) {
         {
           label: "Yes",
           onClick: () => {
-            api.deletePost(data.id);
+            api.deletePost(data.id, data.category);
             deleteFile(data.url);
+            toast.error("Deleted Post", {
+              position: toast.POSITION.TOP_CENTER,
+              autoClose: 3000,
+              theme: "dark",
+            });
           },
         },
         {
@@ -110,11 +123,48 @@ export default function Post({ data, currentUser, children }) {
     });
   }
 
-  function editHandler() {}
+  function editHandler(event) {
+    setEditEnabled(true);
+    postContainerRef.current.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+    document.body.style.overflow = "hidden";
+    descInputRef.current.focus();
+  }
+  
+  function editHandlerOk() {
+    api.editPost({ 
+      id: data.id,
+      title: data.title,
+      description: descInputValue,
+      category: data.category,
+    });
+    document.body.style.overflow = "visible";
+    setEditEnabled(false);
+    toast.success("Edited Post", {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 2000,
+      theme: "dark",
+    });
+    window.sessionStorage.clear();
+  }
+  
+  function editHandlerCancel() {
+    document.body.style.overflow = "visible";
+    setEditEnabled(false);
+  }
 
   return (
-    <div className="flex w-full border-b pt-2 px-2 mx-4 text-black bg-gray-50 hover:bg-gray-100 transition text-sm">
+    <>
+      <div
+        className={`fixed bg-black opacity-70 transition h-screen w-full top-0 left-0 z-20 ${
+          editEnabled ? "block" : "hidden"
+        }`}
+      />
+    <div
+      className={`flex w-full border-b pt-2 px-2 mx-4 text-black bg-gray-50 hover:bg-gray-100 transition text-sm ${editEnabled ? "z-50" : "z-10"}`}
+      ref={postContainerRef}
+    >
       <div className="w-20 pl-4 rounded-lg">
+      <ToastContainer />
         <div className="w-16 h-16 mt-2 rounded-full shadow-lg">
           <Link to={`/profile/${data.user.id}`}>
             <Img
@@ -152,38 +202,64 @@ export default function Post({ data, currentUser, children }) {
           <span className="mx-2 font-bold">&#183;</span>
           <div className="font-light">{timeDifference(data.date)}</div>
           {data.user.id === currentUser?.uid && (
-            <span
-              className="ml-auto text-gray-500 hover:text-gray-800 cursor-pointer relative"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              ref={menuRef}
-            >
-              <IconDotMenu />
-              <div
-                className={`bg-gray-50 rounded-lg w-40 absolute right-0 border top-6 transition overflow-hidden ${
-                  isMenuOpen ? "visible" : "invisible"
-                }`}
+            <div className="flex ml-auto space-x-4">
+              {editEnabled && (
+                <>
+                  <div
+                    className="text-sm text-gray-400 font-medium hover:text-gray-800 cursor-pointer"
+                    onClick={editHandlerOk}
+                  >
+                    ok
+                  </div>
+                  <div
+                    className="text-sm text-gray-400 font-medium hover:text-gray-800 cursor-pointer"
+                    onClick={editHandlerCancel}
+                  >
+                    cancel
+                  </div>
+                </>
+              )}
+              <span
+                className="text-gray-500 hover:text-gray-800 cursor-pointer relative"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                ref={menuRef}
               >
+                <IconDotMenu />
                 <div
-                  onClick={deleteHandler}
-                  className="text-red-400 p-2 flex space-x-2 items-center hover:bg-red-200"
+                  className={`bg-gray-50 rounded-lg w-40 absolute right-0 border top-6 transition overflow-hidden ${
+                    isMenuOpen ? "visible" : "invisible"
+                  }`}
                 >
-                  <IconTrash />
-                  <span>Delete</span>
+                  <div
+                    onClick={deleteHandler}
+                    className="text-red-400 p-2 flex space-x-2 items-center hover:bg-red-200"
+                  >
+                    <IconTrash />
+                    <span>Delete</span>
+                  </div>
+                  <div
+                    onClick={editHandler}
+                    className="text-gray-600 p-2 flex space-x-2 items-center hover:bg-gray-200"
+                  >
+                    <IconEdit />
+                    <span>Edit</span>
+                  </div>
                 </div>
-                <div
-                  onClick={editHandler}
-                  className="text-gray-600 p-2 flex space-x-2 items-center hover:bg-gray-200"
-                >
-                  <IconEdit />
-                  <span>Edit</span>
-                </div>
-              </div>
-            </span>
+              </span>
+            </div>
           )}
         </div>
-        <div className="pb-3">{data.description}</div>
+        <input
+          className="pb-3 bg-transparent focus:outline-none"
+          value={descInputValue}
+          disabled={!editEnabled}
+          onChange={(event) => setDescInputValue(event.target.value)}
+          spellCheck={false}
+          ref={descInputRef}
+        />
         {children}
       </div>
     </div>
+    </>
   );
 }

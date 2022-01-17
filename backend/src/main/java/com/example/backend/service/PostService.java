@@ -47,7 +47,8 @@ public class PostService {
         return getPostList(postsCollection);
     }
 
-    public List<Post> getPostsFromCategory(String category, Integer limit) throws ExecutionException, InterruptedException {
+    public List<Post> getPostsFromCategory(String category, Integer limit)
+            throws ExecutionException, InterruptedException {
         Query postsCollection = firestore.collection("posts")
                 .orderBy("date", Direction.DESCENDING)
                 .whereEqualTo("category", category)
@@ -109,8 +110,14 @@ public class PostService {
      * @throws InterruptedException
      */
     public String updatePost(Post post) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture = firestore.collection("posts").document(post.getId()).set(post);
-        return collectionsApiFuture.get().getUpdateTime().toString();
+        DocumentReference docRef = firestore.collection("posts").document(post.getId());
+        Map<String, Object> updateData = new HashMap<>();
+        updateData.put("title", post.getTitle());
+        updateData.put("description", post.getDescription());
+        updateData.put("category", post.getCategory());
+
+        ApiFuture<WriteResult> future = docRef.update(updateData);
+        return future.get().getUpdateTime().toString();
     }
 
     public String deletePost(String id, String postCategory) throws InterruptedException, ExecutionException {
@@ -217,7 +224,7 @@ public class PostService {
 
         DocumentSnapshot docSnap = docRef.get().get();
 
-        if(!docSnap.getData().containsKey(postCategory)){
+        if (!docSnap.getData().containsKey(postCategory)) {
             Map<String, Object> update = new HashMap<>();
             update.put(postCategory, 1);
 
@@ -232,16 +239,18 @@ public class PostService {
                 .document("SDXBXH2B5iRjgIbebWMR");
 
         DocumentSnapshot docSnap = docRef.get().get();
-        if(docSnap.getData().containsKey(postCategory)){
+        if (docSnap.getData().containsKey(postCategory)) {
             docRef.update(postCategory, FieldValue.increment(-1));
-            if(docSnap.getDouble(postCategory) >= 0){
+            if (docSnap.getDouble(postCategory) >= 0) {
                 docRef.update(postCategory, FieldValue.delete());
             }
         }
     }
 
-    /** Delete a collection in batches to avoid out-of-memory errors.
-     * Batch size may be tuned based on document size (atmost 1MB) and application requirements.
+    /**
+     * Delete a collection in batches to avoid out-of-memory errors.
+     * Batch size may be tuned based on document size (atmost 1MB) and application
+     * requirements.
      */
     void deleteCollection(CollectionReference collection, int batchSize) {
         try {

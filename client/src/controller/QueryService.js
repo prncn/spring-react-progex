@@ -91,7 +91,11 @@ export default class QueryService {
     try {
       console.log("Fetching Posts...");
       const response = await fetch(url);
-      const data = await response.json();
+      let data = await response.json();
+      data = data.filter((item) => {
+        return item.url !== null
+      });
+      console.log(data);
       return data;
     } catch (error) {
       const message = `Fetch error has occured: ${error}`;
@@ -138,29 +142,27 @@ export default class QueryService {
    * @param {string} url - URL of PDF file
    * @returns
    */
-  static async createPost(user, title, description, url) {
+  static async createPost(user, title, description, category, url) {
     const endpoint = "http://localhost:8080/api/posts/";
     return this.HTTPMethodWrapper("POST", endpoint, {
       user,
       title,
       description,
+      category,
       url,
     });
   }
 
-  static async deletePost(id) {
+  static async deletePost(id, category) {
     const endpoint = `http://localhost:8080/api/posts/${id}`;
-    try {
-      const response = await fetch(endpoint, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      return response.json();
-    } catch (error) {
-      console.error(error);
-    }
+    return this.HTTPMethodWrapper("DELETE", endpoint, {
+      category
+    });
+  }
+
+  static async editPost(post) {
+    const endpoint = `http://localhost:8080/api/posts`;
+    return this.HTTPMethodWrapper("PUT", endpoint, post)
   }
 
   static async getUserById(id) {

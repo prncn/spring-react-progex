@@ -119,14 +119,23 @@ export default function Profile() {
   return (
     <div className="flex min-h-screen justify-center divide-x">
       <NavTab currentUser={currentUser} active="profile" />
-      <div className="flex flex-col items-center xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
+      <div className="flex flex-col items-center xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50 relative">
         <div
-          className={`w-full h-32 flex justify-end rounded-b-xl p-3 relative`}
+          className={`w-full h-32 flex justify-end rounded-b-xl p-3 relative bg-cover bg-black animate-gradient-y `}
           style={{
-            backgroundImage: `linear-gradient(to bottom right, ${profilePalette[2]}, ${profilePalette[0]})`,
+            backgroundImage: `linear-gradient(to bottom left, black,  ${profilePalette[2]})`,
+            // animation: 'gradient-xy'
+            // backgroundImage: `url(${user?.photoURL})`,
           }}
         >
-          <div className="w-32 h-32 rounded-full absolute -bottom-10 left-10 border-4 border-gray-50">
+          {/* {profilePalette.map((color, i) => (
+            <div
+              className={`h-full w-20 mx-4`}
+              key={i}
+              style={{ backgroundColor: color }}
+            />
+          ))} */}
+          <div className="w-32 h-32 rounded-full absolute -bottom-10 left-10 border-4 border-gray-50" >
             <img
               className="w-full h-full object-cover rounded-full"
               src={user?.photoURL}

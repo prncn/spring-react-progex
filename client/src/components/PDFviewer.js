@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo } from "react";
 import ViewSDKClient from "../controller/ViewSDKClient";
 
 export function lightbox(SDKclient, file, title) {
@@ -29,23 +29,9 @@ export function PDFviewer({ idn = 0, file, title, height = '96', embedMode = 'IN
       }
     }, [setPaginator, viewSDKClient]);
 
-    const listInnerRef = useRef();
-
-    const onScroll = (event) => {
-      if (listInnerRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-        if (scrollTop + clientHeight === scrollHeight) {
-          console.log("Reached bottom");
-        }
-      }
-  
-      console.log(event.currentTarget.scrollHeight);
-    };
-  
     return (
       <div
         className={`${rounded && 'rounded-xl'} h-${height} overflow-y-auto hidescrollbar`} 
-        onScroll={onScroll} ref={listInnerRef}
       >
         <div id={`pdf-div-${idn}`} className='h-full w-full' style={{ height: `${scroll && '850px'}` }}/>
       </div>

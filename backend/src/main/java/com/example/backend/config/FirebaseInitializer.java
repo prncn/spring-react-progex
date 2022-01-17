@@ -20,7 +20,8 @@ public class FirebaseInitializer {
         File credentials;
 
         try {
-            credentials = new File("backend/" + path);
+            credentials = new File(path);
+            // credentials = new File("backend/" + path);
         } catch (Exception e) {
             credentials = new File(path);
         }

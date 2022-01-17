@@ -99,16 +99,20 @@ function PostCreator({ currentUser, setRevealLoader }) {
   const [title, setTitle] = useState();
   const [description, setDescription] = useState();
   const [url, setURL] = useState();
+  const [urlStatus, setURLStatus] = useState();
+  const [category, setCategory] = useState();
   const pfpIcon = currentUser?.photoURL;
   const [show, setShow] = useState(false);
   
   const onDrop = useCallback(async (acceptedFiles) => {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles.at(-1);
-      setURL("Uploading...");
+      setURLStatus("Uploading...");
       setRevealLoader(true);
-      const downloadURL = await uploadFile(file);
-      setURL(downloadURL);
+      uploadFile(file).then((downloadURL) => {
+        setURL(downloadURL);
+        setURLStatus("File uploaded.");
+      })
     }
   }, [setRevealLoader]);
 
@@ -125,20 +129,23 @@ function PostCreator({ currentUser, setRevealLoader }) {
     [isDragActive, isDragReject, isDragAccept]
   );
 
+  console.log(url);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     let completed_flag = false;
-    [title, description, url].forEach((item) => {
+    [title, description, url, category].forEach((item) => {
       if (/^ *$/.test(item)) {
         completed_flag = true;
       }
     });
 
-    if (url !== "Uploading..." && !completed_flag) {
+    if (urlStatus !== "Uploading..." && !completed_flag) {
       api.createPost(
         { ...currentUser, id: currentUser?.uid },
         title,
         description,
+        category,
         url
       );
       console.log(title);
@@ -156,11 +163,11 @@ function PostCreator({ currentUser, setRevealLoader }) {
   }
 
   return (
-    <div className="w-full h-40 mb-2">
+    <div className="w-full h-52 mb-2">
       {!show ? (
         <div
           onClick={handleReveal}
-          className="w-full h-40 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 animate-gradient-y transition-all shadow-xl"
+          className="w-full h-52 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 animate-gradient-y transition-all shadow-xl"
         >
           <div className={"self-end w-1/3 text-3xl text-white font-semibold"}>
             Hi, {currentUser?.displayName}. <br />{" "}
@@ -182,12 +189,27 @@ function PostCreator({ currentUser, setRevealLoader }) {
             <form className="w-full h-full flex">
               <div className="flex flex-col w-full">
                 <input
+                  className="py-1 bg-transparent text-sm w-1/3 focus:outline-none text-gray-500"
+                  placeholder="Drag your file here"
+                  value={urlStatus}
+                  onInput={(event) => setURLStatus(event.target.value)}
+                  spellCheck="false"
+                  disabled={true}
+                ></input>
+                <input
                   className="py-1 bg-transparent text-lg focus:outline-none"
                   placeholder="Post Title"
                   value={title}
                   onInput={(event) => setTitle(event.target.value)}
                   spellCheck="false"
                 ></input>
+                  <input
+                    className="py-1 bg-transparent text-sm focus:outline-none"
+                    placeholder="Space"
+                    value={category}
+                    onInput={(event) => setCategory(event.target.value)}
+                    spellCheck="false"
+                  ></input>
                 <textarea
                   className="py-1 bg-transparent text-sm focus:outline-none resize-none"
                   placeholder="Description"
@@ -195,14 +217,6 @@ function PostCreator({ currentUser, setRevealLoader }) {
                   onInput={(event) => setDescription(event.target.value)}
                   spellCheck="false"
                 ></textarea>
-                <input
-                  className="py-1 bg-transparent text-sm w-1/3 focus:outline-none text-gray-500"
-                  placeholder="Drag your file here"
-                  value={url}
-                  onInput={(event) => setURL(event.target.value)}
-                  spellCheck="false"
-                  disabled="true"
-                ></input>
               </div>
               <button
                 onClick={handleSubmit}
@@ -221,7 +235,7 @@ function PostCreator({ currentUser, setRevealLoader }) {
 export function SpacesTab({ spaces, data }) {
   return (
     <div
-      className="sticky top-0 bg-white hidden xl:block flex-1"
+      className="sticky top-0 bg-white hidden xl:block flex-1 z-0"
       style={{ height: "94vh" }}
     >
       <div className="w-80 rounded-lg border m-4 py-6 bg-gray-50">
