@@ -164,9 +164,7 @@ public class PostService {
         DocumentSnapshot userDoc = userFuture.get();
 
         if (userDoc.exists()) {
-            UserService userService = new UserService(firestore);
-
-            User user = userService.getUserById(ds.getId());
+            User user = ds.get().get().toObject(User.class);
             post.setUser(user);
         }
 
@@ -274,5 +272,19 @@ public class PostService {
         } catch (Exception e) {
             System.err.println("Error deleting collection : " + e.getMessage());
         }
+    }
+
+    public Map<String, Integer> getCategories() throws ExecutionException, InterruptedException {
+        DocumentReference docRef = firestore.collection("category")
+                .document("SDXBXH2B5iRjgIbebWMR");
+        DocumentSnapshot docSnap = docRef.get().get();
+
+        Map<String, Object> docSnapMap = docSnap.getData();
+        Map<String, Integer> newMap = new HashMap<String, Integer>();
+
+        for (Map.Entry<String, Object> entry : docSnapMap.entrySet()) {
+            newMap.put(entry.getKey(), ((Number)entry.getValue()).intValue() );
+        }
+        return newMap;
     }
 }

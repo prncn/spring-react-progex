@@ -1,12 +1,14 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Post;
+import com.example.backend.model.User;
 import com.example.backend.service.PostService;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -83,5 +85,10 @@ public class PostController {
     public String unsavePost(@RequestBody PostUserJoin data)
             throws InterruptedException, ExecutionException, IllegalAccessException {
         return postService.incrementPost("savedPosts", data.getPostId(), data.getUserId(), false);
+    }
+
+    @GetMapping(value = "/categories")
+    public Map<String, Integer> getCategories() throws ExecutionException, InterruptedException {
+        return postService.getCategories();
     }
 }
