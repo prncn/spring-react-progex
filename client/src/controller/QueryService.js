@@ -86,7 +86,7 @@ export default class QueryService {
    * @returns Array. First entry is the resulting data, which is a this.placeholder
    * in case of a fetch error. Second entry is a success response.
    */
-  static async getPosts({category, user}) {
+  static async getPosts(category, user) {
     let url = "http://localhost:8080/api/posts?limit=20";
     if(category) url = url.concat(`&category=${category}`);
     if(user) url = url.concat(`&user=${user}`);
