@@ -10,20 +10,21 @@ class ViewSDKClient {
       }
     });
     this.adobeDCView = undefined;
+    this.viewAPI = undefined;
   }
 
   ready() {
     return this.readyPromise;
   }
 
-  previewFile(file, fileName, divId, viewerConfig) {
+
+  async previewFile(file, fileName, divId, viewerConfig) {
     const config = {
       clientId: 'cfb77c914b3444668a74f3b1f0a30e78',
     };
     if (divId) {
       config.divId = divId;
     }
-    /* Initialize the AdobeDC View object */
     this.adobeDCView = new window.AdobeDC.View(config);
 
     const previewFilePromise = this.adobeDCView.previewFile(
@@ -41,15 +42,31 @@ class ViewSDKClient {
       viewerConfig
     );
 
+    previewFilePromise.then(function (adobeViewer) {
+      adobeViewer.getAPIs().then((apis) => {
+        apis
+          .getCurrentPage()
+          .catch((error) => console.log(error));
+      });
+    })
+
+    this.viewAPI = previewFilePromise;
     return previewFilePromise;
   }
 
+  goToPage(pageNum) {
+    this.viewAPI.then(function (adobeViewer) {
+      adobeViewer.getAPIs().then((apis) => {
+        apis
+          .gotoLocation(pageNum);
+      });
+    })
+  }
+
   registerSaveApiHandler() {
-    /* Define Save API Handler */
     const saveApiHandler = (metaData, content, options) => {
       console.log(metaData, content, options);
       return new Promise((resolve) => {
-        /* Dummy implementation of Save API, replace with your business logic */
         setTimeout(() => {
           const response = {
             code: window.AdobeDC.View.Enum.ApiResponseCode.SUCCESS,

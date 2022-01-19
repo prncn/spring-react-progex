@@ -2,7 +2,8 @@ import '../index.css';
 import { Input } from '../pages/Home';
 import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signin, signup, resetPassword } from '../controller/Firebase';
+//import { signin, signup, resetPassword } from '../controller/Firebase';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Form component to handle login by user
@@ -13,6 +14,7 @@ export function LoginForm() {
   const passwordRef = useRef();
   const [loading, setLoading] = useState();
   const navigate = useNavigate();
+  const {signin}  = useAuth();
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -30,9 +32,7 @@ export function LoginForm() {
 
   return (
     <form>
-      <p className="home-form__heading">
-        Sign in
-      </p>
+      <p className="home-form__heading">Sign in</p>
       <Input ref={emailRef} type="email" placeholder="E-Mail" />
       <Input ref={passwordRef} type="password" placeholder="Password" />
       <div className="flex justify-between">
@@ -54,20 +54,26 @@ export function LoginForm() {
         </Link>
       </div>
       <div className="mt-10">
-        <Link className="text-sm text-gray-300 hover:text-gray-500" to="/forgot-password">Forgot Password?</Link>
+        <Link
+          className="text-sm text-gray-300 hover:text-gray-500"
+          to="/forgot-password"
+        >
+          Forgot Password?
+        </Link>
       </div>
     </form>
   );
 }
 
 /**
- * Component to reset password 
+ * Component to reset password
  * @returns React component
  */
 export function ResetPasswordForm() {
   const emailRef = useRef();
   const [loading, setLoading] = useState();
   const [setMessage] = useState(); // used to display messages to the user
+  const {resetPassword} = useAuth();
 
   async function handleresetPasword(e) {
     e.preventDefault();
@@ -89,7 +95,13 @@ export function ResetPasswordForm() {
   return (
     <form>
       <p className="home-form__heading">Reset</p>
-      <Input className="w-full" ref={emailRef} type="email" placeholder="E-Mail" required />
+      <Input
+        className="w-full"
+        ref={emailRef}
+        type="email"
+        placeholder="E-Mail"
+        required
+      />
       <div className="flex justify-between">
         <button
           disabled={loading}
@@ -117,6 +129,7 @@ export function SignupForm() {
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
   const [loading, setLoading] = useState();
+  const {signup} = useAuth();
 
   const navigate = useNavigate();
 
@@ -129,7 +142,11 @@ export function SignupForm() {
 
     try {
       setLoading(true);
-      await signup(emailRef.current.value, passwordRef.current.value, displayNameRef.current.value);
+      await signup(
+        emailRef.current.value,
+        passwordRef.current.value,
+        displayNameRef.current.value
+      );
       navigate('/dash');
     } catch (error) {
       alert(error);
@@ -137,10 +154,8 @@ export function SignupForm() {
     setLoading(false);
   }
   return (
-    <form>
-      <p className="home-form__heading">
-        Sign up
-      </p>
+    <form className='py-2'>
+      <p className="home-form__heading">Sign up</p>
 
       <Input ref={displayNameRef} type="text" placeholder="Display Name" />
       <Input ref={emailRef} type="email" placeholder="E-Mail" />
@@ -156,15 +171,12 @@ export function SignupForm() {
           disabled={loading}
           onClick={handleSignup}
           type="button"
-          className="py-2 px-6 bg-green-200 hover:bg-green-300 rounded-lg text-gray-800 font-semibold mt-5"
+          className="py-2 px-6 bg-indigo-100 hover:bg-indigo-200 rounded-lg text-indigo-400 font-semibold mt-5"
         >
           Sign up
         </button>
         <Link to="/login">
-          <button
-            type="button"
-            className="home-form__right-btn"
-          >
+          <button type="button" className="p-3 text-gray-500 mx-1 border border-black hover:bg-gray-200 rounded-lg font-semibold text-sm mt-5">
             Got an account
           </button>
         </Link>

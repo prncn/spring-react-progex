@@ -1,23 +1,19 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Post;
+import com.example.backend.model.User;
 import com.example.backend.service.PostService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("api/posts")
+@RequestMapping("api")
 public class PostController {
     private final PostService postService;
 
@@ -25,28 +21,74 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping(value = "/", produces = "application/json")
-    public List<Post> getAllPost() throws ExecutionException, InterruptedException {
-        return postService.getPostList();
+    @GetMapping(value = "/posts")
+    public List<Post> getAllPost(@RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) String user, @RequestParam(value = "category", required = false) String category)
+            throws ExecutionException, InterruptedException {
+        if (limit == null) {
+            limit = 50;
+        }
+
+        if (user instanceof String) {
+            //Get all posts from user
+            return postService.getPostList(limit, user);
+        } else if (category instanceof String){
+            return postService.getPostsFromCategory(category, limit);
+        } else{
+            return postService.getPostList(limit);
+        }
     }
 
-    @GetMapping(value = "/{id}", produces = "application/json")
-    public Post getPostById(@RequestHeader String id) throws ExecutionException, InterruptedException {
-        return postService.getPost(id);
+    @GetMapping(value = "/posts/{id}")
+    public Post getPostById(@PathVariable String id) throws ExecutionException, InterruptedException {
+        return postService.getPostById(id, null);
     }
 
-    @PostMapping(value = "/", produces = "application/json")
+    @PostMapping(value = "/posts")
     public String createPost(@RequestBody Post post) throws ExecutionException, InterruptedException {
         return postService.createPost(post);
     }
 
-    @PutMapping(value = "/", produces = "application/json")
+    @PutMapping(value = "/posts")
     public String updatePost(@RequestBody Post post) throws ExecutionException, InterruptedException {
         return postService.updatePost(post);
     }
 
-    @DeleteMapping(value = "/", produces = "application/json")
-    public String deletePost(@RequestHeader String id) throws InterruptedException, ExecutionException {
-        return postService.deletePost(id);
+    @DeleteMapping(value = "/posts/{id}")
+    public String deletePost(@PathVariable String id, @RequestBody Post post) throws InterruptedException, ExecutionException {
+        return postService.deletePost(id, post.getCategory());
+    }
+
+    @Data
+    static class PostUserJoin {
+        String postId;
+        String userId;
+    }
+
+    @PostMapping(value = "/posts/{id}/like")
+    public String likePost(@RequestBody PostUserJoin data) throws InterruptedException, ExecutionException, IllegalAccessException {
+        return postService.incrementPost("likedPosts", data.getPostId(), data.getUserId(), true);
+    }
+
+    @DeleteMapping(value = "/posts/{id}/like")
+    public String unlikePost(@RequestBody PostUserJoin data)
+            throws InterruptedException, ExecutionException, IllegalAccessException {
+        return postService.incrementPost("likedPosts", data.getPostId(), data.getUserId(), false);
+    }
+
+    @PostMapping(value = "/posts/{id}/save")
+    public String savePost(@RequestBody PostUserJoin data) throws InterruptedException, ExecutionException, IllegalAccessException {
+        return postService.incrementPost("savedPosts", data.getPostId(), data.getUserId(), true);
+    }
+
+    @DeleteMapping(value = "/posts/{id}/save")
+    public String unsavePost(@RequestBody PostUserJoin data)
+            throws InterruptedException, ExecutionException, IllegalAccessException {
+        return postService.incrementPost("savedPosts", data.getPostId(), data.getUserId(), false);
+    }
+
+    @GetMapping(value = "/categories")
+    public Map<String, Integer> getCategories() throws ExecutionException, InterruptedException {
+        return postService.getCategories();
     }
 }
