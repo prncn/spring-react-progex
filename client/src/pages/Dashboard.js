@@ -285,7 +285,7 @@ function Stories({ data }) {
         {storyposts.map((item, i) => (
           <li key={i} className="flex flex-col justify-center items-center">
             <div
-              className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 m-1 block cursor-pointer animate-gradient-xy"
+              className="bg-gradient-to-tr w-17 h-17 from-red-300 to-indigo-700 rounded-full p-1 m-1 block cursor-pointer animate-gradient-xy"
               onClick={() => lightbox(sdk, item.url, item.title)}
             >
               <Img

@@ -3,12 +3,13 @@ import Post, { timeDifference } from "../components/Post";
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { IconHeart, IconTrash } from "../icons/PostIcons";
+import { IconDotMenu, IconHeart, IconTrash } from "../icons/PostIcons";
 import { PDFviewer } from "../components/PDFviewer";
 import Highlighter from "react-highlight-words";
 import { NavTab } from "../components/NavTab";
 import { SpacesTab } from "./Dashboard";
 import api from "../controller/QueryService";
+import { confirmAlert } from "react-confirm-alert";
 
 // const commentPlaceholder = [
 //   {
@@ -42,7 +43,7 @@ import api from "../controller/QueryService";
 
 export default function SinglePost() {
   const [searchParams] = useSearchParams();
-  const currentUser = useAuth();
+  const { currentUser } = useAuth();
   const postId = searchParams.get("id");
 
   const post = useLocation().state;
@@ -147,7 +148,7 @@ function Comment({ data, paginator, currentUser, postId }) {
   const [liked, setLiked] = useState(false);
 
   function paginate(content) {
-    const strip = content.replace(/[^0-9]/g, "");
+    const strip = content.replace(/[^0-9]+/g, "");
 
     return paginator.ready().then(() => {
       paginator.goToPage(Number(strip));
@@ -166,8 +167,22 @@ function Comment({ data, paginator, currentUser, postId }) {
   }
 
   function handleDelete() {
-    api.deleteComment(postId, data.id)
-    window.location.reload();
+    confirmAlert({
+      title: "Confirm to submit",
+      message: "Really delete this comment?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => {
+            api.deleteComment(postId, data.id)
+            window.location.reload();
+          },
+        },
+        {
+          label: "No",
+        },
+      ],
+    });
   }
 
   function toggleLiked() {
@@ -194,7 +209,7 @@ function Comment({ data, paginator, currentUser, postId }) {
         <div className="mb-2">
           <Highlighter
             highlightTag={Highlight}
-            searchWords={[/page\s[0-9]/g]}
+            searchWords={[/page\s[0-9]+/g]}
             textToHighlight={data.description}
           />
         </div>
@@ -202,7 +217,7 @@ function Comment({ data, paginator, currentUser, postId }) {
       <div className="flex items-center">
         {data.user.id === currentUser?.uid ? (
           <button className="rounded-full hover:bg-gray-300 p-3" onClick={handleDelete}>
-            <IconTrash />
+            <IconDotMenu />
           </button>
         ) : (
           <button className="rounded-full hover:bg-gray-300 p-3" onClick={toggleLiked}>
