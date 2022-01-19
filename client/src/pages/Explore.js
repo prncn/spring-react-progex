@@ -44,7 +44,7 @@ export default function Explore() {
   useEffect(() => {
     if ("spaceId" in params) {
       (async () => {
-        const postsData = await api.getPosts({ category: params.spaceId });
+        const postsData = await api.getPosts(params.spaceId);
         setData(postsData);
       })();
     }

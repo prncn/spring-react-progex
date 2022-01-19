@@ -19,8 +19,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import "react-confirm-alert/src/react-confirm-alert.css";
 
 export function timeDifference(previous) {
-  previous = previous.seconds / 1000;
-  const current = Math.floor(Date.now() / 1000);
+  previous = Math.floor(previous.seconds * 1000);
+  const current = Math.floor(Date.now());
 
   var msPerMinute = 60 * 1000;
   var msPerHour = msPerMinute * 60;
@@ -37,7 +37,12 @@ export function timeDifference(previous) {
   } else if (elapsed < msPerDay) {
     return Math.round(elapsed / msPerHour) + " hours ago";
   } else if (elapsed < msPerMonth) {
-    return Math.round(elapsed / msPerDay) + " days ago";
+    let days = Math.round(elapsed / msPerDay);
+    if(days > 1) {
+      return  days + " days ago";
+    } else {
+      return "yesterday"
+    }
   } else if (elapsed < msPerYear) {
     return Math.round(elapsed / msPerMonth) + " months ago";
   } else {
@@ -202,7 +207,8 @@ export default function Post({ data, currentUser, children }) {
         <div className={`font-semibold mb-1 w-full flex`}>
           <Link to={`/profile/${data.user.id}`}>{data.user.displayName}</Link>
           <span className="mx-2 font-bold">&#183;</span>
-          <div className="font-light">{timeDifference(data.date)}</div>
+          <div className="font-light">{`${timeDifference(data.date)} ${data.category ? ' in' : ''}`}</div>
+          <Link to={`/spaces/${data.category}`}><div className="ml-1 text-indigo-400">{data.category}</div></Link>
           {data.user.id === currentUser?.uid && (
             <div className="flex ml-auto space-x-4">
               {editEnabled && (
