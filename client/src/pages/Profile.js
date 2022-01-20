@@ -7,6 +7,7 @@ import { PDFviewer } from "../components/PDFviewer";
 import { NavTab } from "../components/NavTab";
 import { SpacesTab } from "./Dashboard";
 import { useAuth } from "../context/AuthContext";
+import Modal from "./Modal";
 
 export default function Profile() {
   const [postData, setData] = useState([]);
@@ -15,6 +16,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("Posts");
 
   const {currentUser, _updateEmail, _updatePassword} = useAuth();
+  const [isOpen,setIsOpen] = useState(false)
   const emailRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
@@ -62,6 +64,7 @@ export default function Profile() {
       });
   }
 
+  
   useEffect(() => {
     (async () => {
       const [data, status] = await api.getPostsOfUser(user.id);
@@ -159,6 +162,14 @@ export default function Profile() {
               alt="pfp_icon"
             />
           </div>
+          <div className="flex flex-col p-5 h-full">
+           <div className="text-2xl text-white font-semibold">
+              <button onClick={()=> setIsOpen(true)}>
+                Update Profile
+              </button>
+              <Modal open={isOpen} onClick={()=>setIsOpen(false)}/>
+            </div>
+           </div>
           <div className="flex flex-col p-4 h-full">
             <div className="text-3xl text-white font-semibold">
               {user.displayName}
