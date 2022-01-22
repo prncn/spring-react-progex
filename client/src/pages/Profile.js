@@ -167,7 +167,7 @@ export default function Profile() {
               <button onClick={()=> setIsOpen(true)}>
                 Update Profile
               </button>
-              <Modal open={isOpen} onClick={()=>setIsOpen(false)}/>
+              <Modal open={isOpen} onClose={()=>setIsOpen(false)}/>
             </div>
            </div>
           <div className="flex flex-col p-4 h-full">
