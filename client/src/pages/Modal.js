@@ -22,12 +22,13 @@ const OVERLAY_STYLES = {
   left: 0,
   right: 0,
   bottom: 0,
-  backgroundColor: 'rgba(0, 0, 0, .7)',
+  backgroundColor: 'rgba(0, 0, 0, .9)',
   zIndex: 1000
 }
 
 
 export default function Modal({ open,  onClose }) {
+
 
   const {currentUser, _updateEmail, _updatePassword} = useAuth();
   const emailRef = useRef();
@@ -56,7 +57,7 @@ export default function Modal({ open,  onClose }) {
 
     Promise.all(promises)
       .then(() => {
-        navigate("/");
+        navigate("/profile");
       })
       .catch(() => {
         alert("Profile could not be updated, try again");
@@ -68,12 +69,12 @@ export default function Modal({ open,  onClose }) {
 
   if(!open) return null
 
-  return /* RactDom.createPortal*/ (
+  return ReactDom.createPortal (
     <>
       <div style={OVERLAY_STYLES} />
       <div style={MODAL_STYLES}>
       <form className='py-2'>
-      <p className="home-form__heading">Sign up</p>
+      <p className="home-form__heading">Update</p>
       <Input ref={emailRef} type="email" placeholder={currentUser.email} />
       <Input ref={passwordRef} type="password" placeholder="Password" />
       <Input
@@ -97,7 +98,7 @@ export default function Modal({ open,  onClose }) {
       </div>
     </form>
       </div>
-    </> //,
-   // document.getElementById('portal')
+    </> ,
+    document.getElementById('portal')
   )
 }
