@@ -52,7 +52,7 @@ export default function Modal({ open, close }) {
 
     Promise.all(promises)
       .then(() => {
-        navigate('/');
+        navigate('/profile');
       })
       .catch(() => {
         alert('Profile could not be updated, try again');
