@@ -1,10 +1,9 @@
-import React from 'react'
-import ReactDom from 'react-dom'
+import React from 'react';
 import { Input } from '../pages/Home';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-//import { signin, signup, resetPassword } from '../controller/Firebase';
 import { useAuth } from '../context/AuthContext';
+import { IconClose } from '../icons/PostIcons';
 
 const MODAL_STYLES = {
   position: 'fixed',
@@ -12,9 +11,8 @@ const MODAL_STYLES = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   backgroundColor: '#FFF',
-  padding: '50px',
-  zIndex: 1000
-}
+  zIndex: 1000,
+};
 
 const OVERLAY_STYLES = {
   position: 'fixed',
@@ -22,14 +20,12 @@ const OVERLAY_STYLES = {
   left: 0,
   right: 0,
   bottom: 0,
-  backgroundColor: 'rgba(0, 0, 0, .7)',
-  zIndex: 1000
-}
+  backgroundColor: 'rgba(0, 0, 0, .5)',
+  zIndex: 1000,
+};
 
-
-export default function Modal({ open,  onClose }) {
-
-  const {currentUser, _updateEmail, _updatePassword} = useAuth();
+export default function Modal({ open, close }) {
+  const { currentUser, _updateEmail, _updatePassword } = useAuth();
   const emailRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
@@ -40,7 +36,7 @@ export default function Modal({ open,  onClose }) {
     e.preventDefault();
 
     if (passwordRef.current.value !== passwordConfirmRef.current.value) {
-      alert("Passwords do not match");
+      alert('Passwords do not match');
     }
 
     setLoading(true);
@@ -56,48 +52,69 @@ export default function Modal({ open,  onClose }) {
 
     Promise.all(promises)
       .then(() => {
-        navigate("/");
+        navigate('/');
       })
       .catch(() => {
-        alert("Profile could not be updated, try again");
+        alert('Profile could not be updated, try again');
       })
       .finally(() => {
         setLoading(false);
       });
   }
 
-  if(!open) return null
+  if (!open) return null;
 
-  return /* RactDom.createPortal*/ (
+  return (
     <>
-      <div style={OVERLAY_STYLES} />
-      <div style={MODAL_STYLES}>
-      <form className='py-2'>
-      <p className="home-form__heading">Sign up</p>
-      <Input ref={emailRef} type="email" placeholder={currentUser.email} />
-      <Input ref={passwordRef} type="password" placeholder="Password" />
-      <Input
-        ref={passwordConfirmRef}
-        type="password"
-        placeholder="Confirm Password"
-      />
-
-      <div className="flex justify-between">
-        <button
-          disabled={loading}
-          onClick={handleUpdate}
-          type="button"
-          className="py-2 px-6 bg-indigo-100 hover:bg-indigo-200 rounded-lg text-indigo-400 font-semibold mt-5"
-        >
-          Update
-        </button>
-        <button onClick={onClose} type="button" className="p-3 text-gray-500 mx-1 border border-black hover:bg-gray-200 rounded-lg font-semibold text-sm mt-5">
-            Close
+      <div style={OVERLAY_STYLES} onClick={close} />
+      <div style={MODAL_STYLES} className="rounded-xl p-5 relative w-1/3">
+        <div className="flex items-center justify-center space-x-2 absolute top-2 right-2">
+          <button
+            disabled={loading}
+            onClick={handleUpdate}
+            type="button"
+            className="py-2 px-6 bg-black hover:opacity-100 opacity-60 rounded-full text-white font-semibold"
+          >
+            save
           </button>
+          <button
+            onClick={close}
+            type="button"
+            className="hover:bg-gray-100 rounded-full text-black transition p-3"
+          >
+            <IconClose />
+          </button>
+        </div>
+        <div className="w-32 h-32 rounded-full border-4 border-gray-50 bg-gray-50 cursor-pointer relative">
+          <img
+            className="w-full h-full object-cover rounded-full"
+            src={currentUser?.photoURL}
+            alt="pfp_icon"
+          />
+          <div className="bg-black absolute top-0 left-0 opacity-0 h-full w-full hover:opacity-30 transition rounded-full" />
+        </div>
+        <form>
+          {/* <p className="home-form__heading">Edit Profile</p> */}
+          <Input
+            ref={emailRef}
+            label="Email"
+            type="email"
+            placeholder={currentUser.email}
+          />
+          <Input
+            ref={passwordRef}
+            label="Password"
+            type="password"
+            placeholder="Password"
+          />
+          <Input
+            ref={passwordConfirmRef}
+            label="Confirm Password"
+            type="password"
+            placeholder="Confirm Password"
+          />
+        </form>
       </div>
-    </form>
-      </div>
-    </> //,
-   // document.getElementById('portal')
-  )
+    </>
+  );
 }

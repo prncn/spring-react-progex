@@ -1,3 +1,6 @@
+const placeholder_pdfurl =
+  'https://firebasestorage.googleapis.com/v0/b/prog-ex.appspot.com/o/Eigenvalues.pdf?alt=media&token=31e2f892-24ef-4766-9c50-7510330524a7';
+
 export default class QueryService {
   /**
    * this.placeholder list of posts data. This will be passed
@@ -5,79 +8,79 @@ export default class QueryService {
    */
   static placeholder = [
     {
-      id: "5",
+      id: '5',
       user: {
-        id: "1",
-        displayName: "Loading...",
-        photoURL: "https://pic.onlinewebfonts.com/svg/img_258083.png",
+        id: '1',
+        displayName: 'Loading...',
+        photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
       },
-      title: "Rembrandt Symposium Programm",
-      description: "Loading...",
+      title: 'Rembrandt Symposium Programm',
+      description: 'Loading...',
       date: {
         seconds: 1638807536,
         nanos: 782000000,
       },
-      url: "https://www.tagg.org/pdftest.pdf",
+      url: placeholder_pdfurl,
     },
     {
-      id: "6",
+      id: '6',
       user: {
-        id: "2",
-        displayName: "Loading...",
-        photoURL: "https://pic.onlinewebfonts.com/svg/img_258083.png",
+        id: '2',
+        displayName: 'Loading...',
+        photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
       },
-      title: "What is Conceptual Art",
-      description: "Loading...",
+      title: 'What is Conceptual Art',
+      description: 'Loading...',
       date: {
         seconds: 1638807536,
         nanos: 782000000,
       },
-      url: "https://www.tagg.org/pdftest.pdf",
+      url: placeholder_pdfurl,
     },
     {
-      id: "11",
+      id: '11',
       user: {
-        id: "9",
-        displayName: "Loading...",
-        photoURL: "https://pic.onlinewebfonts.com/svg/img_258083.png",
+        id: '9',
+        displayName: 'Loading...',
+        photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
       },
-      title: "What is Conceptual Art",
-      description: "Some article by yours truly",
+      title: 'What is Conceptual Art',
+      description: 'Some article by yours truly',
       date: {
         seconds: 1638807536,
         nanos: 782000000,
       },
-      url: "https://www.tagg.org/pdftest.pdf",
+      url: placeholder_pdfurl,
     },
     {
-      id: "7",
+      id: '7',
       user: {
-        id: "3",
-        displayName: "Loading...",
-        photoURL: "https://pic.onlinewebfonts.com/svg/img_258083.png",
+        id: '3',
+        displayName: 'Loading...',
+        photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
       },
-      title: "Big Short Guide",
-      description: "Read this, it is important",
+      title: 'Big Short Guide',
+      description: 'Read this, it is important',
       date: {
         seconds: 1638807536,
         nanos: 782000000,
       },
-      url: "https://www.tagg.org/pdftest.pdf",
+      url: placeholder_pdfurl,
     },
     {
-      id: "13",
+      id: '13',
       user: {
-        id: "29",
-        displayName: "Loading...",
-        photoURL: "https://pic.onlinewebfonts.com/svg/img_258083.png",
+        id: '29',
+        displayName: 'Loading...',
+        photoURL: 'https://pic.onlinewebfonts.com/svg/img_258083.png',
       },
-      title: "Big Short Guide",
-      description: "Read this, it is important",
+      title: 'Big Short Guide',
+      description: 'Read this, it is important',
       date: {
         seconds: 1638807536,
         nanos: 782000000,
       },
-      url: "https://www.tagg.org/pdftest.pdf",
+      url: placeholder_pdfurl,
     },
   ];
 
@@ -87,16 +90,16 @@ export default class QueryService {
    * in case of a fetch error. Second entry is a success response.
    */
   static async getPosts(category, user) {
-    let url = "http://localhost:8080/api/posts?limit=20";
-    if(category) url = url.concat(`&category=${category}`);
-    if(user) url = url.concat(`&user=${user}`);
+    let url = 'http://localhost:8080/api/posts?limit=20';
+    if (category) url = url.concat(`&category=${category}`);
+    if (user) url = url.concat(`&user=${user}`);
     console.log(url);
     try {
-      console.log("Fetching Posts...");
+      console.log('Fetching Posts...');
       const response = await fetch(url);
       let data = await response.json();
       data = data.filter((item) => {
-        return item.url !== null
+        return item.url !== null;
       });
       console.log(data);
       return data;
@@ -111,9 +114,9 @@ export default class QueryService {
     const url = `http://localhost:8080/api/posts/${id}`;
     try {
       const response = await fetch(url, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
       const data = await response.json();
@@ -146,8 +149,8 @@ export default class QueryService {
    * @returns
    */
   static async createPost(user, title, description, category, url) {
-    const endpoint = "http://localhost:8080/api/posts/";
-    return this.HTTPMethodWrapper("POST", endpoint, {
+    const endpoint = 'http://localhost:8080/api/posts/';
+    return this.HTTPMethodWrapper('POST', endpoint, {
       user,
       title,
       description,
@@ -158,14 +161,14 @@ export default class QueryService {
 
   static async deletePost(id, category) {
     const endpoint = `http://localhost:8080/api/posts/${id}`;
-    return this.HTTPMethodWrapper("DELETE", endpoint, {
-      category
+    return this.HTTPMethodWrapper('DELETE', endpoint, {
+      category,
     });
   }
 
   static async editPost(post) {
     const endpoint = `http://localhost:8080/api/posts`;
-    return this.HTTPMethodWrapper("PUT", endpoint, post)
+    return this.HTTPMethodWrapper('PUT', endpoint, post);
   }
 
   static async getUserById(id) {
@@ -182,8 +185,8 @@ export default class QueryService {
 
   static async updateUser(id, updateData) {
     const endpoint = `http://localhost:8080/api/users/${id}`;
-    console.log("FIRED API");
-    return this.HTTPMethodWrapper("PUT", endpoint, updateData);
+    console.log('FIRED API');
+    return this.HTTPMethodWrapper('PUT', endpoint, updateData);
   }
 
   static async HTTPMethodWrapper(method, endpoint, body) {
@@ -191,7 +194,7 @@ export default class QueryService {
       const response = await fetch(endpoint, {
         method,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
       });
@@ -203,7 +206,7 @@ export default class QueryService {
 
   static async likePost(postId, userId) {
     const endpoint = `http://localhost:8080/api/posts/${postId}/like`;
-    return this.HTTPMethodWrapper("POST", endpoint, {
+    return this.HTTPMethodWrapper('POST', endpoint, {
       userId,
       postId,
     });
@@ -211,7 +214,7 @@ export default class QueryService {
 
   static async unlikePost(postId, userId) {
     const endpoint = `http://localhost:8080/api/posts/${postId}/like`;
-    return this.HTTPMethodWrapper("DELETE", endpoint, {
+    return this.HTTPMethodWrapper('DELETE', endpoint, {
       userId,
       postId,
     });
@@ -219,7 +222,7 @@ export default class QueryService {
 
   static async savePost(postId, userId) {
     const endpoint = `http://localhost:8080/api/posts/${postId}/save`;
-    return this.HTTPMethodWrapper("POST", endpoint, {
+    return this.HTTPMethodWrapper('POST', endpoint, {
       userId,
       postId,
     });
@@ -227,7 +230,7 @@ export default class QueryService {
 
   static async unsavePost(postId, userId) {
     const endpoint = `http://localhost:8080/api/posts/${postId}/save`;
-    return this.HTTPMethodWrapper("DELETE", endpoint, {
+    return this.HTTPMethodWrapper('DELETE', endpoint, {
       userId,
       postId,
     });
@@ -255,7 +258,7 @@ export default class QueryService {
 
   static async createComment(postId, user, description) {
     const endpoint = `http://localhost:8080/api/posts/${postId}/comments`;
-    return this.HTTPMethodWrapper("POST", endpoint, {
+    return this.HTTPMethodWrapper('POST', endpoint, {
       user,
       description,
     });
@@ -263,7 +266,7 @@ export default class QueryService {
 
   static async deleteComment(postId, commentId) {
     const endpoint = `http://localhost:8080/api/posts/${postId}/comments/${commentId}`;
-    return this.HTTPMethodWrapper("DELETE", endpoint);
+    return this.HTTPMethodWrapper('DELETE', endpoint);
   }
 
   static async getSpaces(sorted = false) {
@@ -282,11 +285,11 @@ export default class QueryService {
     const endpoint = `https://api.unsplash.com/search/photos?query=${searchTerm}&per_page=1&page=1`;
     try {
       const response = await fetch(endpoint, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization:
-            "Client-ID thEZ20OyHFDkAE24Fkg8va-yVBSZBpBaEI86BV2WZ5g",
+            'Client-ID thEZ20OyHFDkAE24Fkg8va-yVBSZBpBaEI86BV2WZ5g',
         },
       });
       return await response.json();

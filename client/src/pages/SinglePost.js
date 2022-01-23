@@ -1,14 +1,14 @@
-import "../index.css";
-import Post, { timeDifference } from "../components/Post";
-import React, { useEffect, useRef, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useLocation, useSearchParams } from "react-router-dom";
-import { IconHeart, IconTrash } from "../icons/PostIcons";
-import { PDFviewer } from "../components/PDFviewer";
-import Highlighter from "react-highlight-words";
-import { NavTab } from "../components/NavTab";
-import { SpacesTab } from "./Dashboard";
-import api from "../controller/QueryService";
+import '../index.css';
+import Post, { timeDifference } from '../components/Post';
+import React, { useEffect, useRef, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useLocation, useSearchParams } from 'react-router-dom';
+import { IconHeart, IconTrash } from '../icons/PostIcons';
+import { PDFviewer } from '../components/PDFviewer';
+import Highlighter from 'react-highlight-words';
+import { NavTab } from '../components/NavTab';
+import { SpacesTab } from './Dashboard';
+import api from '../controller/QueryService';
 
 // const commentPlaceholder = [
 //   {
@@ -42,8 +42,8 @@ import api from "../controller/QueryService";
 
 export default function SinglePost() {
   const [searchParams] = useSearchParams();
-  const currentUser = useAuth();
-  const postId = searchParams.get("id");
+  const { currentUser } = useAuth();
+  const postId = searchParams.get('id');
 
   const post = useLocation().state;
   const [paginator, setPaginator] = useState();
@@ -60,8 +60,8 @@ export default function SinglePost() {
     <div className="flex min-h-screen justify-center divide-x">
       <NavTab currentUser={currentUser} active="dash" />
       <div className="flex flex-col items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
-        <h1 className="font-bold text-gray-500 text-3xl text-left pt-5 w-full px-3">
-          View
+        <h1 className="font-bold text-gray-500 text-3xl text-left pt-5 w-full p-3">
+          {post.title}
         </h1>
         <Post key={post.id} data={post} currentUser={currentUser}>
           <PDFviewer
@@ -86,10 +86,10 @@ export default function SinglePost() {
       </div>
       <SpacesTab
         spaces={[
-          "distributedsystems",
-          "illustrations",
-          "streetwear",
-          "fitness",
+          'distributedsystems',
+          'illustrations',
+          'streetwear',
+          'fitness',
         ]}
       />
     </div>
@@ -100,7 +100,7 @@ export default function SinglePost() {
 
     function handleSubmit(event) {
       event.preventDefault();
-      if ("current" in commentRef && currentUser) {
+      if ('current' in commentRef && currentUser) {
         api.createComment(
           post.id,
           { id: currentUser.uid },
@@ -147,7 +147,7 @@ function Comment({ data, paginator, currentUser, postId }) {
   const [liked, setLiked] = useState(false);
 
   function paginate(content) {
-    const strip = content.replace(/[^0-9]/g, "");
+    const strip = content.replace(/[^0-9]/g, '');
 
     return paginator.ready().then(() => {
       paginator.goToPage(Number(strip));
@@ -166,7 +166,7 @@ function Comment({ data, paginator, currentUser, postId }) {
   }
 
   function handleDelete() {
-    api.deleteComment(postId, data.id)
+    api.deleteComment(postId, data.id);
     window.location.reload();
   }
 
@@ -187,8 +187,8 @@ function Comment({ data, paginator, currentUser, postId }) {
       </div>
       <div className="w-full flex flex-col p-2 text-sm">
         <div className="font-semibold mb-1">
-          {data.user.displayName + " "}
-          &#183;{" "}
+          {data.user.displayName + ' '}
+          &#183;{' '}
           <div className="font-light inline">{timeDifference(data.date)}</div>
         </div>
         <div className="mb-2">
@@ -201,11 +201,17 @@ function Comment({ data, paginator, currentUser, postId }) {
       </div>
       <div className="flex items-center">
         {data.user.id === currentUser?.uid ? (
-          <button className="rounded-full hover:bg-gray-300 p-3" onClick={handleDelete}>
+          <button
+            className="rounded-full hover:bg-gray-300 p-3"
+            onClick={handleDelete}
+          >
             <IconTrash />
           </button>
         ) : (
-          <button className="rounded-full hover:bg-gray-300 p-3" onClick={toggleLiked}>
+          <button
+            className="rounded-full hover:bg-gray-300 p-3"
+            onClick={toggleLiked}
+          >
             <IconHeart />
           </button>
         )}

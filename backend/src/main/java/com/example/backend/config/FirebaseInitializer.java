@@ -17,17 +17,16 @@ public class FirebaseInitializer {
     @PostConstruct
     public void initialize() throws IOException {
         String path = "src/main/resources/static/prog-ex-firebase-adminsdk.json";
-        File credentials;
+        FileInputStream credentials;
 
         try {
-            credentials = new File(path);
-            // credentials = new File("backend/" + path);
+            credentials = new FileInputStream(new File("backend/" + path));
         } catch (Exception e) {
-            credentials = new File(path);
+            credentials = new FileInputStream(new File(path));
         }
 
         FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(new FileInputStream(credentials)))
+                .setCredentials(GoogleCredentials.fromStream(credentials))
                 .build();
 
         FirebaseApp.initializeApp(options);
