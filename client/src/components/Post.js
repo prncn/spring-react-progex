@@ -61,18 +61,18 @@ export default function Post({ data, currentUser, children }) {
   const postContainerRef = useRef(null);
   const descInputRef = useRef(null);
 
-  // useEffect(() => {
-  //   let mounted = false;
-  //   (async () => {
-  //     if (!mounted) {
-  //       setLiked(await api.checkIfPostLikedByUser(data.id, currentUser?.uid));
-  //       setSaved(await api.checkIfPostSavedByUser(data.id, currentUser?.uid));
-  //     }
-  //   })();
-  //   return () => {
-  //     mounted = true;
-  //   };
-  // }, [currentUser?.uid, data.id]);
+  useEffect(() => {
+    let mounted = false;
+    (async () => {
+      if (!mounted) {
+        setLiked(await api.checkIfPostLikedByUser(data.id, currentUser?.uid));
+        setSaved(await api.checkIfPostSavedByUser(data.id, currentUser?.uid));
+      }
+    })();
+    return () => {
+      mounted = true;
+    };
+  }, [currentUser?.uid, data.id]);
 
   const handleClickOutside = (event) => {
     const path = event.path || (event.composedPath && event.composedPath());
@@ -82,13 +82,13 @@ export default function Post({ data, currentUser, children }) {
     }
   };
 
-  // useEffect(() => {
-  //   document.addEventListener('click', handleClickOutside);
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
 
-  //   return () => {
-  //     document.removeEventListener('click', handleClickOutside);
-  //   };
-  // }, []);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   function toggleLiked(e) {
     e.preventDefault();

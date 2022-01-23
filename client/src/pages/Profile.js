@@ -7,7 +7,7 @@ import { PDFviewer } from '../components/PDFviewer';
 import { NavTab } from '../components/NavTab';
 import { SpacesTab } from './Dashboard';
 import { useAuth } from '../context/AuthContext';
-import Modal from './Modal';
+import Modal from '../components/Modal';
 
 export default function Profile() {
   const [postData, setData] = useState([]);
