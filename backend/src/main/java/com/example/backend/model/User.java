@@ -1,6 +1,7 @@
 package com.example.backend.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.google.cloud.firestore.annotation.DocumentId;
 import lombok.Data;
@@ -17,4 +18,9 @@ public class User {
 
     private ArrayList<String> likedPosts = new ArrayList<>();
     private ArrayList<String> savedPosts = new ArrayList<>();
+
+    private ArrayList<String> followers = new ArrayList<>();
+    private ArrayList<String> following = new ArrayList<>();
+
+    private ArrayList<HashMap<String, Object>> messages = new ArrayList<>();
 }

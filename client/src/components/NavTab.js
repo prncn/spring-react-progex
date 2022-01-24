@@ -91,6 +91,9 @@ export function NavTab({ currentUser }) {
           <NavLinkBtn path="profile">
             <IconProfile />
           </NavLinkBtn>
+          <NavLinkBtn path="messages">
+            <IconProfile />
+          </NavLinkBtn>
           <button onClick={handleLogout} className="dashboard-nav__btn">
             <IconLogout />
             <span>logout</span>

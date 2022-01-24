@@ -171,6 +171,19 @@ export default class QueryService {
     return this.HTTPMethodWrapper('PUT', endpoint, post);
   }
 
+  static async getUserList() {
+    const endpoint = `http://localhost:8080/api/users`;
+    try {
+      const response = await fetch(endpoint);
+      const data = await response.json();
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
+
   static async getUserById(id) {
     const endpoint = `http://localhost:8080/api/users/${id}`;
     try {

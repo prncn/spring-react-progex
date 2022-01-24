@@ -11,11 +11,11 @@ import {
 
 import React, { useContext, useState, useEffect } from 'react';
 import { auth, db } from '../controller/Firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
 
 const AuthContext = React.createContext();
 
-export function  useAuth() {
+export function useAuth() {
   return useContext(AuthContext);
 }
 
@@ -30,27 +30,45 @@ export function AuthProvider({ children }) {
     'https://i.imgur.com/ncnHn9I.jpg',
     'https://pic.onlinewebfonts.com/svg/img_258083.png',
   ];
-  
-  const photoURL = images[Math.random() * images.length];
-  
-  async function signup(email, password, displayName) {
 
-    return await createUserWithEmailAndPassword(auth, email, password).then((res) => {
-      updateProfile(res.user, {
-        displayName,
-        photoURL,
-      });
-      try {
-        setDoc(doc(db, 'users', res.user.uid), {
+  const photoURL = images[Math.random() * images.length];
+
+  async function signup(email, password, displayName) {
+    return await createUserWithEmailAndPassword(auth, email, password).then(
+      (res) => {
+        updateProfile(res.user, {
           displayName,
           photoURL,
-          likedPosts: [],
-          savedPosts: [],
         });
-      } catch (e) {
-        console.error('Error adding document: ', e);
+        try {
+          setDoc(doc(db, 'users', res.user.uid), {
+            displayName,
+            photoURL,
+            email,
+            likedPosts: [],
+            savedPosts: [],
+            followers: [],
+            following: [],
+            messages: [],
+          });
+        } catch (e) {
+          console.error('Error adding document: ', e);
+        }
       }
-    });
+    );
+  }
+
+  function updateMessages(messages) {
+    const ref = doc(db, 'users', auth.currentUser.uid);
+    console.log('firing');
+    console.log(messages);
+    try {
+      updateDoc(ref, {
+        messages,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   function signin(email, password) {
@@ -90,6 +108,7 @@ export function AuthProvider({ children }) {
     _updateEmail,
     _updatePassword,
     currentUser,
+    updateMessages,
   };
 
   return (
