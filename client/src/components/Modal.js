@@ -1,7 +1,6 @@
 import React from 'react';
 import { Input } from '../pages/Home';
 import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { IconClose } from '../icons/PostIcons';
 
@@ -12,6 +11,7 @@ const MODAL_STYLES = {
   transform: 'translate(-50%, -50%)',
   backgroundColor: '#FFF',
   zIndex: 1000,
+  width: '40em',
 };
 
 const OVERLAY_STYLES = {
@@ -25,36 +25,50 @@ const OVERLAY_STYLES = {
 };
 
 export default function Modal({ open, close }) {
-  const { currentUser, _updateEmail, _updatePassword } = useAuth();
+  const { currentUser, _updateEmail, _updatePassword, _updateProfile } =
+    useAuth();
   const emailRef = useRef();
+  const usernameRef = useRef();
+  const photoRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
   const [loading, setLoading] = useState();
-  const navigate = useNavigate();
+  const [photoURL, setPhotoURL] = useState(currentUser?.photoURL);
 
   function handleUpdate(e) {
     e.preventDefault();
 
     if (passwordRef.current.value !== passwordConfirmRef.current.value) {
       alert('Passwords do not match');
+      return;
     }
 
     setLoading(true);
     const promises = [];
 
     if (emailRef.current.value !== currentUser.email) {
-      promises.push(_updateEmail(currentUser.email));
+      const promiseUpdateEmail = _updateEmail(currentUser.email);
+      promises.push(promiseUpdateEmail);
     }
 
     if (passwordRef.current.value) {
       promises.push(_updatePassword(passwordRef.current.value));
     }
 
+    if (usernameRef.current.value || photoRef.current.value) {
+      const newDisplayName =
+        usernameRef.current.value || currentUser.displayName;
+      const newPhotoURL = photoRef.current.value || currentUser.photoURL;
+      const promiseUpdateProfile = _updateProfile(newDisplayName, newPhotoURL);
+      promises.push([...promiseUpdateProfile]);
+    }
+
     Promise.all(promises)
       .then(() => {
-        navigate('/profile');
+        close();
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log(err);
         alert('Profile could not be updated, try again');
       })
       .finally(() => {
@@ -62,12 +76,21 @@ export default function Modal({ open, close }) {
       });
   }
 
+  function handlePhotoChange(event) {
+    event.preventDefault();
+    if (!/^ *$/.test(event.target.value)) {
+      setPhotoURL(event.target.value);
+    } else {
+      setPhotoURL(currentUser?.photoURL);
+    }
+  }
+
   if (!open) return null;
 
   return (
     <>
       <div style={OVERLAY_STYLES} onClick={close} />
-      <div style={MODAL_STYLES} className="rounded-xl p-5 relative w-1/3">
+      <div style={MODAL_STYLES} className="rounded-xl p-5 relative">
         <div className="flex items-center justify-center space-x-2 absolute top-2 right-2">
           <button
             disabled={loading}
@@ -85,34 +108,62 @@ export default function Modal({ open, close }) {
             <IconClose />
           </button>
         </div>
-        <div className="w-32 h-32 rounded-full border-4 border-gray-50 bg-gray-50 cursor-pointer relative">
-          <img
-            className="w-full h-full object-cover rounded-full"
-            src={currentUser?.photoURL}
-            alt="pfp_icon"
-          />
-          <div className="bg-black absolute top-0 left-0 opacity-0 h-full w-full hover:opacity-30 transition rounded-full" />
+        <div className="flex">
+          <div className="w-32 h-32 rounded-full border-4 border-gray-50 bg-gray-50 cursor-pointer relative flex-none">
+            <img
+              className="w-full h-full object-cover rounded-full"
+              src={photoURL}
+              alt="pfp_icon"
+            />
+            <div className="bg-black absolute top-0 left-0 opacity-0 h-full w-full hover:opacity-30 transition rounded-full flex-none" />
+          </div>
+          <div className="flex flex-col justify-end w-full ml-5">
+            <Input
+              ref={photoRef}
+              label="Profile Icon"
+              type="text"
+              placeholder={currentUser.photoURL}
+              onChange={handlePhotoChange}
+            />
+          </div>
         </div>
         <form>
-          {/* <p className="home-form__heading">Edit Profile</p> */}
-          <Input
-            ref={emailRef}
-            label="Email"
-            type="email"
-            placeholder={currentUser.email}
-          />
-          <Input
-            ref={passwordRef}
-            label="Password"
-            type="password"
-            placeholder="Password"
-          />
-          <Input
-            ref={passwordConfirmRef}
-            label="Confirm Password"
-            type="password"
-            placeholder="Confirm Password"
-          />
+          <div className="flex space-x-1">
+            <div className="w-1/2">
+              <Input
+                ref={usernameRef}
+                label="Username"
+                type="username"
+                placeholder={currentUser.displayName}
+              />
+            </div>
+            <div className="w-1/2">
+              <Input
+                ref={emailRef}
+                label="Email"
+                type="email"
+                placeholder={currentUser.displayName}
+              />
+            </div>
+          </div>
+          <div className="flex space-x-1">
+            <div className="w-1/2">
+              <Input
+                ref={passwordRef}
+                label="Password"
+                type="password"
+                placeholder="Password"
+              />
+            </div>
+            <div className="w-1/2">
+              <Input
+                ref={passwordConfirmRef}
+                label="Confirm Password"
+                type="password"
+                placeholder="Confirm Password"
+              />
+            </div>
+          </div>
         </form>
       </div>
     </>

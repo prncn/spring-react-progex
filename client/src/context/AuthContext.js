@@ -60,8 +60,6 @@ export function AuthProvider({ children }) {
 
   function updateMessages(messages) {
     const ref = doc(db, 'users', auth.currentUser.uid);
-    console.log('firing');
-    console.log(messages);
     try {
       updateDoc(ref, {
         messages,
@@ -84,11 +82,35 @@ export function AuthProvider({ children }) {
   }
 
   function _updateEmail(email) {
-    return updateEmail(auth.currentUser, email);
+    try {
+      const promiseAuth = updateEmail(auth.currentUser, email);
+      const promiseStore = updateDoc(doc(db, 'users', auth.currentUser.uid), {
+        email,
+      });
+      return [promiseAuth, promiseStore];
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   function _updatePassword(email) {
     return updatePassword(auth.currentUser, email);
+  }
+
+  function _updateProfile(displayName, photoURL) {
+    try {
+      const promiseAuth = updateProfile(auth.currentUser, {
+        displayName,
+        photoURL,
+      });
+      const promiseStore = updateDoc(doc(db, 'users', auth.currentUser.uid), {
+        displayName,
+        photoURL,
+      });
+      return [promiseAuth, promiseStore];
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {
@@ -107,6 +129,7 @@ export function AuthProvider({ children }) {
     resetPassword,
     _updateEmail,
     _updatePassword,
+    _updateProfile,
     currentUser,
     updateMessages,
   };

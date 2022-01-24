@@ -12,7 +12,7 @@ export const Input = forwardRef((props, ref) => {
       <label className="text-gray-500 text-sm font-normal">{props.label}</label>
       <input
         {...props}
-        className="w-full p-3 my-2 text-gray-500 text-sm rounded focus:outline-none border bg-gray-200 focus:border focus:bg-transparent transition"
+        className="w-full p-3 my-2 text-gray-500 text-sm rounded focus:outline-none border bg-gray-100 focus:border focus:bg-transparent transition"
         autoComplete="off"
         spellCheck={false}
         ref={ref}
