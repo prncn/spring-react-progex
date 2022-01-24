@@ -5,11 +5,14 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -31,21 +34,26 @@ public class UserService {
     public User getUserById(String userId) throws ExecutionException, InterruptedException {
         ApiFuture<DocumentSnapshot> future = firestore.collection("users").document(userId).get();
         DocumentSnapshot userDoc = future.get();
-
-        // User user = new User();
-        // user.setId(userDoc.getId());
-        // user.setDisplayName(userDoc.getString("displayName"));
-        // user.setPhotoURL(userDoc.getString("photoURL"));
-        // user.setEmail(userDoc.getString("email"));
-        // user.setLikedPosts((ArrayList<String>) userDoc.get("likedPosts"));
-        // user.setSavedPosts((ArrayList<String>) userDoc.get("savedPosts"));
-
         User user = userDoc.toObject(User.class);
 
         return user;
     }
 
-    public String updateUser(String userId, HashMap<String, Object> userUpdate) throws ExecutionException, InterruptedException {
+    public List<User> getUserList() throws ExecutionException, InterruptedException {
+        ApiFuture<QuerySnapshot> future = firestore.collection("users").limit(50).get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+        List<User> users = new ArrayList<>();
+
+        for (QueryDocumentSnapshot document : documents) {
+            User user = document.toObject(User.class);
+            users.add(user);
+        }
+
+        return users;
+    }
+
+    public String updateUser(String userId, HashMap<String, Object> userUpdate)
+            throws ExecutionException, InterruptedException {
         DocumentReference ref = firestore.collection("users").document(userId);
         ApiFuture<WriteResult> collectionsApiFuture = ref.update(userUpdate);
         return collectionsApiFuture.get().getUpdateTime().toString();

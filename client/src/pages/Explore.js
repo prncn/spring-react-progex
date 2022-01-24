@@ -1,36 +1,36 @@
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { NavTab } from "../components/NavTab";
-import { PDFviewer } from "../components/PDFviewer";
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { NavTab } from '../components/NavTab';
+import { PDFviewer } from '../components/PDFviewer';
 
-import api from "../controller/QueryService";
-import { useAuth } from "../context/AuthContext";
+import api from '../controller/QueryService';
+import { useAuth } from '../context/AuthContext';
 
 export default function Explore() {
   //const auth = useAuth();
   const { currentUser } = useAuth();
   const params = useParams();
   const spaces = [
-    "illustration",
-    "statistics",
-    "streetwear",
-    "slow jazz",
-    "neural networks",
-    "machine learning",
-    "object oriented programming",
-    "social sciences",
-    "philosophy",
-    "taxation",
-    "volatility",
-    "investments",
-    "culture",
-    "slow jazz",
-    "illustration",
-    "statistics",
-    "streetwear",
-    "slow jazz",
+    'illustration',
+    'statistics',
+    'streetwear',
+    'slow jazz',
+    'neural networks',
+    'machine learning',
+    'object oriented programming',
+    'social sciences',
+    'philosophy',
+    'taxation',
+    'volatility',
+    'investments',
+    'culture',
+    'slow jazz',
+    'illustration',
+    'statistics',
+    'streetwear',
+    'slow jazz',
   ];
-  const colors = ["green", "indigo", "blue"];
+  const colors = ['green', 'indigo', 'blue'];
   let color = colors[Math.floor(Math.random() * colors.length)];
   const [data, setData] = useState([]);
 
@@ -42,7 +42,7 @@ export default function Explore() {
   }
 
   useEffect(() => {
-    if ("spaceId" in params) {
+    if ('spaceId' in params) {
       (async () => {
         const postsData = await api.getPosts(params.spaceId);
         setData(postsData);
@@ -54,7 +54,7 @@ export default function Explore() {
     <div className="flex min-h-screen">
       <NavTab currentUser={currentUser} active="spaces" />
       <div className="bg-gray-100 w-full">
-        {"spaceId" in params ? (
+        {'spaceId' in params ? (
           <div className="p-1">
             <h1 className="ml-1 mt-10 text-lg font-semibold">
               {params.spaceId}
@@ -87,7 +87,7 @@ export default function Explore() {
                 <div
                   className={`overflow-hidden h-40 w-${
                     40 * rand()
-                  } m-1 bg-post-img hover:bg-${color}-400 bg-${color}-300 rounded-lg font-semibold text-2xl text-white p-4 cursor-pointer`}
+                  } m-1 bg-post-img hover:bg-${color}-400 bg-${color}-300 rounded-lg font-semibold text-2xl text-white p-4 transition`}
                 >
                   {name}
                 </div>
