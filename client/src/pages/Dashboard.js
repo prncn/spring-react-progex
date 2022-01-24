@@ -1,16 +1,16 @@
-import "../index.css";
-import Post from "../components/Post";
-import React, { useState, useMemo, useCallback, useEffect } from "react";
-import { Link } from "react-router-dom";
-import api from "../controller/QueryService";
-import { lightbox, PDFviewer } from "../components/PDFviewer";
-import { useDropzone } from "react-dropzone";
-import { uploadFile } from "../controller/Firebase";
-import { NavTab } from "../components/NavTab";
-import ViewSDKClient from "../controller/ViewSDKClient";
-import { Img } from "react-image";
-import anonIcon from "../img/img_258083.png";
-import { useAuth } from "../context/AuthContext";
+import '../index.css';
+import Post from '../components/Post';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import api from '../controller/QueryService';
+import { lightbox, PDFviewer } from '../components/PDFviewer';
+import { useDropzone } from 'react-dropzone';
+import { uploadFile } from '../controller/Firebase';
+import { NavTab } from '../components/NavTab';
+import ViewSDKClient from '../controller/ViewSDKClient';
+import { Img } from 'react-image';
+import anonIcon from '../img/img_258083.png';
+import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard() {
   const [data, setData] = useState(api.placeholder);
@@ -18,18 +18,23 @@ export default function Dashboard() {
 
   useEffect(() => {
     (async () => {
-      const session = window.sessionStorage.getItem("POST_CACHE");
+      const session = window.sessionStorage.getItem('POST_CACHE');
       if (session) {
         setData(JSON.parse(session));
       } else {
         const res = await api.getPosts();
-        window.sessionStorage.setItem("POST_CACHE", JSON.stringify(res));
+        window.sessionStorage.setItem('POST_CACHE', JSON.stringify(res));
         setData(res);
       }
     })();
   }, []);
 
   const [revealLoader, setRevealLoader] = useState(false);
+
+  function refreshHandler() {
+    window.sessionStorage.clear();
+    window.location.reload();
+  }
 
   return (
     <>
@@ -41,11 +46,18 @@ export default function Dashboard() {
       <div className="flex min-h-screen justify-between divide-x">
         <NavTab currentUser={currentUser} data={data.slice(0, 6)} />
         <div className="flex flex-col items-center divide-y xl:w-1/2 flex-grow xl:flex-grow-0 bg-gray-50">
-          <PostCreator currentUser={currentUser} setRevealLoader={setRevealLoader}/>
-          <h1
-            className="font-bold text-gray-500 text-3xl text-left pt-10 pb-5 w-full px-3"
-          >
-            Posts
+          <PostCreator
+            currentUser={currentUser}
+            setRevealLoader={setRevealLoader}
+          />
+          <h1 className="font-bold text-gray-500 text-3xl text-left pt-10 pb-5 w-full px-3 cursor-pointer space-x-2">
+            <span>Posts</span>
+            <span
+              className="hover:opacity-20 opacity-0 transition"
+              onClick={refreshHandler}
+            >
+              Refresh
+            </span>
           </h1>
           {data.map((post, i) => (
             <Post key={post.id} data={post} currentUser={currentUser}>
@@ -58,36 +70,34 @@ export default function Dashboard() {
             </Post>
           ))}
         </div>
-        <SpacesTab
-          data={data.slice(0, 3)}
-        />
+        <SpacesTab data={data.slice(0, 3)} />
       </div>
     </>
   );
 }
 
 const activeStyle = {
-  borderColor: "#2196f3",
+  borderColor: '#2196f3',
 };
 
 const acceptStyle = {
-  borderColor: "#00e676",
+  borderColor: '#00e676',
 };
 
 const rejectStyle = {
-  borderColor: "#be185d",
+  borderColor: '#be185d',
 };
 
 const baseStyle = {
-  width: "100%",
-  height: "100%",
-  display: "flex",
-  borderRadius: "0.75em",
-  padding: "0.75rem",
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  borderRadius: '0.75em',
+  padding: '0.75rem',
   borderWidth: 4,
-  borderColor: "#a5b4fc",
-  borderStyle: "dashed",
-  transition: "border .24s ease-in-out",
+  borderColor: '#a5b4fc',
+  borderStyle: 'dashed',
+  transition: 'border .24s ease-in-out',
 };
 
 function PostCreator({ currentUser, setRevealLoader }) {
@@ -98,21 +108,24 @@ function PostCreator({ currentUser, setRevealLoader }) {
   const [category, setCategory] = useState();
   const pfpIcon = currentUser?.photoURL;
   const [show, setShow] = useState(false);
-  
-  const onDrop = useCallback(async (acceptedFiles) => {
-    if (acceptedFiles.length > 0) {
-      const file = acceptedFiles.at(-1);
-      setURLStatus("Uploading...");
-      setRevealLoader(true);
-      uploadFile(file).then((downloadURL) => {
-        setURL(downloadURL);
-        setURLStatus("File uploaded.");
-      })
-    }
-  }, [setRevealLoader]);
+
+  const onDrop = useCallback(
+    async (acceptedFiles) => {
+      if (acceptedFiles.length > 0) {
+        const file = acceptedFiles.at(-1);
+        setURLStatus('Uploading...');
+        setRevealLoader(true);
+        uploadFile(file).then((downloadURL) => {
+          setURL(downloadURL);
+          setURLStatus('File uploaded.');
+        });
+      }
+    },
+    [setRevealLoader]
+  );
 
   const { getRootProps, isDragActive, isDragAccept, isDragReject } =
-    useDropzone({ accept: "application/pdf", onDrop });
+    useDropzone({ accept: 'application/pdf', onDrop });
 
   const style = useMemo(
     () => ({
@@ -135,7 +148,7 @@ function PostCreator({ currentUser, setRevealLoader }) {
       }
     });
 
-    if (urlStatus !== "Uploading..." && !completed_flag) {
+    if (urlStatus !== 'Uploading...' && !completed_flag) {
       api.createPost(
         { ...currentUser, id: currentUser?.uid },
         title,
@@ -162,10 +175,10 @@ function PostCreator({ currentUser, setRevealLoader }) {
       {!show ? (
         <div
           onClick={handleReveal}
-          className="w-full h-52 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-indigo-400 animate-gradient-y transition-all shadow-xl"
+          className="w-full h-52 flex rounded-b-xl bg-gradient-to-tr from-red-300 to-indigo-500 p-3 mb-6 cursor-pointer hover:from-pink-400 animate-gradient-y transition shadow-xl"
         >
-          <div className={"self-end w-1/3 text-3xl text-white font-semibold"}>
-            Hi, {currentUser?.displayName}. <br />{" "}
+          <div className={'self-end w-1/3 text-3xl text-white font-semibold'}>
+            Hi, {currentUser?.displayName}. <br />{' '}
             <p className="font-light"> Share your docs here. </p>
           </div>
         </div>
@@ -198,13 +211,13 @@ function PostCreator({ currentUser, setRevealLoader }) {
                   onInput={(event) => setTitle(event.target.value)}
                   spellCheck="false"
                 ></input>
-                  <input
-                    className="py-1 bg-transparent text-sm focus:outline-none"
-                    placeholder="Space"
-                    value={category}
-                    onInput={(event) => setCategory(event.target.value)}
-                    spellCheck="false"
-                  ></input>
+                <input
+                  className="py-1 bg-transparent text-sm focus:outline-none"
+                  placeholder="Space"
+                  value={category}
+                  onInput={(event) => setCategory(event.target.value)}
+                  spellCheck="false"
+                ></input>
                 <textarea
                   className="py-1 bg-transparent text-sm focus:outline-none resize-none"
                   placeholder="Description"
@@ -234,7 +247,7 @@ export function SpacesTab({ data }) {
     (async () => {
       // const session = sessionStorage.getItem('SPACES_DATA');
       const session = false;
-      if(session) {
+      if (session) {
         setSpaces(session);
       } else {
         const spacesData = await api.getSpaces();
@@ -247,19 +260,24 @@ export function SpacesTab({ data }) {
   return (
     <div
       className="sticky top-0 bg-white hidden xl:block flex-1 z-0"
-      style={{ height: "94vh" }}
+      style={{ height: '94vh' }}
     >
       <div className="w-80 rounded-lg border m-4 py-6 bg-gray-50">
         <h1 className="text-xl font-semibold mb-4 pl-6">Spaces for you</h1>
         <div className="font-semibold divide-y">
-          {Object.keys(spaces).slice(0, 5).map((space, i) => (
-            <Link to={`/spaces/${space}`} key={i}>
-              <div className="py-3 px-6 hover:bg-gray-200 cursor-pointer">
-                <p>{space}</p>
-                <p className="font-light text-sm"> {spaces[space]} Docs in this Space</p>
-              </div>
-            </Link>
-          ))}
+          {Object.keys(spaces)
+            .slice(0, 5)
+            .map((space, i) => (
+              <Link to={`/spaces/${space}`} key={i}>
+                <div className="py-3 px-6 hover:bg-gray-200 cursor-pointer">
+                  <p>{space}</p>
+                  <p className="font-light text-sm">
+                    {' '}
+                    {spaces[space]} Docs in this Space
+                  </p>
+                </div>
+              </Link>
+            ))}
         </div>
       </div>
       {data && (
@@ -285,7 +303,7 @@ function Stories({ data }) {
         {storyposts.map((item, i) => (
           <li key={i} className="flex flex-col justify-center items-center">
             <div
-              className="bg-gradient-to-tr from-red-300 to-indigo-700 rounded-full p-1 m-1 block cursor-pointer animate-gradient-xy"
+              className="bg-gradient-to-tr w-17 h-17 from-red-300 to-indigo-700 rounded-full p-1 m-1 block cursor-pointer animate-gradient-xy"
               onClick={() => lightbox(sdk, item.url, item.title)}
             >
               <Img
