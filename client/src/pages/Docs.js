@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PDFviewer } from '../components/PDFviewer';
 import api from '../controller/QueryService';
-import { IconFolder, IconPlus } from '../icons/FileIcons';
+import { IconFolder, IconLoading, IconPlus } from '../icons/FileIcons';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { NavTab } from '../components/NavTab';
 import { useAuth } from '../context/AuthContext';
@@ -215,7 +215,9 @@ export default function Docs() {
         <div className="w-1/2 xl:w-1/3 h-full mr-10">
           {isFetching ? (
             <div className="text-white p-10 flex space-x-3">
-              <span>Loading...</span>
+              <span className="animate-spin">
+                <IconLoading />
+              </span>
             </div>
           ) : (
             <DragDropContext onDragEnd={onDragEnd}>

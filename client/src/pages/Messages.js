@@ -50,6 +50,28 @@ export default function Messages() {
     }
   }, [currentUser, users, recip]);
 
+  function dateCompare(a, b) {
+    return a.at > b.at ? 1 : -1;
+  }
+
+  const buildMessagesOther = useCallback(
+    (other) => {
+      for (const user of users) {
+        if (user.id === currentUser?.uid) {
+          const myMessages = user.messages.filter(
+            (msg) => msg.to === other?.id
+          );
+          const theirMessages = other?.messages.filter(
+            (msg) => msg.to === currentUser?.uid
+          );
+          const concatMsg = myMessages.concat(theirMessages);
+          return concatMsg.sort(dateCompare);
+        }
+      }
+    },
+    [currentUser, users]
+  );
+
   useEffect(() => {
     setMsgList(buildMessages);
   }, [buildMessages]);
@@ -63,7 +85,7 @@ export default function Messages() {
       setMsgList(currentMsgList);
       setInput('');
     }
-    updateMessages(currentMsgList);
+    updateMessages(currentMsgList.filter((msg) => msg.to !== currentUser?.uid));
   }
 
   function switchRecip(user) {
@@ -77,11 +99,14 @@ export default function Messages() {
       <div className="bg-white w-full flex">
         <div className="bg-gray-50 h-full w-96 divide-y">
           <div className="text-3xl font-semibold m-5">Messages</div>
-          {users.map((user) => (
-            <UserCard user={user} key={user.id} />
-          ))}
+          {users
+            .filter((user) => user.id !== currentUser?.uid)
+            .sort(dateCompare)
+            .map((user) => (
+              <UserCard user={user} key={user.id} />
+            ))}
         </div>
-        <div className="w-1/2 h-full border space-y-2 justify-end flex flex-col relative">
+        <div className="w-1/2 h-full border space-y-2 justify-end flex flex-col relative overflow-y-auto">
           <div className="w-full flex p-4 absolute top-0 left-0">
             <div className="w-16 h-16 rounded-full">
               <img
@@ -132,10 +157,13 @@ export default function Messages() {
 
     return (
       <button
-        className="w-full flex relative p-4"
+        className="w-full flex relative px-4 py-3"
         onClick={() => switchRecip(user)}
       >
         <div className="bg-black h-full w-full opacity-0 hover:opacity-10 absolute top-0 left-0 transition" />
+        {buildMessagesOther(user).at(-1)?.to === currentUser?.uid && (
+          <div className="bg-gradient-to-r from-indigo-400 to-pink-300 animate-gradient-xy rounded-full absolute right-3 top-3 h-2 w-2" />
+        )}
         <div className="w-16 h-16 rounded-full">
           <img
             className="w-full h-full object-cover rounded-full"
@@ -143,12 +171,18 @@ export default function Messages() {
             alt="pfp_icon"
           />
         </div>
-        <div className="px-4">
+        <div className="px-4 text-left">
           <div className="font-medium">
             {user?.displayName}{' '}
             <div className="font-light text-gray-400 inline-block">
               {trunc(user?.email)}
             </div>
+          </div>
+          <div className="font-normal text-gray-400 text-sm mt-1">
+            {
+              user?.messages.filter((msg) => msg.to === currentUser?.uid).at(-1)
+                ?.text
+            }
           </div>
         </div>
       </button>

@@ -18,6 +18,7 @@ export default function Profile() {
   const { currentUser } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [profilePalette, setProfilePalette] = useState([]);
+  const [followed, setFollowed] = useState(false);
 
   const params = useParams();
   useEffect(() => {
@@ -25,8 +26,11 @@ export default function Profile() {
       const [data, response] = await api.getUserById(params.userId);
       console.log(response);
       setUser(data);
+      if (data.followers.includes(currentUser?.uid)) {
+        setFollowed(true);
+      }
     })();
-  }, [params]);
+  }, [params, currentUser]);
 
   useEffect(() => {
     (async () => {
@@ -98,6 +102,29 @@ export default function Profile() {
     }
   }
 
+  async function toggleFollowed() {
+    const [currentUserFull, response] = await api.getUserById(currentUser?.uid);
+    console.log(response);
+    const newFollowing = currentUserFull?.following;
+    const newFollowers = user?.followers;
+
+    if (!followed && !newFollowing.includes(user?.id)) {
+      newFollowing.push(user?.id);
+      newFollowers.push(currentUserFull?.id);
+    } else {
+      newFollowing.splice(newFollowing.indexOf(user?.id), 1);
+      newFollowers.splice(newFollowers.indexOf(currentUserFull?.id), 1);
+    }
+
+    api.updateUser(currentUserFull?.id, {
+      following: newFollowing,
+    });
+    api.updateUser(user?.id, {
+      followers: newFollowers,
+    });
+    setFollowed(!followed);
+  }
+
   return (
     <div className="flex min-h-screen justify-center divide-x">
       <NavTab currentUser={currentUser} active="profile" />
@@ -105,7 +132,7 @@ export default function Profile() {
         <div
           className={`w-full h-32 flex justify-end rounded-b-xl p-3 relative bg-cover bg-black animate-gradient-y `}
           style={{
-            backgroundImage: `linear-gradient(to bottom left, black,  ${profilePalette[2]})`,
+            backgroundImage: `linear-gradient(to bottom left, black, ${profilePalette[0]})`,
           }}
         >
           <div className="w-32 h-32 rounded-full absolute -bottom-10 left-10 border-4 border-gray-50 bg-gray-50">
@@ -115,8 +142,7 @@ export default function Profile() {
               alt="pfp_icon"
             />
           </div>
-          <div className="flex flex-col p-5 h-full"></div>
-          <div className="flex flex-col p-4 h-full">
+          <div className="flex flex-col p-4 h-full text-right">
             <div className="text-3xl text-white font-semibold">
               {user.displayName}
             </div>
@@ -127,10 +153,19 @@ export default function Profile() {
               {user.savedPosts?.length} Docs Saved
             </div>
           </div>
-          <div className="h-full">
+          <div className="h-full self-end">
             {user.id !== currentUser.uid ? (
-              <div className="py-2 px-6 border border-white rounded-full text-white font-semibold cursor-pointer hover:shadow transition">
-                <span className="opactiy-100">Follow</span>
+              <div
+                className={`py-2 px-6 ${
+                  followed
+                    ? 'bg-transparent text-white border border-white'
+                    : 'bg-white text-black'
+                } rounded-full font-semibold cursor-pointer hover:opacity-90 transition`}
+                onClick={toggleFollowed}
+              >
+                <span className="opactiy-100">
+                  {followed ? 'Following' : 'Follow'}
+                </span>
               </div>
             ) : (
               <div className="py-2 px-6 border border-white rounded-full text-white font-semibold hover:shadow transition">
