@@ -48,7 +48,7 @@ export default function Modal({ open, close }) {
 
     if (emailRef.current.value !== currentUser.email) {
       const promiseUpdateEmail = _updateEmail(currentUser.email);
-      promises.push(promiseUpdateEmail);
+      promises.push([...promiseUpdateEmail]);
     }
 
     if (passwordRef.current.value) {
