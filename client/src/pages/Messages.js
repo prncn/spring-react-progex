@@ -4,6 +4,7 @@ import { NavTab } from '../components/NavTab';
 import api from '../controller/QueryService';
 import { useAuth } from '../context/AuthContext';
 import { IconRight } from '../icons/FileIcons';
+import { updateMessages } from '../controller/Firebase';
 
 class Message {
   constructor(text, to) {
@@ -14,7 +15,7 @@ class Message {
 }
 
 export default function Messages() {
-  const { currentUser, updateMessages } = useAuth();
+  const { currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [msgList, setMsgList] = useState([]);
   const [input, setInput] = useState([]);
@@ -85,7 +86,7 @@ export default function Messages() {
       setMsgList(currentMsgList);
       setInput('');
     }
-    updateMessages(currentMsgList.filter((msg) => msg.to !== currentUser?.uid));
+    updateMessages({ ...newMsg });
   }
 
   function switchRecip(user) {

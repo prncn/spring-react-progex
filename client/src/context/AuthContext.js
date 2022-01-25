@@ -58,17 +58,6 @@ export function AuthProvider({ children }) {
     );
   }
 
-  function updateMessages(messages) {
-    const ref = doc(db, 'users', auth.currentUser.uid);
-    try {
-      updateDoc(ref, {
-        messages,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   function signin(email, password) {
     return signInWithEmailAndPassword(auth, email, password);
   }
@@ -131,7 +120,6 @@ export function AuthProvider({ children }) {
     _updatePassword,
     _updateProfile,
     currentUser,
-    updateMessages,
   };
 
   return (
