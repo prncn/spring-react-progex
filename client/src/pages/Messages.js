@@ -162,7 +162,7 @@ export default function Messages() {
         onClick={() => switchRecip(user)}
       >
         <div className="bg-black h-full w-full opacity-0 hover:opacity-10 absolute top-0 left-0 transition" />
-        {buildMessagesOther(user).at(-1)?.to === currentUser?.uid && (
+        {buildMessagesOther(user)?.at(-1)?.to === currentUser?.uid && (
           <div className="bg-gradient-to-r from-indigo-400 to-pink-300 animate-gradient-xy rounded-full absolute right-3 top-3 h-2 w-2" />
         )}
         <div className="w-16 h-16 rounded-full">

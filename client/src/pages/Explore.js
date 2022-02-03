@@ -87,7 +87,7 @@ export default function Explore() {
                 <div
                   className={`overflow-hidden h-40 w-${
                     40 * rand()
-                  } m-1 bg-post-img hover:bg-${color}-400 bg-${color}-300 rounded-lg font-semibold text-2xl text-white p-4 transition`}
+                  } m-1 bg-post-img hover:bg-green-400 bg-green-300 rounded-lg font-semibold text-2xl text-white p-4 transition`}
                 >
                   {name}
                 </div>
