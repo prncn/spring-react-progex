@@ -137,7 +137,7 @@ function PostCreator({ currentUser, setRevealLoader }) {
     [isDragActive, isDragReject, isDragAccept]
   );
 
-  console.log(url);
+  // console.log(url);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

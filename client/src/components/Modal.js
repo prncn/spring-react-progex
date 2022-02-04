@@ -142,7 +142,7 @@ export default function Modal({ open, close }) {
                 ref={emailRef}
                 label="Email"
                 type="email"
-                placeholder={currentUser.displayName}
+                placeholder={currentUser.email}
               />
             </div>
           </div>

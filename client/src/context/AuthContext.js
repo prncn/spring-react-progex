@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
     'https://pic.onlinewebfonts.com/svg/img_258083.png',
   ];
 
-  const photoURL = images[Math.random() * images.length];
+  const photoURL = images[Math.floor(Math.random() * images.length)];
 
   async function signup(email, password, displayName) {
     return await createUserWithEmailAndPassword(auth, email, password).then(
